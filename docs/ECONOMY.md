@@ -1,255 +1,113 @@
-# ECONOMY
+# Economy
 
-This document describes the economic model of the prototype and **documents the market
-trade-price choice** required by the spec.
-
-> **See also:** [DESIGN.md](DESIGN.md) (core loop) · [MODDING.md](MODDING.md) (content JSON) ·
-> [BALANCE_ANALYTICS.md](BALANCE_ANALYTICS.md) · [README — Commands](../README.md#commands)
+How the simulation handles goods, markets, and the daily tick. Mod format lives in [MODDING.md](MODDING.md); balance runs in [BALANCE_ANALYTICS.md](BALANCE_ANALYTICS.md).
 
 ## Items
 
-Items are defined in `data/vanilla/items.json`. Each item has:
+Defined in `data/vanilla/items.json`: `id`, `name`, `category` (`raw|refined|component|good|energy|special`), `baseValue`, `volume`.
 
-- `id` — unique, lowercase identifier (never hardcoded in logic).
-- `name` — display name.
-- `category` — `raw | refined | component | good | energy | special`.
-- `baseValue` — anchor price in credits, used to seed markets and value inventory.
-- `volume` — cargo volume per unit, used by logistics capacity checks.
-
-The 20 vanilla items span the full chain: raw (`ore`, `rare_ore`, `water`, `biomass`),
-energy (`energy`), refined (`metal`, `alloys`, `chemicals`, `fuel`), components
-(`electronics`, `machinery`, `construction_materials`, `ship_parts`, `industrial_tools`),
-and goods (`food`, `consumer_goods`, `medical_supplies`, `luxury_goods`,
-`research_equipment`, `habitat_modules`).
+Vanilla runs ore → metal → alloys/components → goods across 20 items. Categories cover raw materials, energy, refined metals, components, and finished goods.
 
 ## Production
 
-Buildings (`buildings.json`) run recipes (`recipes.json`). A recipe declares its
-`buildingType`, `inputs`, `outputs`, and `duration` (in days/ticks).
+Buildings run recipes from `recipes.json`. Inputs are consumed when a job **starts**; outputs appear when it **finishes**. Quantity scales inputs/outputs; duration stays the recipe base. Stock is per system (where the building's planet sits).
 
-- **Inputs are consumed when a job starts.** Outputs are created when it completes.
-- A job has a `quantity` (number of recipe runs); inputs and outputs scale linearly
-  with it, while the batch still takes the recipe's base `duration`.
-- Inputs/outputs are drawn from / deposited into the inventory of the **system the
-  building's planet is in**.
+Extraction recipes set `"extraction": true` and a `yieldStat` (`mineralRichness`, `fertility`, `energyPotential`, `habitability`). Output scales with that planet stat; minimum multiplier 0.25 so barren worlds still trickle.
 
-### Extraction & planet stats
-
-Extraction recipes (`"extraction": true`) represent mining, water/biomass harvesting,
-and power generation. Their output is scaled by a planet stat declared **in data** via
-`yieldStat` (`mineralRichness | fertility | energyPotential | habitability`). This
-keeps the simulation data-driven — `extraction.ts` reads `planet[recipe.yieldStat]`
-and never references item names. A floor multiplier (0.25) guarantees a trickle even
-on poorly-suited worlds.
-
-Example chains:
+Typical chain:
 
 ```
-energy (power plant, scaled by energyPotential)
-ore  + energy            -> metal
-metal + chemicals + energy -> alloys
-rare_ore + chemicals + energy -> electronics
-metal + electronics      -> machinery
-metal + machinery        -> construction_materials
-alloys + electronics + machinery -> ship_parts
-chemicals + food         -> medical_supplies
-construction_materials + machinery -> habitat_modules
+energy → ore + energy → metal → … → ship_parts, habitat_modules, etc.
 ```
 
 ## Markets
 
-Each star system has exactly **one local market**. Orders have:
+One market per system. Orders: buy/sell, quantity, price, `ownerId`.
 
-`id, marketId, itemId, side (buy|sell), quantity, remainingQuantity, price,
-ownerId (corp id or "npc"), createdAt`.
+Baseline liquidity: for each item, an NPC sell at ~110% reference and buy at ~90%, 1000 units deep, replenished each tick.
 
-NPC orders provide baseline liquidity: for every item, an NPC sell order is seeded at
-`round(referencePrice * 1.1)` and an NPC buy order at `round(referencePrice * 0.9)`.
-Each NPC order is backed by `NPC_ORDER_QUANTITY` (1000) units. After matching each
-tick, depleted NPC depth is **replenished** so liquidity never permanently drains.
+Order owners:
 
-**Order ownership split (Milestone 3):**
+| ownerId | Meaning |
+|---------|---------|
+| `npc` | Abstract regional liquidity (`NPC_OWNER`) |
+| `corp_*` | NPC corporation listing surplus or covering shortage |
+| player corp id | Your resting orders |
 
-| `ownerId` | Role |
-|-----------|------|
-| `"npc"` (`NPC_OWNER`) | Abstract market maker / regional liquidity for non-industrial goods |
-| `corp_*` | Real NPC corporations listing industrial surplus or covering shortages |
-| player corp id | Player resting orders |
+Corp market AI (`npcMarketAI.ts`) keeps at most one open buy or sell per corp/system/item. Surplus → sell near 1.05× reference; shortage → buy near 0.95×. Objective progress counts player production only.
 
-NPC corporations (`npcMarketAI.ts`) place at most **one open buy or sell** per
-corp/system/item. Surplus inventory becomes sell listings; shortages become buy orders
-priced near reference (`×1.05` sell, `×0.95` buy). Player production and objectives
-ignore NPC output — only the player corporation increments campaign production totals.
-
-### Order placement
-
-- **Sell orders** reserve the corresponding inventory in the market's system.
-- **Buy orders** escrow credits (`quantity * price`) up front.
+Sell orders reserve inventory. Buy orders escrow credits upfront.
 
 ### Matching
 
-Matching runs during the tick (step 4). For each market+item:
+Per market and item: highest buys vs lowest sells; trade while bid ≥ ask. Tie-break on creation time for determinism.
 
-1. Sort buy orders by **highest price first**, sell orders by **lowest price first**
-   (ties broken by creation order for determinism).
-2. While the best buy price ≥ the best sell price, execute a trade for the minimum of
-   the two remaining quantities.
+### Trade price (midpoint)
 
-### Trade-price rule — **MIDPOINT** (documented choice)
-
-> When a buy order at price *B* crosses a sell order at price *S* (with *B ≥ S*), the
-> trade settles at the **midpoint**: `price = round((B + S) / 2)`.
-
-**Why midpoint?** It is symmetric and fair to both sides, prevents either party from
-capturing the entire spread merely by being matched, and produces stable, readable
-price history. The alternative (settling at the resting sell price) advantages
-aggressive buyers and makes prices noisier. The rule is encoded by
-`TRADE_PRICE_RULE = 'midpoint'` in `src/shared/constants.ts` and applied in
-`src/simulation/market.ts` (`executeTrade`).
-
-When a player buy settles below its escrow price, the difference is refunded; a player
-sell is paid the trade price for the delivered (reserved) goods.
+When bid *B* crosses ask *S*, settlement is `round((B + S) / 2)`. Encoded as `TRADE_PRICE_RULE = 'midpoint'` in `src/shared/constants.ts`, used in `market.ts`. Symmetric, stable history. Escrow refunds the difference on player buys; player sells get the trade price.
 
 ### Price history
 
-After matching (step 7), one `price_history` row is recorded per traded item per market
-using that tick's trade price. Economy-driven price rows (step 3) are written earlier for
-profiled items; trade rows override the reference price for items that traded this tick.
-Player↔NPC trades adjust regional stockpiles (step 5): buying draws stock down, selling
-adds stock. `referencePrice()` returns the latest recorded price, or
-the item's `baseValue` if it has never traded.
+Trade rows recorded after matching. Profile-driven price moves happen earlier in the tick. Player↔NPC trades nudge regional stockpiles. `referencePrice()` uses latest row or `baseValue`.
 
-**Retention:** only the most recent **365 ticks** of price history are kept per
-market+item. At the end of every tick, rows older than `tick - 365` are pruned. The
-latest row per market+item always survives, so reference prices are unaffected; only
-the visible chart depth is bounded (and save files stay small).
+365 ticks retained per market/item; older rows pruned at end of tick. Reference price always kept.
 
 ## Logistics
 
-Ships have `cargoCapacity`, `fuelUsePerDistance`, `speed`, and a current system.
-Distance between systems is the (scaled) Euclidean distance on the star map.
+Ships: capacity, fuel per distance, speed, current system. Jobs reserve cargo and burn fuel on dispatch (`ceil(distance × fuelUsePerDistance)`). Ship moves `speed` per tick; arrival moves cargo and relocates the ship.
 
-A transport job:
+Cancel a running job: cargo returns at origin, fuel already spent is gone.
 
-- validates cargo fits capacity (`quantity * item.volume`),
-- reserves the cargo at the origin and **burns fuel immediately**
-  (`ceil(distance * fuelUsePerDistance)`),
-- advances by the ship's `speed` each tick; on arrival the reserved goods move from the
-  origin system to the destination system and the ship relocates.
+## Tick order
 
-A **running** transport job can be cancelled: the reserved cargo is released back to the
-origin system's free inventory and the job never delivers. The fuel burned at dispatch
-is **not refunded** — fuel is consumed the moment the ship departs.
+`runTick(state)` — one day, deterministic:
 
-## The tick
+1. Finish production jobs (player + NPC)
+2. Finish transport jobs (player + NPC)
+3. NPC production AI — queue on idle buildings
+4. NPC market AI — refresh corp orders
+5. NPC logistics AI — up to one haul per NPC corp
+6. Local economy (profiles → price pressure)
+7. Population (food security → growth/decline)
+8. NPC regional trade (abstract inter-market moves)
+9. Sync NPC order depth to stockpiles (profiled items)
+10. Match orders
+11. Apply player trades to stockpiles
+12. Replenish NPC depth
+13. Record trade prices
+14. Events
 
-`runTick(state)` advances exactly one day and is deterministic. Steps, in order:
+Persistence is the caller's job.
 
-1. process production jobs (player + NPC buildings)
-2. process transport jobs (player + NPC convoys)
-3. NPC production AI — queue new jobs on idle NPC buildings
-4. NPC market AI — refresh corp buy/sell orders from inventory targets
-5. NPC logistics AI — dispatch at most one inter-system haul per NPC corp
-6. process local economy (daily flows + price pressure for profiled items)
-7. process population dynamics (food security → growth/decline on live planet counts)
-8. NPC regional trade (abstract convoys move goods between surplus and shortage markets)
-9. sync NPC order depth to regional stockpiles (profiled items only)
-10. match market orders
-11. apply player trades to regional stockpiles
-12. replenish NPC order depth (stockpile-scaled for profiled items)
-13. record trade price history
-14. trigger events
-15. (persistence is handled by the caller / save manager)
+### Profiles vs NPC corps
 
-### Abstract demand vs industrial supply
+`economic_profiles.json` models background regional demand/supply. NPC corps add real buildings, inventory, jobs, corp orders, and ships. Ore `producedPerDay` in profiles was lowered where Helion already mines, to avoid double supply.
 
-**Economic profiles** (`economic_profiles.json`) model abstract regional demand and
-background supply (food, fuel, generic ore flows). **NPC corporations** add real
-buildings, inventories, production jobs, corp-owned market listings, and ship convoys.
-After Milestone 3, profile `producedPerDay` for items NPC corps now produce industrially
-(ore) was reduced to avoid double-counting supply.
+Vanilla NPC seeds (`npc_corporations.json`, new campaigns only):
 
-### NPC corporations (industrial layer)
+- **Helion Mining** — extractor at Cinder
+- **Orion Refining** — refiner at Marrow
 
-Seeded on **new campaigns only** from `data/vanilla/npc_corporations.json` (see
-`docs/MODDING.md`). Vanilla corps:
+Runtime corp state lives in SQLite; editing JSON later does not touch existing saves.
 
-- **Helion Mining** (`corp_helion_mining`, extractor) — mine at Cinder, hauler ship
-- **Orion Refining** (`corp_orion_refining`, refiner) — refinery at Marrow
+## Regional depth
 
-Runtime state (inventory, credits, jobs, orders, ships) is persisted in SQLite; editing
-the JSON later does not mutate existing saves.
+**Stockpile-scaled liquidity:** for profiled items, NPC order size follows regional stock vs target. Shortages cap how much you can buy from the region; surpluses cap how much you can sell into it. Other items keep full 1000-unit depth. Tunables in `economy_config.json`.
 
-A `ticking` guard flag on the campaign meta protects against accidental re-entry, and
-the tick number increments atomically once all steps succeed.
+**Regional trade:** goods move between markets when one side is in surplus and another in shortage, or when price spread exceeds a threshold. Capped per item per day.
 
-## Regional economy depth
+**Population:** live counts per planet; food security drives slow growth or decline. Feeds `perCapitaConsumptionPerDay` on profiles.
 
-### Stockpile-scaled NPC liquidity
+## UI helpers
 
-For items covered by an **economic profile**, NPC buy/sell depth is no longer infinite.
-Each tick, order quantity is set from the regional stockpile vs target:
+**Quick trades:** `previewMarketTrade` / `executeMarketTrade` — hit best bid/ask in one step, same midpoint rules.
 
-- **NPC sell** (player buys): depth scales with stock on hand — shortages limit how much
-  the region can export to you.
-- **NPC buy** (player sells): depth rises when the region is in surplus.
+**Charts:** `getPriceHistory({ systemId, itemId, sinceTick?, limit? })` for the Market page chart.
 
-Non-profiled items keep the full `NPC_ORDER_QUANTITY` (1000) backing. Tunables live in
-`data/vanilla/economy_config.json` (`npcLiquidityMinFraction`, `npcLiquidityMaxFraction`).
+**Planner:** `getProductionPlan({ targetItemId, targetQty })` — feasibility from player stock only; no market buys, no auto-queue.
 
-### NPC regional trade
+**Smart advance:** `runTicksSmart` modes `production`, `transport`, `changes` — day-by-day until condition or 30-day cap. One save at the end like `runTicks(n)`.
 
-After daily flows, the simulation moves goods between markets when:
+## Balance
 
-- one market has surplus stock (above target × `regionalTradeMinSurplusFraction`), and
-- another has shortage (below target × `regionalTradeMinShortageFraction`), **or**
-- price spread exceeds `regionalTradeMinSpreadPercent`.
-
-Volume per item per tick is capped by `regionalTradeMaxUnitsPerDay`. This creates
-cross-system arbitrage opportunities for the player without infinite NPC liquidity.
-
-### Population dynamics
-
-Each planet has a **live population** (saved separately from frozen definitions).
-When regional food stockpile (configurable via `populationFoodItemId`) is healthy,
-population grows slowly; during shortages it declines. Live population feeds
-`perCapitaConsumptionPerDay` in economic profiles, so demand can rise over a long campaign.
-
-### Mod tuning
-
-Optional `economy_config.json` in any mod merges field-by-field (later mods in load order
-win). See `docs/MODDING.md`.
-
-## Player market shortcuts
-
-The Market page supports **quick trades** against NPC liquidity:
-
-- **Preview** (`previewMarketTrade`) — read-only check of quantity, price, and affordability.
-- **Execute** (`executeMarketTrade`) — sell at best bid or buy at best ask in one step.
-
-These use the same matching and midpoint pricing rules as resting orders.
-
-## Price history & charts
-
-`getPriceHistory({ systemId, itemId, sinceTick?, limit? })` returns recent trade rows for
-the Market page **price chart** (7 / 30 / 90 / all ranges, hover tooltip). History is
-persisted per market+item with 365-tick retention (see [Price history](#price-history) above).
-
-## Production planner
-
-`getProductionPlan({ targetItemId, targetQty })` runs the read-only planner in
-`src/simulation/productionPlanner.ts`. It evaluates feasibility from **player corporation
-stock only** — no market buying, no NPC inventory, no automatic queueing. The Production
-page shows required inputs, building availability, estimated days, bottlenecks, and warnings.
-
-## Smart time advance
-
-The Dashboard exposes `runTicksSmart` with modes `production`, `transport`, and `changes`.
-Each mode advances day-by-day until a stop condition is met or **30 days** elapse (whichever
-comes first). Saves run once at the end, same as `runTicks(n)`.
-
-## Balance analytics
-
-Automated headless simulations (`src/balance/`) run scripted player strategies against the
-vanilla economy and evaluate hard gates (arc completion, stockpile bounds, event cooldowns,
-NPC order bounds, price explosion checks, etc.). See [`docs/BALANCE_ANALYTICS.md`](BALANCE_ANALYTICS.md).
+Headless strategies in `src/balance/` with hard CI gates (arc completion, stock bounds, NPC order limits, day-100 price caps). See [BALANCE_ANALYTICS.md](BALANCE_ANALYTICS.md).

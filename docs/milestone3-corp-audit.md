@@ -1,54 +1,27 @@
-# Milestone 3 — single-corporation audit (Phase 0)
+# Milestone 3 corp refactor audit (Phase 0)
 
-> **Status:** Completed in Phase 3A (`corporations[]`, `playerCorporationId`, migration v12).
-> This file is a historical audit trail — use `src/simulation/corporations.ts` helpers in new code.
+Historical notes from before multi-corp landed. Phase 3A shipped `corporations[]`, `playerCorporationId`, migration v12. Use `src/simulation/corporations.ts` in new code.
 
-Generated during Phase 0 preparation. Use this list when refactoring to `corporations[]` + `playerCorporationId`.
+## Patterns we searched for
 
-## Search patterns
+| Pattern | Why |
+|---------|-----|
+| `state.corporation` | Single-corp assumption |
+| `corporation.id` | Player-scoped inventory/orders |
+| `LIMIT 1` | Single corp row in SQLite |
+| `NPC_OWNER` | Abstract liquidity id |
+| `ownerId` | Corp vs NPC on entities |
 
-| Pattern | Purpose |
-|---------|---------|
-| `state.corporation` | Direct player corp access |
-| `corporation.id` | Player-scoped inventory/orders/ships |
-| `LIMIT 1` | Single corp / meta row in SQLite |
-| `NPC_OWNER` | Abstract market liquidity (`'npc'`) |
-| `ownerId` | Corp or NPC ownership on entities |
+## Files that had `state.corporation` (pre-3A)
 
-## Affected files (`state.corporation`)
+`bootstrap.ts`, `market.ts`, `production.ts`, `logistics.ts`, `viewQueries.ts`, `gameService.ts`, repositories, renderer pages, tests — all migrated to `getPlayerCorporation()` and related helpers.
 
-| File | Notes |
-|------|-------|
-| `src/simulation/bootstrap.ts` | Creates player corp |
-| `src/simulation/market.ts` | Credits, inventory, order ownership |
-| `src/simulation/marketTrade.ts` | Player inventory for quick trades |
-| `src/simulation/buildings.ts` | Player credits and build costs |
-| `src/simulation/ships.ts` | Player credits and ship purchase |
-| `src/simulation/progression.ts` | Contract payouts |
-| `src/simulation/progressionRegistry.ts` | Objective progress, net worth |
-| `src/simulation/eventRegistry.ts` | Stock checks, credit events |
-| `src/simulation/economyMath.ts` | Credit checks |
-| `src/simulation/viewQueries.ts` | Dashboard, inventory views |
-| `src/simulation/actionSuggestions.ts` | Player suggestions |
-| `src/simulation/starMapView.ts` | Player home, fleet |
-| `src/database/saveManager.ts` | save/load corporation |
-| `src/balance/harness.ts` | Starting credits metric |
-| `src/balance/metrics.ts` | Player-focused snapshots |
-| `src/balance/strategies/*.ts` | Strategy helpers |
+## SQLite
 
-## SQLite `LIMIT 1`
+`worldRepo` and friends previously used `LIMIT 1` on corporations; now load/save all rows.
 
-| File | Table |
-|------|-------|
-| `src/database/repositories/worldRepo.ts` | `campaign_meta`, `corporations`, `activity_log_json`, `planet_populations_json` |
-| `src/database/repositories/progressionRepo.ts` | `campaign_meta.progression_json` |
+## Follow-up (completed)
 
-## Refactor strategy
-
-1. Phase 0: `getPlayerCorporation(state)` helpers — use in new code.
-2. Phase 3A: Add `corporations[]`, `playerCorporationId`; migrate save/load; replace `state.corporation` reads via helpers.
-3. Phase 3B+: NPC corps appended to `corporations[]` at bootstrap only.
-
-## Helpers
-
-See [`src/simulation/corporations.ts`](../src/simulation/corporations.ts).
+1. Phase 0: helpers + old-save fixture  
+2. Phase 3A: state shape + migration  
+3. Phases 3B–3G: NPC defs, AI, docs  

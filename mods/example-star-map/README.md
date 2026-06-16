@@ -1,41 +1,31 @@
-# Example star map mod (documentation only)
+# Example star map mod
 
-Vanilla UI includes a **Star Map** page. This folder documents how mods or external tools can also consume the live galactic map data exposed by the engine.
+Vanilla already has a Star Map page. This folder is for mods or external tools that want the same live map data over IPC.
 
-## IPC: `getStarMap`
+## `getStarMap`
 
-The renderer calls `window.api.getStarMap()` (see `src/main/preload.ts`). The main process builds a `StarMapView` from the active campaign via `buildStarMapView()` in `src/simulation/starMapView.ts`.
+Renderer: `window.api.getStarMap()`. Main builds `StarMapView` in `src/simulation/starMapView.ts`.
 
-### Response shape (summary)
+Rough shape:
 
-| Field | Description |
-|-------|-------------|
-| `homeSystemId` | Player home system |
+| Field | Contents |
+|-------|----------|
+| `homeSystemId` | Player home |
 | `currentTick` | Campaign day |
-| `systems[]` | Per-system summary + economy heat, faction color, shortages |
-| `lanes[]` | Jump lanes between systems (distance-weighted) |
-| `transportArcs[]` | Active player haul routes |
-| `npcConvoys[]` | Recent NPC regional trades (last few ticks) |
-| `factions[]` | Legend entries (id, name, color) |
+| `systems[]` | Per-system stats, heat, faction color |
+| `lanes[]` | Jump connections |
+| `transportArcs[]` | Player routes in flight |
+| `npcConvoys[]` | Recent NPC hauls |
+| `factions[]` | Legend |
 
-See `src/shared/types/views.ts` for full TypeScript types.
+Full types: `src/shared/types/views.ts`.
 
-## Dev: dump map JSON from a save
-
-From the project root (with a campaign loaded in dev, or adapt the script):
+## Dump JSON from a save
 
 ```bash
 node scripts/dump-star-map.mjs path/to/saves/your-campaign.sqlite
 ```
 
-Prints pretty JSON to stdout for tooling / mod prototyping.
+## Custom UI
 
-## Building a mod UI
-
-Mods cannot inject React pages today. Options:
-
-1. **External tool** — read a save + replicate view assembly (harder; prefer IPC in dev).
-2. **Fork the renderer** — add a page that calls `getStarMap` and renders SVG/canvas.
-3. **Future mod API** — hook for custom nav entries (not implemented yet).
-
-When adding a map overlay, call `getStarMap` after ticks (or subscribe via dashboard refresh) so convoy arcs and economy heat stay current.
+Mods can't inject React pages yet. Options: external tool reading saves (hard), fork the renderer and call `getStarMap`, or wait for a nav-hook API. Refresh after ticks so convoy arcs stay current.

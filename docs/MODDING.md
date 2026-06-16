@@ -1,19 +1,14 @@
-# MODDING
+# Modding
 
-All game content is data. The base game is a built-in mod named **`vanilla`**
-(`data/vanilla/`). External mods live in `mods/<your-mod>/`. Every JSON file is
-validated with Zod before it is loaded; invalid data produces a clear error and the
-campaign will refuse to start.
+All content is JSON. Vanilla is the built-in mod in `data/vanilla/`; add folders under `mods/`. Zod validates on load — bad data errors out before a campaign starts.
 
-> **See also:** [README — How to play](../README.md#how-to-play) · [ECONOMY.md](ECONOMY.md) ·
-> [PERSISTENCE.md](PERSISTENCE.md) (save snapshots) · [example-expanded-industry](../mods/example-expanded-industry/)
+Economy rules: [ECONOMY.md](ECONOMY.md). Save behavior: [PERSISTENCE.md](PERSISTENCE.md). Working example: [example-expanded-industry](../mods/example-expanded-industry/).
 
-## Where the files live
+## Where files live
 
-**Running from source (development):** edit `data/` and `mods/` in the project root.
+From source: edit `data/` and `mods/` in the repo root.
 
-**Running the packaged portable .exe:** the editable folders are created **next to the
-`.exe`** on first launch and that is where you edit content:
+Portable exe: editable folders appear next to the exe on first run:
 
 ```
 GalacticEconomy.exe
@@ -22,17 +17,9 @@ mods/      <- add external mod folders here
 saves/     <- campaign .sqlite files
 ```
 
-Two behaviors to know:
+The exe seeds folders once if missing; relaunch never overwrites your edits. Delete `data/` or `mods/` to reset. Runtime always reads disk beside the exe, not the bundled seed.
 
-- **Seed-if-missing.** The exe carries a read-only seed copy internally and only writes
-  these folders if they don't already exist. Your edits are therefore **never
-  overwritten** by relaunching or (re)running the exe. To restore defaults, delete the
-  folder (e.g. `data/`) and relaunch. The game never reads live content from the internal
-  seed — only from the folders beside the exe.
-- **Save snapshot.** When you start a **new campaign**, the loaded item/recipe/building/
-  scenario, and NPC corporation seed definitions are **frozen into that save's SQLite file**.
-  Editing `data/` or `mods/` afterward changes *future* new campaigns but leaves existing
-  saves untouched, so old campaigns never break when content changes.
+New campaigns freeze loaded definitions (including scenario and NPC corp seeds) into the save SQLite file. Later JSON edits affect only future new campaigns.
 
 ## Vanilla data structure
 
@@ -60,10 +47,8 @@ Two behaviors to know:
 
 ## Example mods
 
-| Folder | What it demonstrates |
-|--------|----------------------|
-| `mods/example-expanded-industry/` | New items, building, and recipes merged on top of vanilla |
-| `mods/example-star-map/` | How to consume `getStarMap` IPC from external tools (see its README) |
+- `mods/example-expanded-industry/` — items, building, recipes on vanilla
+- `mods/example-star-map/` — consuming `getStarMap` from outside the app
 
 ## Creating a mod
 
@@ -279,9 +264,7 @@ saves keep their frozen definitions snapshot.
 
 ## NPC corporations (`npc_corporations.json`)
 
-Optional. Seeds **passive NPC corporations on new campaigns only** — runtime state
-(inventory, buildings, ships, credits, jobs, orders) is saved in SQLite and is **not**
-rebuilt from JSON when a save loads.
+Optional. Seeds NPC corps on new campaigns only. Inventory, buildings, ships, credits, jobs, and orders persist in the save — not rebuilt from JSON on load.
 
 ```json
 {
@@ -302,9 +285,7 @@ market AI (trader skips industrial production). See [`ECONOMY.md`](ECONOMY.md).
 
 ## Scenarios (`scenarios.json`)
 
-Optional. Named **new-campaign presets** that partially override `campaign_start.json`
-and optionally `economyConfigOverrides` / `startingObjectiveIds`. Vanilla ships four:
-`standard`, `prospector_easy`, `barebones_hard`, `trade_focus`.
+Optional presets that override parts of `campaign_start.json` (and optionally economy or objective filters). Vanilla: `standard`, `prospector_easy`, `barebones_hard`, `trade_focus`.
 
 ```json
 {
@@ -321,9 +302,7 @@ and optionally `economyConfigOverrides` / `startingObjectiveIds`. Vanilla ships 
 
 `difficulty`: `easy` | `normal` | `hard` | `custom`.
 
-When a campaign is created, the chosen scenario is **snapshotted** into SQLite
-(`scenario_config_json`). Loaded saves bootstrap from that snapshot — editing
-`scenarios.json` later affects **future** new campaigns only. See [`PERSISTENCE.md`](PERSISTENCE.md).
+Chosen scenario is copied into the save at creation (`scenario_config_json`). Loaded games use that copy, not live JSON on disk.
 
 ## Star map
 
