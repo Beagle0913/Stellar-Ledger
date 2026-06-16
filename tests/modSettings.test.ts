@@ -40,7 +40,8 @@ function externalMod(id: string): LoadedMod {
     objectives: [],
     contractTemplates: [],
     economyConfig: {},
-    campaignStartConfig: {}
+    campaignStartConfig: {},
+    scenarios: []
   }
 }
 
@@ -113,7 +114,7 @@ describe('mod settings', () => {
     })
 
     try {
-      expect(() => service.createNewCampaign('Should Fail')).toThrow(/mod validation failed/i)
+      expect(() => service.createNewCampaign({ name: 'Should Fail' })).toThrow(/mod validation failed/i)
     } finally {
       service.close()
       rmSync(base, { recursive: true, force: true })

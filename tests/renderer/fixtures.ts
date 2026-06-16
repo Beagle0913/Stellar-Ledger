@@ -225,7 +225,8 @@ export const mockModsView: ModsView = {
     economicProfiles: 2,
     ships: 2,
     objectives: 5,
-    contractTemplates: 4
+    contractTemplates: 4,
+    scenarios: 4
   },
   newCampaignDefinitionCounts: {
     items: 10,
@@ -238,7 +239,8 @@ export const mockModsView: ModsView = {
     economicProfiles: 2,
     ships: 2,
     objectives: 5,
-    contractTemplates: 4
+    contractTemplates: 4,
+    scenarios: 4
   },
   validationErrors: []
 }

@@ -55,7 +55,7 @@ describe('GameService.getMods', () => {
 describe('GameService autosave', () => {
   it('persists market orders immediately after createMarketOrder', () => {
     const service = newService()
-    service.createNewCampaign('Autosave Test')
+    service.createNewCampaign({ name: 'Autosave Test' })
     const before = service.getDashboard()
     expect(before.saveStatus).toBe('saved')
 

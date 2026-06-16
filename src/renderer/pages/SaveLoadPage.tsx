@@ -1,20 +1,33 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { api } from '../api'
 import { useApp } from '../App'
 import { useAsync } from '../hooks'
 import { DataTable } from '../components/DataTable'
-import type { SaveSummary } from '../../shared/types'
+import type { SaveSummary, ScenarioSummary } from '../../shared/types'
 
 export function SaveLoadPage(): React.JSX.Element {
   const { navigate, refresh, setCampaignActive, campaignActive, handleApiError } = useApp()
   const [name, setName] = useState('New Campaign')
+  const [scenarioId, setScenarioId] = useState('standard')
   const [error, setError] = useState<string | null>(null)
   const saves = useAsync<SaveSummary[]>(() => api.listSaves(), [])
+  const scenarios = useAsync<ScenarioSummary[]>(() => api.listScenarios(), [])
+
+  useEffect(() => {
+    if (scenarios.data?.length && !scenarios.data.some((s) => s.id === scenarioId)) {
+      setScenarioId(scenarios.data[0]!.id)
+    }
+  }, [scenarios.data, scenarioId])
+
+  const selectedScenario = useMemo(
+    () => scenarios.data?.find((s) => s.id === scenarioId) ?? null,
+    [scenarios.data, scenarioId]
+  )
 
   async function create(): Promise<void> {
     setError(null)
     try {
-      await api.createNewCampaign(name)
+      await api.createNewCampaign({ name, scenarioId })
       setCampaignActive(true)
       refresh()
       navigate('dashboard')
@@ -73,6 +86,8 @@ export function SaveLoadPage(): React.JSX.Element {
     }
   }
 
+  const start = selectedScenario?.campaignStart
+
   return (
     <div>
       <h2>Save / Load</h2>
@@ -83,13 +98,61 @@ export function SaveLoadPage(): React.JSX.Element {
         <div className="form-line">
           <label>Name</label>
           <input value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div className="form-line">
+          <label>Scenario</label>
+          <select value={scenarioId} onChange={(e) => setScenarioId(e.target.value)}>
+            {(scenarios.data ?? []).map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.difficulty})
+              </option>
+            ))}
+          </select>
           <button className="primary" onClick={() => void create()}>
             Create Campaign
           </button>
         </div>
+        {selectedScenario && (
+          <div className="panel" style={{ marginTop: 12, padding: 12 }}>
+            <div className="badges" style={{ marginBottom: 8 }}>
+              <span className="tag">{selectedScenario.difficulty}</span>
+            </div>
+            <p>{selectedScenario.description}</p>
+            <ul className="ticklog">
+              <li>
+                Starting credits:{' '}
+                <span className="mono">
+                  {(start?.startingCredits ?? 38_000).toLocaleString()} cr
+                </span>
+              </li>
+              {start?.startingBuildingTypes && (
+                <li>
+                  Buildings:{' '}
+                  <span className="mono">{start.startingBuildingTypes.join(', ')}</span>
+                </li>
+              )}
+              {start?.startingStock && (
+                <li>
+                  Stock highlights:{' '}
+                  <span className="mono">
+                    {Object.entries(start.startingStock)
+                      .slice(0, 5)
+                      .map(([k, v]) => `${k} ${v}`)
+                      .join(' · ')}
+                  </span>
+                </li>
+              )}
+              {start?.homeSystemId && (
+                <li>
+                  Home system: <span className="mono">{start.homeSystemId}</span>
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
         <p className="muted">
           Creates a fresh local SQLite save in <span className="mono">saves/</span> and freezes the
-          currently loaded mod definitions into it.
+          currently loaded mod definitions into it. Scenario settings are snapshotted into the save.
         </p>
       </div>
 
@@ -101,6 +164,11 @@ export function SaveLoadPage(): React.JSX.Element {
           empty="No saves yet."
           columns={[
             { key: 'name', header: 'Name', render: (r) => r.name },
+            {
+              key: 'scenario',
+              header: 'Scenario',
+              render: (r) => r.scenarioName ?? 'Standard'
+            },
             { key: 'file', header: 'File', render: (r) => <span className="mono">{r.fileName}</span> },
             { key: 'tick', header: 'Day', numeric: true, render: (r) => r.tick },
             {

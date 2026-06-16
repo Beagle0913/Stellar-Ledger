@@ -1,9 +1,10 @@
 import type { DB } from '../db.js'
-import { parseStoredActivityLog, parseStoredBuildMaterials, parseStoredCampaignStartConfig, parseStoredContractTemplates, parseStoredEconomicProfiles, parseStoredEconomyConfig, parseStoredEvents, parseStoredFactions, parseStoredObjectives, parseStoredPlanetModifiers, parseStoredPlanetPopulations, parseStoredShipDefinitions } from '../saveValidation.js'
+import { parseStoredActivityLog, parseStoredBuildMaterials, parseStoredCampaignStartConfig, parseStoredContractTemplates, parseStoredEconomicProfiles, parseStoredEconomyConfig, parseStoredEvents, parseStoredFactions, parseStoredObjectives, parseStoredPlanetModifiers, parseStoredPlanetPopulations, parseStoredShipDefinitions, buildScenarioSnapshotFromRow } from '../saveValidation.js'
 import type {
   BuildingDefinition,
   BuildingInstance,
   CampaignMeta,
+  CampaignScenarioSnapshot,
   CampaignStartConfig,
   Corporation,
   EconomicProfileDefinition,
@@ -32,9 +33,10 @@ import type {
 // ---- Campaign meta ----------------------------------------------------------
 
 export function saveMeta(db: DB, meta: CampaignMeta, defs: GameDefinitions): void {
+  const scenario = meta.scenario
   db.prepare(
-    `INSERT INTO campaign_meta (id, name, tick, created_at, ticking, game_version, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, progression_json, economy_config_json, campaign_start_config_json, planet_populations_json, activity_log_json)
-     VALUES (@id, @name, @tick, @created_at, @ticking, @game_version, @factions_json, @events_json, @economic_profiles_json, @ships_json, @objectives_json, @contract_templates_json, @progression_json, @economy_config_json, @campaign_start_config_json, @planet_populations_json, @activity_log_json)
+    `INSERT INTO campaign_meta (id, name, tick, created_at, ticking, game_version, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, progression_json, economy_config_json, campaign_start_config_json, planet_populations_json, activity_log_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json)
+     VALUES (@id, @name, @tick, @created_at, @ticking, @game_version, @factions_json, @events_json, @economic_profiles_json, @ships_json, @objectives_json, @contract_templates_json, @progression_json, @economy_config_json, @campaign_start_config_json, @planet_populations_json, @activity_log_json, @scenario_id, @scenario_name, @scenario_difficulty, @scenario_config_json)
      ON CONFLICT(id) DO UPDATE SET
        name=excluded.name, tick=excluded.tick, ticking=excluded.ticking,
        planet_populations_json=excluded.planet_populations_json`
@@ -55,7 +57,11 @@ export function saveMeta(db: DB, meta: CampaignMeta, defs: GameDefinitions): voi
     economy_config_json: JSON.stringify(defs.economyConfig),
     campaign_start_config_json: JSON.stringify(defs.campaignStartConfig),
     planet_populations_json: '[]',
-    activity_log_json: '[]'
+    activity_log_json: '[]',
+    scenario_id: scenario?.id ?? 'standard',
+    scenario_name: scenario?.name ?? 'Standard',
+    scenario_difficulty: scenario?.difficulty ?? 'normal',
+    scenario_config_json: JSON.stringify(scenario?.config ?? null)
   })
 }
 
@@ -87,10 +93,11 @@ export function loadMeta(db: DB): {
   contractTemplates: ContractTemplateDefinition[]
   economyConfig: EconomyConfig
   campaignStartConfig: CampaignStartConfig
+  scenario: CampaignScenarioSnapshot
 } {
   const row = db
     .prepare(
-      'SELECT id, name, tick, created_at, ticking, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, economy_config_json, campaign_start_config_json FROM campaign_meta LIMIT 1'
+      'SELECT id, name, tick, created_at, ticking, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, economy_config_json, campaign_start_config_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json FROM campaign_meta LIMIT 1'
     )
     .get() as
     | {
@@ -107,16 +114,27 @@ export function loadMeta(db: DB): {
         contract_templates_json: string | null
         economy_config_json: string | null
         campaign_start_config_json: string | null
+        scenario_id: string | null
+        scenario_name: string | null
+        scenario_difficulty: string | null
+        scenario_config_json: string | null
       }
     | undefined
   if (!row) throw new Error('No campaign_meta row found in save.')
+  const scenario = buildScenarioSnapshotFromRow(
+    row.scenario_id,
+    row.scenario_name,
+    row.scenario_difficulty,
+    row.scenario_config_json
+  )
   return {
     meta: {
       id: row.id,
       name: row.name,
       tick: row.tick,
       createdAt: row.created_at,
-      ticking: false
+      ticking: false,
+      scenario
     },
     factions: parseStoredFactions(row.factions_json),
     events: parseStoredEvents(row.events_json),
@@ -125,7 +143,8 @@ export function loadMeta(db: DB): {
     objectives: parseStoredObjectives(row.objectives_json),
     contractTemplates: parseStoredContractTemplates(row.contract_templates_json),
     economyConfig: parseStoredEconomyConfig(row.economy_config_json),
-    campaignStartConfig: parseStoredCampaignStartConfig(row.campaign_start_config_json)
+    campaignStartConfig: parseStoredCampaignStartConfig(row.campaign_start_config_json),
+    scenario
   }
 }
 
@@ -344,7 +363,8 @@ export function loadDefinitions(
     objectives,
     contractTemplates,
     economyConfig,
-    campaignStartConfig
+    campaignStartConfig,
+    scenarios: []
   }
 }
 

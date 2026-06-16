@@ -212,7 +212,7 @@ describe('v1 -> v2 migration', () => {
 
     runMigrations(db)
 
-    expect(db.pragma('user_version', { simple: true })).toBe(10)
+    expect(db.pragma('user_version', { simple: true })).toBe(11)
     expect(columnNames(db, 'campaign_meta')).toContain('economic_profiles_json')
     expect(columnNames(db, 'campaign_meta')).toContain('ships_json')
     expect(columnNames(db, 'campaign_meta')).toContain('progression_json')
@@ -222,6 +222,10 @@ describe('v1 -> v2 migration', () => {
     expect(columnNames(db, 'campaign_meta')).toContain('planet_populations_json')
     expect(columnNames(db, 'campaign_meta')).toContain('activity_log_json')
     expect(columnNames(db, 'campaign_meta')).toContain('campaign_start_config_json')
+    expect(columnNames(db, 'campaign_meta')).toContain('scenario_id')
+    expect(columnNames(db, 'campaign_meta')).toContain('scenario_name')
+    expect(columnNames(db, 'campaign_meta')).toContain('scenario_difficulty')
+    expect(columnNames(db, 'campaign_meta')).toContain('scenario_config_json')
     expect(columnNames(db, 'star_systems')).toContain('economic_profile_id')
     expect(columnNames(db, 'star_systems')).toContain('controlling_faction_id')
     expect(columnNames(db, 'planets')).toContain('economic_profile_id')
@@ -267,7 +271,7 @@ describe('v1 -> v2 migration', () => {
     const db = buildV1Database()
     runMigrations(db)
     runMigrations(db)
-    expect(db.pragma('user_version', { simple: true })).toBe(10)
+    expect(db.pragma('user_version', { simple: true })).toBe(11)
     expect(() => loadCampaign(db)).not.toThrow()
     db.close()
   })

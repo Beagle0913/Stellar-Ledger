@@ -5,7 +5,7 @@ import { openDatabase } from '../src/database/db.js'
 import { createCampaign, loadCampaign, saveState } from '../src/database/saveManager.js'
 import { getAllCorporations, getNpcCorporations } from '../src/simulation/corporations.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
-import { loadVanillaDefs } from './helpers.js'
+import { loadVanillaDefs, standardScenario } from './helpers.js'
 
 const FIXTURE_DIR = join(process.cwd(), 'tests', 'fixtures')
 const FIXTURE_PATH = join(FIXTURE_DIR, 'pre-milestone3.sqlite')
@@ -16,7 +16,7 @@ describe('pre-Milestone-3 save fixture', () => {
     mkdirSync(FIXTURE_DIR, { recursive: true })
     const defs = loadVanillaDefs()
     const buildDb = openDatabase(FIXTURE_PATH)
-    const state = createCampaign(buildDb, defs, 'Fixture Campaign')
+    const state = createCampaign(buildDb, defs, 'Fixture Campaign', standardScenario(defs))
     saveState(buildDb, state)
     buildDb.close()
 
@@ -33,7 +33,7 @@ describe('pre-Milestone-3 save fixture', () => {
   it('round-trips in memory without inventing NPC corporations', () => {
     const db = openDatabase(':memory:')
     const defs = loadVanillaDefs()
-    const state = createCampaign(db, defs, 'Memory Legacy')
+    const state = createCampaign(db, defs, 'Memory Legacy', standardScenario(defs))
     saveState(db, state)
     const loaded = loadCampaign(db)
     expect(getAllCorporations(loaded)).toHaveLength(1)

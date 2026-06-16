@@ -21,7 +21,7 @@ beforeAll(() => {
     vanillaDir: VANILLA_DIR,
     modsDir: join(tmp, 'mods')
   })
-  service.createNewCampaign('IPC Test Campaign')
+  service.createNewCampaign({ name: 'IPC Test Campaign' })
   saveFileName = service.listSaves()[0]!.fileName
 })
 
@@ -39,7 +39,8 @@ afterAll(() => {
 function payloadFor(): Record<keyof GameApi, unknown> {
   return {
     listSaves: undefined,
-    createNewCampaign: 'IPC Test Campaign 2',
+    listScenarios: undefined,
+    createNewCampaign: { name: 'IPC Test Campaign 2', scenarioId: 'standard' },
     loadCampaign: saveFileName,
     saveCurrent: undefined,
     hasActiveCampaign: undefined,

@@ -24,6 +24,15 @@ export type MockRendererApi = {
 export function createMockRendererApi(overrides: Partial<MockRendererApi> = {}): MockRendererApi {
   const base: MockRendererApi = {
     listSaves: vi.fn(async () => []),
+    listScenarios: vi.fn(async () => [
+      {
+        id: 'standard',
+        name: 'Standard',
+        description: 'Default',
+        difficulty: 'normal' as const,
+        campaignStart: {}
+      }
+    ]),
     createNewCampaign: vi.fn(async () => mockDashboard),
     loadCampaign: vi.fn(async () => mockDashboard),
     saveCurrent: vi.fn(async () => true as const),

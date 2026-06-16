@@ -233,6 +233,21 @@ function migrateV9ToV10(db: DatabaseType.Database): void {
   db.pragma('foreign_keys = ON')
 }
 
+function migrateV10ToV11(db: DatabaseType.Database): void {
+  if (!tableHasColumn(db, 'campaign_meta', 'scenario_id')) {
+    db.exec("ALTER TABLE campaign_meta ADD COLUMN scenario_id TEXT NOT NULL DEFAULT 'standard'")
+  }
+  if (!tableHasColumn(db, 'campaign_meta', 'scenario_name')) {
+    db.exec("ALTER TABLE campaign_meta ADD COLUMN scenario_name TEXT NOT NULL DEFAULT 'Standard'")
+  }
+  if (!tableHasColumn(db, 'campaign_meta', 'scenario_difficulty')) {
+    db.exec("ALTER TABLE campaign_meta ADD COLUMN scenario_difficulty TEXT NOT NULL DEFAULT 'normal'")
+  }
+  if (!tableHasColumn(db, 'campaign_meta', 'scenario_config_json')) {
+    db.exec('ALTER TABLE campaign_meta ADD COLUMN scenario_config_json TEXT')
+  }
+}
+
 interface Migration {
   version: number
   migrate(db: DatabaseType.Database): void
@@ -249,7 +264,8 @@ const MIGRATIONS: Migration[] = [
   { version: 7, migrate: migrateV6ToV7 },
   { version: 8, migrate: migrateV7ToV8 },
   { version: 9, migrate: migrateV8ToV9 },
-  { version: 10, migrate: migrateV9ToV10 }
+  { version: 10, migrate: migrateV9ToV10 },
+  { version: 11, migrate: migrateV10ToV11 }
 ]
 
 const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1]!.version

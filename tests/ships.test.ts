@@ -5,7 +5,7 @@ import { purchaseShip } from '../src/simulation/ships.js'
 import { createTransportJob } from '../src/simulation/logistics.js'
 import { openDatabase } from '../src/database/db.js'
 import { createCampaign, loadCampaign, saveState } from '../src/database/saveManager.js'
-import { loadVanillaDefs, newGame, otherSystemId } from './helpers.js'
+import { loadVanillaDefs, newGame, otherSystemId, standardScenario } from './helpers.js'
 
 describe('ships', () => {
   it('purchaseShip adds a second ship at the home system', () => {
@@ -44,7 +44,7 @@ describe('ships', () => {
   it('ships round-trip through save/load', () => {
     const defs = loadVanillaDefs()
     const db = openDatabase(':memory:')
-    const created = createCampaign(db, defs, 'Fleet Save')
+    const created = createCampaign(db, defs, 'Fleet Save', standardScenario(defs))
     created.corporation.credits = 50_000
     purchaseShip(created, 'ship_hauler_2')
     saveState(db, created)

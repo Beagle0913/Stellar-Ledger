@@ -4,7 +4,7 @@ import { createCampaign, loadCampaign, saveState } from '../src/database/saveMan
 import { runTick } from '../src/simulation/tick.js'
 import { executeMarketTrade } from '../src/simulation/marketTrade.js'
 import type { PriceHistoryRow } from '../src/shared/types.js'
-import { loadVanillaDefs } from './helpers.js'
+import { loadVanillaDefs, standardScenario } from './helpers.js'
 
 // price_history is persisted INCREMENTALLY (marketRepo.savePriceHistory) rather
 // than wiped+reinserted every tick. These tests pin the round-trip behaviour so
@@ -23,7 +23,8 @@ function sortRows(rows: PriceHistoryRow[]): PriceHistoryRow[] {
 describe('incremental price history persistence', () => {
   it('round-trips price history across multiple ticks and saves', () => {
     const db = openDatabase(':memory:')
-    const state = createCampaign(db, loadVanillaDefs(), 'Persist Campaign')
+    const defs = loadVanillaDefs()
+    const state = createCampaign(db, defs, 'Persist Campaign', standardScenario(defs))
 
     for (let i = 0; i < 5; i += 1) {
       runTick(state)
@@ -38,7 +39,8 @@ describe('incremental price history persistence', () => {
 
   it('persists rows added at the current tick between saves (instant trades)', () => {
     const db = openDatabase(':memory:')
-    const state = createCampaign(db, loadVanillaDefs(), 'Trade Campaign')
+    const defs = loadVanillaDefs()
+    const state = createCampaign(db, defs, 'Trade Campaign', standardScenario(defs))
 
     runTick(state)
     saveState(db, state)

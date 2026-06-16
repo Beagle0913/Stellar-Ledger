@@ -21,7 +21,7 @@ import {
 } from '../src/simulation/localEconomy.js'
 import { runTick } from '../src/simulation/tick.js'
 import { setPlanetPopulation } from '../src/simulation/planetPopulation.js'
-import { loadVanillaDefs, newGame } from './helpers.js'
+import { loadVanillaDefs, newGame, standardScenario } from './helpers.js'
 
 function helionMarketId(): string {
   return marketIdForSystem('sys_helion')
@@ -141,7 +141,7 @@ describe('local economy', () => {
   it('persists price history and stockpiles through save/load', () => {
     const db = openDatabase(':memory:')
     const defs = loadVanillaDefs()
-    const state = createCampaign(db, defs, 'Local economy save')
+    const state = createCampaign(db, defs, 'Local economy save', standardScenario(defs))
 
     runTick(state)
     saveState(db, state)
@@ -421,7 +421,8 @@ describe('economic profile validation', () => {
       objectives: [],
       contractTemplates: [],
       economyConfig: {},
-      campaignStartConfig: {}
+      campaignStartConfig: {},
+      scenarios: []
     }
 
     expect(() => mergeMods([mod])).toThrow(ModValidationError)

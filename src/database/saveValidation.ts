@@ -10,13 +10,16 @@ import {
   idSchema,
   objectivesFileSchema,
   planetModifiersSchema,
+  scenarioDefinitionSchema,
   shipsFileSchema
 } from '../mods/modSchemas.js'
 import { mergeCampaignStartConfig } from '../shared/campaignStartConfig.js'
 import { mergeEconomyConfig } from '../shared/economyConfig.js'
+import { legacyStandardScenarioSnapshot } from '../shared/scenarios.js'
 import type {
   CampaignProgression,
   CampaignStartConfig,
+  CampaignScenarioSnapshot,
   ContractTemplateDefinition,
   EconomicProfileDefinition,
   EconomyConfig,
@@ -27,6 +30,7 @@ import type {
   PlanetPopulationRow,
   PlanetModifiers,
   RecipeIO,
+  ScenarioDefinition,
   ShipDefinition
 } from '../shared/types.js'
 
@@ -205,6 +209,40 @@ export function parseStoredCampaignStartConfig(raw: string | null | undefined): 
   } catch {
     noteValidationWarning('campaign_start_config_json', 'invalid JSON')
     return mergeCampaignStartConfig(undefined)
+  }
+}
+
+export function parseStoredScenarioConfig(raw: string | null | undefined): ScenarioDefinition {
+  if (!raw) return legacyStandardScenarioSnapshot()
+  try {
+    const parsed: unknown = JSON.parse(raw)
+    const result = scenarioDefinitionSchema.safeParse(parsed)
+    if (!result.success) {
+      noteValidationWarning('scenario_config_json', 'schema validation failed')
+      return legacyStandardScenarioSnapshot()
+    }
+    return result.data
+  } catch {
+    noteValidationWarning('scenario_config_json', 'invalid JSON')
+    return legacyStandardScenarioSnapshot()
+  }
+}
+
+export function buildScenarioSnapshotFromRow(
+  scenarioId: string | null | undefined,
+  scenarioName: string | null | undefined,
+  scenarioDifficulty: string | null | undefined,
+  scenarioConfigJson: string | null | undefined
+): CampaignScenarioSnapshot {
+  const config = parseStoredScenarioConfig(scenarioConfigJson)
+  const difficulty = (scenarioDifficulty ??
+    config.difficulty ??
+    'normal') as CampaignScenarioSnapshot['difficulty']
+  return {
+    id: scenarioId ?? config.id,
+    name: scenarioName ?? config.name,
+    difficulty,
+    config
   }
 }
 

@@ -259,6 +259,7 @@ export interface DefinitionCounts {
   ships: number
   objectives: number
   contractTemplates: number
+  scenarios: number
 }
 
 export interface ModConflictWarning {
@@ -283,6 +284,9 @@ export interface SaveSummary {
   name: string
   fileName: string
   tick: number
+  scenarioId?: string
+  scenarioName?: string
+  scenarioDifficulty?: string
 }
 
 export interface PlanetSummary {

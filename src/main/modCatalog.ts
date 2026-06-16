@@ -2,6 +2,7 @@ import { errorMessage } from '../shared/errors.js'
 import type { GameDefinitions } from '../shared/types.js'
 import { mergeEconomyConfig } from '../shared/economyConfig.js'
 import { mergeCampaignStartConfig } from '../shared/campaignStartConfig.js'
+import { defaultStandardScenario } from '../shared/scenarios.js'
 import { discoverMods, loadModFromDir } from '../mods/modLoader.js'
 import { mergeMods } from '../mods/mergeMods.js'
 import {
@@ -37,7 +38,8 @@ const EMPTY_DEFS = (): GameDefinitions => ({
   objectives: [],
   contractTemplates: [],
   economyConfig: mergeEconomyConfig(undefined),
-  campaignStartConfig: mergeCampaignStartConfig(undefined)
+  campaignStartConfig: mergeCampaignStartConfig(undefined),
+  scenarios: [defaultStandardScenario()]
 })
 
 /**

@@ -1,10 +1,12 @@
 import type { IpcError } from '../errors.js'
 import type {
   BuildingTypeId,
+  CampaignStartConfig,
   ItemDefinition,
   ItemId,
   PlanetId,
   RecipeId,
+  ScenarioDifficulty,
   SystemId
 } from './definitions.js'
 import type { GameLogEntry, OrderSide } from './state.js'
@@ -103,9 +105,24 @@ export interface RenameSaveArgs {
   newName: string
 }
 
+export interface CreateNewCampaignArgs {
+  name: string
+  /** Defaults to `standard` when omitted. */
+  scenarioId?: string
+}
+
+export interface ScenarioSummary {
+  id: string
+  name: string
+  description: string
+  difficulty: ScenarioDifficulty
+  campaignStart: Partial<CampaignStartConfig>
+}
+
 export interface GameApi {
   listSaves(): Promise<IpcResult<SaveSummary[]>>
-  createNewCampaign(name: string): Promise<IpcResult<DashboardData>>
+  listScenarios(): Promise<IpcResult<ScenarioSummary[]>>
+  createNewCampaign(args: CreateNewCampaignArgs): Promise<IpcResult<DashboardData>>
   loadCampaign(id: string): Promise<IpcResult<DashboardData>>
   saveCurrent(): Promise<IpcResult<true>>
   hasActiveCampaign(): Promise<IpcResult<boolean>>

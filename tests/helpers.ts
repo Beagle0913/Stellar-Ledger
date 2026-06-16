@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import { loadModFromDir } from '../src/mods/modLoader.js'
 import { mergeMods } from '../src/mods/mergeMods.js'
 import { buildInitialState } from '../src/database/saveManager.js'
+import { resolveScenario, STANDARD_SCENARIO_ID } from '../src/shared/scenarios.js'
 import type { GameDefinitions, GameState } from '../src/shared/types.js'
 
 // Shared test utilities. Tests run headlessly under Node against the real vanilla
@@ -12,6 +13,10 @@ export const VANILLA_DIR = join(process.cwd(), 'data', 'vanilla')
 export function loadVanillaDefs(): GameDefinitions {
   const vanilla = loadModFromDir(VANILLA_DIR, 'builtin')
   return mergeMods([vanilla])
+}
+
+export function standardScenario(defs: GameDefinitions = loadVanillaDefs()) {
+  return resolveScenario(defs, STANDARD_SCENARIO_ID)
 }
 
 export function newGame(): GameState {

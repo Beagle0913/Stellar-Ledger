@@ -9,6 +9,8 @@ import type {
   MarketId,
   PlanetId,
   RecipeId,
+  ScenarioDefinition,
+  ScenarioDifficulty,
   SystemId
 } from './definitions.js'
 
@@ -203,6 +205,16 @@ export interface CampaignMeta {
   tick: number
   createdAt: number
   ticking: boolean
+  /** Frozen scenario snapshot at campaign creation (Phase 1+). */
+  scenario?: CampaignScenarioSnapshot
+}
+
+/** Persisted scenario choice for a save file. */
+export interface CampaignScenarioSnapshot {
+  id: string
+  name: string
+  difficulty: ScenarioDifficulty
+  config: ScenarioDefinition
 }
 
 export interface PlanetPopulationRow {

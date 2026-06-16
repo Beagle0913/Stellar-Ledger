@@ -85,7 +85,7 @@ describe('safeDispatch error codes', () => {
   })
 
   it('returns domain codes once a campaign is active', () => {
-    const created = safeDispatch(service, 'createNewCampaign', 'Errors Test')
+    const created = safeDispatch(service, 'createNewCampaign', { name: 'Errors Test' })
     expect(created.ok).toBe(true)
 
     expectError('getSystem', 'sys_does_not_exist', 'NOT_FOUND')

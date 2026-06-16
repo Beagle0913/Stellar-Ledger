@@ -2,9 +2,11 @@ import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { VANILLA_MOD_ID } from '../shared/constants.js'
 import { errorMessage, GameError } from '../shared/errors.js'
+import { resolveScenario, STANDARD_SCENARIO_ID } from '../shared/scenarios.js'
 import type {
   BuildBuildingArgs,
   CreateMarketOrderArgs,
+  CreateNewCampaignArgs,
   CreateTransportJobArgs,
   DashboardData,
   DebugStateView,
@@ -27,6 +29,7 @@ import type {
   RepeatProductionJobArgs,
   RunProductionUntilExhaustedArgs,
   RunTicksSmartArgs,
+  ScenarioSummary,
   StarMapView,
   PreviewMarketTradeArgs,
   MarketTradePreview,
@@ -111,7 +114,18 @@ export class GameService {
 
   // ---- Campaign lifecycle ---------------------------------------------------
 
-  createNewCampaign(name: string): DashboardData {
+  listScenarios(): ScenarioSummary[] {
+    const { defs } = this.modCatalog.load()
+    return defs.scenarios.map((s) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description,
+      difficulty: s.difficulty,
+      campaignStart: s.campaignStart
+    }))
+  }
+
+  createNewCampaign(args: CreateNewCampaignArgs): DashboardData {
     const { defs, errors } = this.modCatalog.reload()
     if (errors.length > 0) {
       throw new GameError(
@@ -120,12 +134,14 @@ export class GameService {
       )
     }
     this.session.close()
-    const safeName = (name || 'Campaign').trim()
+    const safeName = (args.name || 'Campaign').trim()
+    const scenarioId = args.scenarioId?.trim() || STANDARD_SCENARIO_ID
+    const scenario = resolveScenario(defs, scenarioId)
     const fileName = `${slugify(safeName)}-${Date.now()}.sqlite`
     const db = openDatabase(join(this.config.savesDir, fileName))
-    const state = createCampaign(db, defs, safeName)
+    const state = createCampaign(db, defs, safeName, scenario)
     this.session.open(db, state, fileName)
-    logSystem(`Created campaign "${safeName}" (${fileName})`)
+    logSystem(`Created campaign "${safeName}" (${fileName}) scenario=${scenario.id}`)
     return this.getDashboard()
   }
 
@@ -171,7 +187,15 @@ export class GameService {
       try {
         const db = openDatabase(join(this.config.savesDir, file))
         const { meta } = loadMeta(db)
-        out.push({ id: file, name: meta.name, fileName: file, tick: meta.tick })
+        out.push({
+          id: file,
+          name: meta.name,
+          fileName: file,
+          tick: meta.tick,
+          scenarioId: meta.scenario?.id,
+          scenarioName: meta.scenario?.name,
+          scenarioDifficulty: meta.scenario?.difficulty
+        })
         closeDatabase(db)
       } catch (err) {
         debugLog(`listSaves: skipping unreadable save "${file}"`, err)
@@ -462,7 +486,8 @@ function definitionCountsFrom(defs: GameDefinitions): DefinitionCounts {
     economicProfiles: defs.economicProfiles.length,
     ships: defs.ships.length,
     objectives: defs.objectives.length,
-    contractTemplates: defs.contractTemplates.length
+    contractTemplates: defs.contractTemplates.length,
+    scenarios: defs.scenarios.length
   }
 }
 

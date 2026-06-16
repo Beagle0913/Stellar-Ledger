@@ -69,9 +69,11 @@ export function mergeMods(mods: LoadedMod[]): GameDefinitions {
     objectives: [],
     contractTemplates: [],
     economyConfig: mergeEconomyConfig(undefined),
-    campaignStartConfig: mergeCampaignStartConfig(undefined)
+    campaignStartConfig: mergeCampaignStartConfig(undefined),
+    scenarios: []
   }
 
+  const scenarioOwners = new Map<string, string>()
   const itemOwners = new Map<string, string>()
   const recipeOwners = new Map<string, string>()
   const buildingOwners = new Map<string, string>()
@@ -129,6 +131,10 @@ export function mergeMods(mods: LoadedMod[]): GameDefinitions {
     for (const template of mod.contractTemplates) {
       assertUnique('contract template', template.id, contractTemplateOwners, modId)
       defs.contractTemplates.push(template)
+    }
+    for (const scenario of mod.scenarios) {
+      assertUnique('scenario', scenario.id, scenarioOwners, modId)
+      defs.scenarios.push(scenario)
     }
     defs.economyConfig = mergeEconomyConfig({ ...defs.economyConfig, ...mod.economyConfig })
     defs.campaignStartConfig = mergeCampaignStartConfig({

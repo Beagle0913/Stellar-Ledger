@@ -1,9 +1,13 @@
-import type { GameDefinitions, GameState } from '../shared/types.js'
+import type { DB } from './db.js'
+import type { GameDefinitions, GameState, ScenarioDefinition } from '../shared/types.js'
+import {
+  applyScenarioToDefinitions,
+  scenarioSnapshotFrom
+} from '../shared/scenarios.js'
 import { buildInitialState } from '../simulation/bootstrap.js'
 import { PRICE_HISTORY_RETENTION_TICKS } from '../simulation/tick.js'
 
 export { buildInitialState } from '../simulation/bootstrap.js'
-import type { DB } from './db.js'
 import {
   loadLocalStockpiles,
   saveLocalStockpiles
@@ -46,15 +50,19 @@ import {
 import { loadProgression, saveProgression } from './repositories/progressionRepo.js'
 import { clearLoadValidationWarnings } from './saveValidation.js'
 
-// Orchestrates campaign create / load / save. Definitions are frozen into the
-// save at creation; subsequent saves only rewrite mutable state.
-
 /** Create a new campaign: freeze definitions + persist initial state. */
-export function createCampaign(db: DB, defs: GameDefinitions, campaignName: string): GameState {
-  const state = buildInitialState(defs, campaignName)
+export function createCampaign(
+  db: DB,
+  defs: GameDefinitions,
+  campaignName: string,
+  scenario: ScenarioDefinition
+): GameState {
+  const applied = applyScenarioToDefinitions(defs, scenario)
+  const state = buildInitialState(applied, campaignName)
+  state.meta.scenario = scenarioSnapshotFrom(scenario)
   const tx = db.transaction(() => {
-    writeDefinitions(db, defs)
-    saveMeta(db, state.meta, defs)
+    writeDefinitions(db, applied)
+    saveMeta(db, state.meta, applied)
     saveCorporation(db, state.corporation)
     persistMutable(db, state)
   })
@@ -65,8 +73,17 @@ export function createCampaign(db: DB, defs: GameDefinitions, campaignName: stri
 /** Load a full GameState from an existing save DB. */
 export function loadCampaign(db: DB): GameState {
   clearLoadValidationWarnings()
-  const { meta, factions, events, economicProfiles, ships, objectives, contractTemplates, economyConfig, campaignStartConfig } =
-    loadMeta(db)
+  const {
+    meta,
+    factions,
+    events,
+    economicProfiles,
+    ships,
+    objectives,
+    contractTemplates,
+    economyConfig,
+    campaignStartConfig
+  } = loadMeta(db)
   const definitions = loadDefinitions(
     db,
     factions,

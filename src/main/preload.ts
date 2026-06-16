@@ -12,7 +12,8 @@ function call<T>(method: string, payload?: unknown): Promise<T> {
 
 const api: GameApi = {
   listSaves: () => call('listSaves'),
-  createNewCampaign: (name) => call('createNewCampaign', name),
+  listScenarios: () => call('listScenarios'),
+  createNewCampaign: (args) => call('createNewCampaign', args),
   loadCampaign: (id) => call('loadCampaign', id),
   saveCurrent: () => call('saveCurrent'),
   hasActiveCampaign: () => call('hasActiveCampaign'),

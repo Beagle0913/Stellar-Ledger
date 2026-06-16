@@ -230,3 +230,15 @@ export const campaignStartConfigSchema = z.object({
   homeSystemId: idSchema.optional(),
   homePlanetMinHabitability: z.number().min(0).max(1).optional()
 })
+
+export const scenarioDefinitionSchema = z.object({
+  id: idSchema,
+  name: z.string().min(1),
+  description: z.string().default(''),
+  difficulty: z.enum(['easy', 'normal', 'hard', 'custom']),
+  campaignStart: campaignStartConfigSchema.default({}),
+  economyConfigOverrides: economyConfigSchema.optional(),
+  startingObjectiveIds: z.array(idSchema).optional()
+})
+
+export const scenariosFileSchema = z.array(scenarioDefinitionSchema)

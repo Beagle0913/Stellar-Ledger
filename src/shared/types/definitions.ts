@@ -236,6 +236,19 @@ export interface CampaignStartConfig {
   homePlanetMinHabitability: number
 }
 
+export type ScenarioDifficulty = 'easy' | 'normal' | 'hard' | 'custom'
+
+/** Named new-campaign preset (loaded from mod scenarios.json). */
+export interface ScenarioDefinition {
+  id: string
+  name: string
+  description: string
+  difficulty: ScenarioDifficulty
+  campaignStart: Partial<CampaignStartConfig>
+  economyConfigOverrides?: Partial<EconomyConfig>
+  startingObjectiveIds?: string[]
+}
+
 export interface GameDefinitions {
   items: ItemDefinition[]
   recipes: RecipeDefinition[]
@@ -250,4 +263,5 @@ export interface GameDefinitions {
   contractTemplates: ContractTemplateDefinition[]
   economyConfig: EconomyConfig
   campaignStartConfig: CampaignStartConfig
+  scenarios: ScenarioDefinition[]
 }

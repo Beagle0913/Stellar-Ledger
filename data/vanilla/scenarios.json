@@ -1,0 +1,59 @@
+[
+  {
+    "id": "standard",
+    "name": "Standard",
+    "description": "Balanced industrial start — the default vanilla campaign layout.",
+    "difficulty": "normal",
+    "campaignStart": {}
+  },
+  {
+    "id": "prospector_easy",
+    "name": "Prospector",
+    "description": "Extra credits and stock for a gentler first hour.",
+    "difficulty": "easy",
+    "campaignStart": {
+      "startingCredits": 52000,
+      "startingStock": {
+        "ore": 200,
+        "food": 120,
+        "fuel": 120,
+        "machinery": 40,
+        "energy": 90
+      }
+    }
+  },
+  {
+    "id": "barebones_hard",
+    "name": "Barebones",
+    "description": "Tight credits and minimal stock — every credit counts.",
+    "difficulty": "hard",
+    "campaignStart": {
+      "startingCredits": 22000,
+      "startingStock": {
+        "ore": 60,
+        "food": 40,
+        "fuel": 40,
+        "machinery": 10,
+        "energy": 30
+      },
+      "startingBuildingTypes": ["power_plant", "mine", "refinery", "farm"]
+    }
+  },
+  {
+    "id": "trade_focus",
+    "name": "Trade Focus",
+    "description": "Start with extra fuel and machinery to emphasize logistics and market play.",
+    "difficulty": "custom",
+    "campaignStart": {
+      "startingCredits": 42000,
+      "startingStock": {
+        "ore": 80,
+        "food": 60,
+        "fuel": 160,
+        "machinery": 50,
+        "energy": 50
+      },
+      "startingBuildingTypes": ["power_plant", "mine", "farm"]
+    }
+  }
+]

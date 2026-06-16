@@ -4,7 +4,7 @@ import { createCampaign, loadCampaign, saveState } from '../src/database/saveMan
 import { createMarketOrder } from '../src/simulation/market.js'
 import { startProductionJob } from '../src/simulation/production.js'
 import { runTick } from '../src/simulation/tick.js'
-import { loadVanillaDefs } from './helpers.js'
+import { loadVanillaDefs, standardScenario } from './helpers.js'
 
 // End-to-end SQLite round-trip using an in-memory database. Also verifies the
 // native better-sqlite3 binary loads under plain Node.
@@ -13,7 +13,7 @@ describe('save manager (sqlite round-trip)', () => {
     const db = openDatabase(':memory:')
     const defs = loadVanillaDefs()
 
-    const state = createCampaign(db, defs, 'Roundtrip')
+    const state = createCampaign(db, defs, 'Roundtrip', standardScenario(defs))
     expect(state.corporation.credits).toBe(38_000)
     expect(state.buildings.length).toBeGreaterThan(0)
 
@@ -41,7 +41,7 @@ describe('save manager (sqlite round-trip)', () => {
   it('persists state consistently after multiple ticks with production and market activity', () => {
     const db = openDatabase(':memory:')
     const defs = loadVanillaDefs()
-    const state = createCampaign(db, defs, 'Multi-tick')
+    const state = createCampaign(db, defs, 'Multi-tick', standardScenario(defs))
 
     const home = state.corporation.homeSystemId
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')!

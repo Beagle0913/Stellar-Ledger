@@ -11,6 +11,7 @@ import { parseIpcPayload } from './ipcSchemas.js'
 /** Every GameApi method name handled by invokeMethod (kept exhaustive by tests). */
 export const HANDLED_METHODS = [
   'listSaves',
+  'listScenarios',
   'createNewCampaign',
   'loadCampaign',
   'saveCurrent',
@@ -58,6 +59,8 @@ export function invokeMethod(service: GameService, method: string, payload: unkn
   switch (method) {
     case 'listSaves':
       return service.listSaves()
+    case 'listScenarios':
+      return service.listScenarios()
     case 'createNewCampaign':
       return service.createNewCampaign(parseIpcPayload(method, payload))
     case 'loadCampaign':

@@ -9,7 +9,10 @@ import { GameError } from '../shared/errors.js'
 const nonEmptyString = z.string().min(1)
 
 export const ipcPayloadSchemas = {
-  createNewCampaign: nonEmptyString,
+  createNewCampaign: z.object({
+    name: z.string().min(1),
+    scenarioId: z.string().min(1).optional()
+  }),
   loadCampaign: nonEmptyString,
   getSystem: nonEmptyString,
   getPlanet: nonEmptyString,
