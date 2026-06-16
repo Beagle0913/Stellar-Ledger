@@ -1,0 +1,18 @@
+{
+  "startingCredits": 38000,
+  "startingStock": {
+    "ore": 140,
+    "food": 80,
+    "fuel": 80,
+    "machinery": 25,
+    "energy": 65
+  },
+  "startingBuildingTypes": [
+    "power_plant",
+    "mine",
+    "refinery",
+    "farm",
+    "machinery_factory"
+  ],
+  "homePlanetMinHabitability": 0.5
+}

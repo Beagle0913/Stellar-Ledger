@@ -1,0 +1,18 @@
+[
+  {
+    "id": "recipe_superalloy",
+    "name": "Superalloy Casting",
+    "buildingType": "advanced_foundry",
+    "inputs": [{ "itemId": "alloys", "quantity": 3 }, { "itemId": "rare_ore", "quantity": 2 }, { "itemId": "energy", "quantity": 4 }],
+    "outputs": [{ "itemId": "superalloy", "quantity": 1 }],
+    "duration": 4
+  },
+  {
+    "id": "recipe_advanced_electronics",
+    "name": "Advanced Electronics Fabrication",
+    "buildingType": "advanced_foundry",
+    "inputs": [{ "itemId": "electronics", "quantity": 3 }, { "itemId": "superalloy", "quantity": 1 }],
+    "outputs": [{ "itemId": "advanced_electronics", "quantity": 1 }],
+    "duration": 5
+  }
+]

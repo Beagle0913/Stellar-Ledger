@@ -1,0 +1,60 @@
+[
+  {
+    "id": "obj_arc_first_metal",
+    "title": "Smelt your first metal",
+    "description": "Queue a Metal Smelting job and produce your first 4 units of metal.",
+    "type": "produce_item",
+    "itemId": "metal",
+    "target": 4
+  },
+  {
+    "id": "obj_arc_produce",
+    "title": "Scale up metal production",
+    "description": "Keep smelting and advancing time until you have produced 16 units of metal in total.",
+    "type": "produce_item",
+    "itemId": "metal",
+    "target": 16,
+    "dependsOnObjectiveId": "obj_arc_first_metal"
+  },
+  {
+    "id": "obj_arc_revenue",
+    "title": "Earn 2,000 cr from sales",
+    "description": "Sell metal on a regional market to earn 2,000 credits in proceeds.",
+    "type": "sell_proceeds",
+    "target": 2000,
+    "dependsOnObjectiveId": "obj_arc_produce"
+  },
+  {
+    "id": "obj_arc_convoy",
+    "title": "Run your first convoy",
+    "description": "Use logistics to deliver cargo between two different star systems.",
+    "type": "inter_system_delivery",
+    "target": 1,
+    "dependsOnObjectiveId": "obj_arc_revenue"
+  },
+  {
+    "id": "obj_arc_fleet",
+    "title": "Expand to two ships",
+    "description": "Reinvest your profits and grow your fleet to at least two ships.",
+    "type": "own_ships",
+    "target": 2,
+    "dependsOnObjectiveId": "obj_arc_convoy"
+  },
+  {
+    "id": "obj_net_worth",
+    "title": "Reach 130,000 net worth",
+    "description": "Grow your corporation to 130,000 credits in estimated net worth.",
+    "type": "net_worth",
+    "target": 130000,
+    "dependsOnObjectiveId": "obj_arc_fleet"
+  },
+  {
+    "id": "obj_arc_contract",
+    "title": "Complete a faction contract",
+    "description": "Accept a contract from the board and fulfil it for a reputation and credit reward.",
+    "type": "complete_contracts",
+    "target": 1,
+    "dependsOnObjectiveId": "obj_arc_produce",
+    "optional": true
+  }
+]

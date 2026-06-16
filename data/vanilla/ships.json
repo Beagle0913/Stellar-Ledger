@@ -1,0 +1,27 @@
+[
+  {
+    "id": "ship_hauler_1",
+    "name": "Hauler I",
+    "cargoCapacity": 100,
+    "fuelUsePerDistance": 1,
+    "speed": 5,
+    "purchaseCost": 5000,
+    "starter": true
+  },
+  {
+    "id": "ship_hauler_2",
+    "name": "Hauler II",
+    "cargoCapacity": 200,
+    "fuelUsePerDistance": 1,
+    "speed": 6,
+    "purchaseCost": 39500
+  },
+  {
+    "id": "ship_bulk_freighter",
+    "name": "Bulk Freighter",
+    "cargoCapacity": 400,
+    "fuelUsePerDistance": 2,
+    "speed": 4,
+    "purchaseCost": 65000
+  }
+]

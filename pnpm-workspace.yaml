@@ -1,0 +1,14 @@
+# Approve the native build scripts these packages need (better-sqlite3 compiles
+# / downloads a native binary; electron & esbuild download platform binaries).
+allowBuilds:
+  better-sqlite3: true
+  electron: true
+  esbuild: true
+
+onlyBuiltDependencies:
+  - better-sqlite3
+  - electron
+  - esbuild
+
+# Avoid the pre-run deps check spawning a nested `pnpm` (not on PATH under corepack).
+verifyDepsBeforeRun: false

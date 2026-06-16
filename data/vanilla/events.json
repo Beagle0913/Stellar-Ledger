@@ -1,0 +1,68 @@
+[
+  {
+    "id": "evt_market_pulse",
+    "name": "Market Pulse",
+    "description": "Periodic galactic market report. Regional prices and stockpiles shift daily — watch the tick report for opportunities.",
+    "trigger": { "type": "tickInterval", "everyTicks": 5 },
+    "effect": { "type": "message" }
+  },
+  {
+    "id": "evt_metal_buyer_rally",
+    "name": "Industrial Buyer Rally",
+    "description": "Regional buyers are bidding aggressively for refined metal. NPC ask prices rise — a good window to sell smelted stock.",
+    "trigger": { "type": "tickInterval", "everyTicks": 14 },
+    "effect": { "type": "priceShock", "itemId": "metal", "multiplier": 1.2 },
+    "minCampaignTick": 8,
+    "requiresCompletedObjectiveId": "obj_arc_revenue",
+    "cooldownTicks": 14
+  },
+  {
+    "id": "evt_food_security_warning",
+    "name": "Food Security Warning",
+    "description": "Regional food stockpiles are thinning. If shortages persist, population growth will stall and worlds may decline.",
+    "trigger": { "type": "stockpileShortage", "itemId": "food", "threshold": 200 },
+    "effect": { "type": "message" },
+    "minCampaignTick": 15,
+    "requiresCompletedObjectiveId": "obj_arc_revenue",
+    "cooldownTicks": 10
+  },
+  {
+    "id": "evt_food_relief_convoy",
+    "name": "Food Relief Convoy",
+    "description": "When any region's food stockpile runs critically low, a relief convoy delivers emergency supplies to every market.",
+    "trigger": { "type": "stockpileShortage", "itemId": "food", "threshold": 100 },
+    "effect": { "type": "stockpileShock", "itemId": "food", "delta": 150 },
+    "minCampaignTick": 12,
+    "requiresCompletedObjectiveId": "obj_arc_produce",
+    "cooldownTicks": 21
+  },
+  {
+    "id": "evt_logistics_fuel_pressure",
+    "name": "Logistics Fuel Pressure",
+    "description": "Your fuel reserves are running low and NPC fuel prices are climbing. Restock at a market or shorten your haul routes.",
+    "trigger": { "type": "lowStock", "itemId": "fuel", "threshold": 35 },
+    "effect": { "type": "priceShock", "itemId": "fuel", "multiplier": 1.25 },
+    "minCampaignTick": 10,
+    "requiresCompletedObjectiveId": "obj_arc_convoy",
+    "cooldownTicks": 10
+  },
+  {
+    "id": "evt_machinery_squeeze",
+    "name": "Machinery Squeeze",
+    "description": "Industrial demand is outstripping regional machinery stockpiles. NPC machinery prices rise until supply catches up.",
+    "trigger": { "type": "stockpileShortage", "itemId": "machinery", "threshold": 120 },
+    "effect": { "type": "priceShock", "itemId": "machinery", "multiplier": 1.3 },
+    "minCampaignTick": 22,
+    "requiresCompletedObjectiveId": "obj_arc_fleet",
+    "cooldownTicks": 14
+  },
+  {
+    "id": "evt_trade_guild_subsidy",
+    "name": "Trade Guild Subsidy",
+    "description": "Every 60 days the Trade Guild pays out a small operating subsidy to licensed corporations.",
+    "trigger": { "type": "tickInterval", "everyTicks": 60 },
+    "effect": { "type": "creditBonus", "amount": 2500 },
+    "minCampaignTick": 20,
+    "cooldownTicks": 60
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "faction_independents",
+    "name": "Independent Operators",
+    "description": "Loose association of small corporations and free traders. The player starts here.",
+    "priceBias": 1
+  },
+  {
+    "id": "faction_consortium",
+    "name": "Helion Consortium",
+    "description": "Established industrial bloc controlling much of the core systems' heavy manufacturing.",
+    "priceBias": 1.08
+  },
+  {
+    "id": "faction_frontier",
+    "name": "Frontier Compact",
+    "description": "Resource-hungry settlers pushing into the outer systems, always short on machinery.",
+    "priceBias": 0.92
+  }
+]

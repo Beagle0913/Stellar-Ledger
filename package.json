@@ -1,0 +1,91 @@
+{
+  "name": "galactic-economy-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An original moddable single-player galactic economy / spreadsheet strategy game (vertical slice prototype).",
+  "author": "Prototype",
+  "license": "MIT",
+  "main": "out/main/main.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "balance": "vitest run tests/balance --exclude tests/balance/reportRunner.test.ts",
+    "balance:report": "node scripts/balance-report.mjs",
+    "postinstall": "electron-builder install-app-deps",
+    "scaffold:ipc": "node scripts/scaffold-ipc.mjs",
+    "rebuild:electron": "node scripts/rebuild-electron-native.mjs",
+    "rebuild:node": "npm rebuild better-sqlite3",
+    "dist": "node scripts/dist.mjs",
+    "dist:fast": "electron-vite build && electron-builder",
+    "play": "node scripts/rebuild-electron-native.mjs && electron-vite build && electron-vite preview",
+    "play:portable": "node scripts/launch-portable.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.6.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^2.3.0",
+    "eslint": "^10.4.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "jsdom": "^29.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.61.0",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.yourname.galactic-economy",
+    "productName": "GalacticEconomy",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**",
+      "**/node_modules/bindings/**"
+    ],
+    "npmRebuild": true,
+    "extraResources": [
+      {
+        "from": "data",
+        "to": "data"
+      },
+      {
+        "from": "mods",
+        "to": "mods"
+      }
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "GalacticEconomy.exe"
+    }
+  },
+  "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916"
+}

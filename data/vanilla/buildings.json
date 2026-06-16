@@ -1,0 +1,14 @@
+[
+  { "id": "mine", "name": "Mine", "buildCost": 5000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] },
+  { "id": "rare_mine", "name": "Rare Ore Mine", "buildCost": 8000, "buildMaterials": [{ "itemId": "machinery", "quantity": 3 }] },
+  { "id": "water_extractor", "name": "Water Extractor", "buildCost": 4000, "buildMaterials": [{ "itemId": "machinery", "quantity": 1 }] },
+  { "id": "farm", "name": "Farm", "buildCost": 3000, "buildMaterials": [{ "itemId": "machinery", "quantity": 1 }] },
+  { "id": "power_plant", "name": "Power Plant", "buildCost": 6000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] },
+  { "id": "refinery", "name": "Refinery", "buildCost": 9000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] },
+  { "id": "chemical_plant", "name": "Chemical Plant", "buildCost": 9000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] },
+  { "id": "electronics_factory", "name": "Electronics Factory", "buildCost": 12000, "buildMaterials": [{ "itemId": "machinery", "quantity": 3 }] },
+  { "id": "machinery_factory", "name": "Machinery Factory", "buildCost": 12000, "buildMaterials": [{ "itemId": "machinery", "quantity": 3 }] },
+  { "id": "construction_factory", "name": "Construction Factory", "buildCost": 10000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] },
+  { "id": "ship_parts_factory", "name": "Ship Parts Factory", "buildCost": 15000, "buildMaterials": [{ "itemId": "machinery", "quantity": 4 }] },
+  { "id": "logistics_hub", "name": "Logistics Hub", "buildCost": 8000, "buildMaterials": [{ "itemId": "machinery", "quantity": 2 }] }
+]

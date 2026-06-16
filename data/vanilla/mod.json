@@ -1,0 +1,10 @@
+{
+  "id": "vanilla",
+  "name": "Vanilla",
+  "version": "0.1.0",
+  "author": "Prototype",
+  "gameVersion": "0.1.x",
+  "dependencies": [],
+  "loadAfter": [],
+  "description": "Base game content: items, recipes, buildings, the starting 5-system galaxy, factions, and events."
+}

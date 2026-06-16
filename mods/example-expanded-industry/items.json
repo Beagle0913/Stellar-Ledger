@@ -1,0 +1,4 @@
+[
+  { "id": "superalloy", "name": "Superalloy", "category": "refined", "baseValue": 220, "volume": 1 },
+  { "id": "advanced_electronics", "name": "Advanced Electronics", "category": "component", "baseValue": 340, "volume": 0.5 }
+]

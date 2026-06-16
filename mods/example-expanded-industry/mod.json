@@ -1,0 +1,10 @@
+{
+  "id": "example_expanded_industry",
+  "name": "Example Expanded Industry",
+  "version": "0.1.0",
+  "author": "Example",
+  "gameVersion": "0.1.x",
+  "dependencies": ["vanilla"],
+  "loadAfter": ["vanilla"],
+  "description": "Adds a few extra industrial items and recipes."
+}

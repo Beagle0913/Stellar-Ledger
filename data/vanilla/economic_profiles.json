@@ -1,0 +1,173 @@
+[
+  {
+    "id": "profile_food_demand",
+    "name": "Populated Core Food Demand",
+    "items": [
+      {
+        "itemId": "food",
+        "consumedPerDay": 50,
+        "producedPerDay": 0,
+        "targetStockpile": 500,
+        "minPriceMultiplier": 0.7,
+        "maxPriceMultiplier": 1.8,
+        "shortagePressureMultiplier": 1.2,
+        "surplusPressureMultiplier": 0.8,
+        "perCapitaConsumptionPerDay": 0.00001
+      },
+      {
+        "itemId": "luxury_goods",
+        "consumedPerDay": 5,
+        "producedPerDay": 0,
+        "targetStockpile": 80,
+        "minPriceMultiplier": 0.8,
+        "maxPriceMultiplier": 2.0,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0,
+        "perCapitaConsumptionPerDay": 0.000001
+      }
+    ]
+  },
+  {
+    "id": "profile_ore_supply",
+    "name": "Mining Belt Ore Supply",
+    "items": [
+      {
+        "itemId": "ore",
+        "consumedPerDay": 0,
+        "producedPerDay": 80,
+        "targetStockpile": 800,
+        "minPriceMultiplier": 0.5,
+        "maxPriceMultiplier": 1.5,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_machinery_demand",
+    "name": "Industrial Machinery Demand",
+    "items": [
+      {
+        "itemId": "machinery",
+        "consumedPerDay": 15,
+        "producedPerDay": 0,
+        "targetStockpile": 200,
+        "minPriceMultiplier": 0.75,
+        "maxPriceMultiplier": 2.0,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      },
+      {
+        "itemId": "energy",
+        "consumedPerDay": 40,
+        "producedPerDay": 0,
+        "targetStockpile": 400,
+        "minPriceMultiplier": 0.6,
+        "maxPriceMultiplier": 1.8,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_aquaculture_food_supply",
+    "name": "Oceanic Aquaculture Food Supply",
+    "items": [
+      {
+        "itemId": "food",
+        "consumedPerDay": 0,
+        "producedPerDay": 45,
+        "targetStockpile": 450,
+        "minPriceMultiplier": 0.6,
+        "maxPriceMultiplier": 1.6,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_rocky_mining_supply",
+    "name": "Rocky World Ore Supply",
+    "items": [
+      {
+        "itemId": "ore",
+        "consumedPerDay": 0,
+        "producedPerDay": 60,
+        "targetStockpile": 600,
+        "minPriceMultiplier": 0.5,
+        "maxPriceMultiplier": 1.5,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_gas_giant_fuel_supply",
+    "name": "Gas Giant Fuel & Energy Harvest",
+    "items": [
+      {
+        "itemId": "fuel",
+        "consumedPerDay": 0,
+        "producedPerDay": 25,
+        "targetStockpile": 300,
+        "minPriceMultiplier": 0.6,
+        "maxPriceMultiplier": 1.7,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      },
+      {
+        "itemId": "energy",
+        "consumedPerDay": 0,
+        "producedPerDay": 50,
+        "targetStockpile": 500,
+        "minPriceMultiplier": 0.5,
+        "maxPriceMultiplier": 1.6,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_mining_colony_needs",
+    "name": "Mining Colony Water & Machinery Demand",
+    "items": [
+      {
+        "itemId": "water",
+        "consumedPerDay": 30,
+        "producedPerDay": 0,
+        "targetStockpile": 300,
+        "minPriceMultiplier": 0.7,
+        "maxPriceMultiplier": 2.0,
+        "shortagePressureMultiplier": 1.1,
+        "surplusPressureMultiplier": 0.9
+      },
+      {
+        "itemId": "machinery",
+        "consumedPerDay": 8,
+        "producedPerDay": 0,
+        "targetStockpile": 100,
+        "minPriceMultiplier": 0.75,
+        "maxPriceMultiplier": 2.0,
+        "shortagePressureMultiplier": 1.0,
+        "surplusPressureMultiplier": 1.0
+      }
+    ]
+  },
+  {
+    "id": "profile_terran_food_demand",
+    "name": "Garden World Food Demand",
+    "items": [
+      {
+        "itemId": "food",
+        "consumedPerDay": 30,
+        "producedPerDay": 0,
+        "targetStockpile": 400,
+        "minPriceMultiplier": 0.7,
+        "maxPriceMultiplier": 1.8,
+        "shortagePressureMultiplier": 1.1,
+        "surplusPressureMultiplier": 0.9,
+        "perCapitaConsumptionPerDay": 0.00001
+      }
+    ]
+  }
+]

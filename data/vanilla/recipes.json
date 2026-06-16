@@ -1,0 +1,172 @@
+[
+  {
+    "id": "recipe_ore_mining",
+    "name": "Ore Mining",
+    "buildingType": "mine",
+    "extraction": true,
+    "yieldStat": "mineralRichness",
+    "inputs": [{ "itemId": "energy", "quantity": 2 }],
+    "outputs": [{ "itemId": "ore", "quantity": 10 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_rare_ore_mining",
+    "name": "Rare Ore Mining",
+    "buildingType": "rare_mine",
+    "extraction": true,
+    "yieldStat": "mineralRichness",
+    "inputs": [{ "itemId": "energy", "quantity": 4 }],
+    "outputs": [{ "itemId": "rare_ore", "quantity": 5 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_water_extraction",
+    "name": "Water Extraction",
+    "buildingType": "water_extractor",
+    "extraction": true,
+    "yieldStat": "habitability",
+    "inputs": [{ "itemId": "energy", "quantity": 1 }],
+    "outputs": [{ "itemId": "water", "quantity": 10 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_biomass_harvest",
+    "name": "Biomass Harvest",
+    "buildingType": "farm",
+    "extraction": true,
+    "yieldStat": "fertility",
+    "inputs": [{ "itemId": "water", "quantity": 2 }, { "itemId": "energy", "quantity": 1 }],
+    "outputs": [{ "itemId": "biomass", "quantity": 8 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_energy_generation",
+    "name": "Energy Generation",
+    "buildingType": "power_plant",
+    "extraction": true,
+    "yieldStat": "energyPotential",
+    "inputs": [],
+    "outputs": [{ "itemId": "energy", "quantity": 20 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_metal_smelting",
+    "name": "Metal Smelting",
+    "buildingType": "refinery",
+    "inputs": [{ "itemId": "ore", "quantity": 4 }, { "itemId": "energy", "quantity": 2 }],
+    "outputs": [{ "itemId": "metal", "quantity": 2 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_alloy_forging",
+    "name": "Alloy Forging",
+    "buildingType": "refinery",
+    "inputs": [{ "itemId": "metal", "quantity": 3 }, { "itemId": "chemicals", "quantity": 1 }, { "itemId": "energy", "quantity": 2 }],
+    "outputs": [{ "itemId": "alloys", "quantity": 2 }],
+    "duration": 3
+  },
+  {
+    "id": "recipe_fuel_refining",
+    "name": "Fuel Refining",
+    "buildingType": "refinery",
+    "inputs": [{ "itemId": "chemicals", "quantity": 2 }, { "itemId": "energy", "quantity": 1 }],
+    "outputs": [{ "itemId": "fuel", "quantity": 4 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_chemicals_synthesis",
+    "name": "Chemicals Synthesis",
+    "buildingType": "chemical_plant",
+    "inputs": [{ "itemId": "rare_ore", "quantity": 1 }, { "itemId": "water", "quantity": 3 }, { "itemId": "energy", "quantity": 2 }],
+    "outputs": [{ "itemId": "chemicals", "quantity": 4 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_food_production",
+    "name": "Food Production",
+    "buildingType": "farm",
+    "inputs": [{ "itemId": "water", "quantity": 2 }, { "itemId": "biomass", "quantity": 3 }, { "itemId": "energy", "quantity": 1 }],
+    "outputs": [{ "itemId": "food", "quantity": 5 }],
+    "duration": 1
+  },
+  {
+    "id": "recipe_electronics_assembly",
+    "name": "Electronics Assembly",
+    "buildingType": "electronics_factory",
+    "inputs": [{ "itemId": "rare_ore", "quantity": 2 }, { "itemId": "chemicals", "quantity": 2 }, { "itemId": "energy", "quantity": 3 }],
+    "outputs": [{ "itemId": "electronics", "quantity": 3 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_machinery_assembly",
+    "name": "Machinery Assembly",
+    "buildingType": "machinery_factory",
+    "inputs": [{ "itemId": "metal", "quantity": 4 }, { "itemId": "electronics", "quantity": 2 }],
+    "outputs": [{ "itemId": "machinery", "quantity": 1 }],
+    "duration": 3
+  },
+  {
+    "id": "recipe_construction_materials",
+    "name": "Construction Materials",
+    "buildingType": "construction_factory",
+    "inputs": [{ "itemId": "metal", "quantity": 5 }, { "itemId": "machinery", "quantity": 1 }],
+    "outputs": [{ "itemId": "construction_materials", "quantity": 4 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_ship_parts",
+    "name": "Ship Parts",
+    "buildingType": "ship_parts_factory",
+    "inputs": [{ "itemId": "alloys", "quantity": 2 }, { "itemId": "electronics", "quantity": 2 }, { "itemId": "machinery", "quantity": 1 }],
+    "outputs": [{ "itemId": "ship_parts", "quantity": 1 }],
+    "duration": 4
+  },
+  {
+    "id": "recipe_medical_supplies",
+    "name": "Medical Supplies",
+    "buildingType": "chemical_plant",
+    "inputs": [{ "itemId": "chemicals", "quantity": 2 }, { "itemId": "food", "quantity": 2 }],
+    "outputs": [{ "itemId": "medical_supplies", "quantity": 2 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_habitat_modules",
+    "name": "Habitat Modules",
+    "buildingType": "construction_factory",
+    "inputs": [{ "itemId": "construction_materials", "quantity": 4 }, { "itemId": "machinery", "quantity": 2 }],
+    "outputs": [{ "itemId": "habitat_modules", "quantity": 1 }],
+    "duration": 5
+  },
+  {
+    "id": "recipe_consumer_goods",
+    "name": "Consumer Goods",
+    "buildingType": "machinery_factory",
+    "inputs": [{ "itemId": "metal", "quantity": 2 }, { "itemId": "chemicals", "quantity": 1 }],
+    "outputs": [{ "itemId": "consumer_goods", "quantity": 3 }],
+    "duration": 2
+  },
+  {
+    "id": "recipe_luxury_goods",
+    "name": "Luxury Goods",
+    "buildingType": "electronics_factory",
+    "inputs": [{ "itemId": "consumer_goods", "quantity": 2 }, { "itemId": "electronics", "quantity": 1 }],
+    "outputs": [{ "itemId": "luxury_goods", "quantity": 1 }],
+    "duration": 3
+  },
+  {
+    "id": "recipe_research_equipment",
+    "name": "Research Equipment",
+    "buildingType": "electronics_factory",
+    "inputs": [{ "itemId": "electronics", "quantity": 3 }, { "itemId": "machinery", "quantity": 1 }],
+    "outputs": [{ "itemId": "research_equipment", "quantity": 1 }],
+    "duration": 4
+  },
+  {
+    "id": "recipe_industrial_tools",
+    "name": "Industrial Tools",
+    "buildingType": "machinery_factory",
+    "inputs": [{ "itemId": "metal", "quantity": 3 }, { "itemId": "machinery", "quantity": 1 }],
+    "outputs": [{ "itemId": "industrial_tools", "quantity": 2 }],
+    "duration": 2
+  }
+]

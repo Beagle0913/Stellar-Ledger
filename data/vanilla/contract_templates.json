@@ -1,0 +1,142 @@
+[
+  {
+    "id": "tpl_sell_faction",
+    "type": "sell_in_faction",
+    "title": "Regional Sales",
+    "description": "Sell goods in a faction's territory.",
+    "factionId": "faction_consortium",
+    "minCampaignTick": 0,
+    "tiers": [
+      {
+        "tier": 1,
+        "minReputation": 0,
+        "creditReward": 300,
+        "reputationReward": 2,
+        "expiresInDays": 10,
+        "itemId": "food",
+        "quantityMin": 15,
+        "quantityMax": 25
+      },
+      {
+        "tier": 2,
+        "minReputation": 8,
+        "minCampaignTick": 25,
+        "creditReward": 2200,
+        "reputationReward": 3,
+        "expiresInDays": 10,
+        "itemId": "metal",
+        "quantityMin": 15,
+        "quantityMax": 40
+      }
+    ]
+  },
+  {
+    "id": "tpl_produce",
+    "type": "produce_item",
+    "title": "Industrial Order",
+    "description": "Produce goods for a regional buyer.",
+    "factionId": "faction_frontier",
+    "minCampaignTick": 0,
+    "tiers": [
+      {
+        "tier": 1,
+        "minReputation": 0,
+        "creditReward": 550,
+        "reputationReward": 2,
+        "expiresInDays": 14,
+        "itemId": "metal",
+        "quantityMin": 8,
+        "quantityMax": 12
+      },
+      {
+        "tier": 2,
+        "minReputation": 10,
+        "minCampaignTick": 25,
+        "creditReward": 3200,
+        "reputationReward": 3,
+        "expiresInDays": 10,
+        "itemId": "metal",
+        "quantityMin": 25,
+        "quantityMax": 45
+      }
+    ]
+  },
+  {
+    "id": "tpl_deliver",
+    "type": "deliver_item",
+    "title": "Courier Run",
+    "description": "Deliver cargo to a target system.",
+    "factionId": "faction_consortium",
+    "minCampaignTick": 8,
+    "tiers": [
+      {
+        "tier": 1,
+        "minReputation": 0,
+        "creditReward": 1100,
+        "reputationReward": 2,
+        "expiresInDays": 14,
+        "itemId": "food",
+        "quantityMin": 10,
+        "quantityMax": 20
+      },
+      {
+        "tier": 2,
+        "minReputation": 8,
+        "minCampaignTick": 25,
+        "creditReward": 2800,
+        "reputationReward": 3,
+        "expiresInDays": 12,
+        "itemId": "metal",
+        "quantityMin": 12,
+        "quantityMax": 28
+      }
+    ]
+  },
+  {
+    "id": "tpl_own_asset",
+    "type": "own_asset",
+    "title": "Fleet Expansion",
+    "description": "Acquire a new ship for the corporation.",
+    "factionId": "faction_independents",
+    "minCampaignTick": 20,
+    "tiers": [
+      {
+        "tier": 1,
+        "minReputation": 0,
+        "creditReward": 600,
+        "reputationReward": 1,
+        "expiresInDays": 21,
+        "shipDefinitionId": "ship_hauler_2"
+      }
+    ]
+  },
+  {
+    "id": "tpl_net_worth",
+    "type": "reach_net_worth",
+    "title": "Capital Milestone",
+    "description": "Reach a net-worth target for your corporation.",
+    "factionId": "faction_consortium",
+    "minCampaignTick": 20,
+    "tiers": [
+      {
+        "tier": 1,
+        "minReputation": 0,
+        "creditReward": 1500,
+        "reputationReward": 2,
+        "expiresInDays": 21,
+        "netWorthMin": 90000,
+        "netWorthMax": 110000
+      },
+      {
+        "tier": 2,
+        "minReputation": 12,
+        "minCampaignTick": 35,
+        "creditReward": 4500,
+        "reputationReward": 4,
+        "expiresInDays": 14,
+        "netWorthMin": 140000,
+        "netWorthMax": 170000
+      }
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "npcLiquidityMinFraction": 0.08,
+  "npcLiquidityMaxFraction": 1.0,
+  "regionalTradeMinSpreadPercent": 6,
+  "regionalTradeMaxUnitsPerDay": 30,
+  "regionalTradeMinSurplusFraction": 0.12,
+  "regionalTradeMinShortageFraction": 0.12,
+  "populationGrowthRatePerDay": 0.00008,
+  "populationDeclineFoodRatio": 0.45,
+  "populationFoodItemId": "food",
+  "fuelItemId": "fuel"
+}

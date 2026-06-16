@@ -1,0 +1,21 @@
+[
+  { "id": "helion_prime", "name": "Helion Prime", "systemId": "sys_helion", "planetType": "terran", "habitability": 0.9, "mineralRichness": 0.6, "fertility": 1.2, "energyPotential": 1.0, "population": 5000000, "modifiers": {}, "economicProfileId": "profile_food_demand" },
+  { "id": "helion_minor", "name": "Helion Minor", "systemId": "sys_helion", "planetType": "rocky", "habitability": 0.2, "mineralRichness": 1.5, "fertility": 0.2, "energyPotential": 0.8, "population": 120000, "modifiers": {}, "economicProfileId": "profile_rocky_mining_supply" },
+  { "id": "helion_belt", "name": "Helion Belt", "systemId": "sys_helion", "planetType": "barren", "habitability": 0.0, "mineralRichness": 1.8, "fertility": 0.0, "energyPotential": 0.5, "population": 0, "modifiers": { "asteroidMining": 1.2 } },
+
+  { "id": "vesper_i", "name": "Vesper I", "systemId": "sys_vesper", "planetType": "oceanic", "habitability": 0.7, "mineralRichness": 0.4, "fertility": 1.6, "energyPotential": 0.9, "population": 1800000, "modifiers": { "aquaculture": 1.3 }, "economicProfileId": "profile_aquaculture_food_supply" },
+  { "id": "vesper_ii", "name": "Vesper II", "systemId": "sys_vesper", "planetType": "ice", "habitability": 0.1, "mineralRichness": 0.8, "fertility": 0.3, "energyPotential": 0.6, "population": 40000, "modifiers": {} },
+  { "id": "vesper_gas", "name": "Vesper Gas Giant", "systemId": "sys_vesper", "planetType": "gas_giant", "habitability": 0.0, "mineralRichness": 0.2, "fertility": 0.0, "energyPotential": 1.8, "population": 0, "modifiers": { "gasHarvest": 1.5 }, "economicProfileId": "profile_gas_giant_fuel_supply" },
+
+  { "id": "cinder_core", "name": "Cinder Core", "systemId": "sys_cinder", "planetType": "volcanic", "habitability": 0.05, "mineralRichness": 1.9, "fertility": 0.1, "energyPotential": 1.7, "population": 8000, "modifiers": { "geothermal": 1.4 }, "economicProfileId": "profile_ore_supply" },
+  { "id": "cinder_ash", "name": "Cinder Ash", "systemId": "sys_cinder", "planetType": "rocky", "habitability": 0.15, "mineralRichness": 1.3, "fertility": 0.3, "energyPotential": 0.9, "population": 60000, "modifiers": {}, "economicProfileId": "profile_mining_colony_needs" },
+  { "id": "cinder_rim", "name": "Cinder Rim", "systemId": "sys_cinder", "planetType": "barren", "habitability": 0.0, "mineralRichness": 1.6, "fertility": 0.0, "energyPotential": 0.7, "population": 0, "modifiers": {} },
+
+  { "id": "marrow_a", "name": "Marrow A", "systemId": "sys_marrow", "planetType": "rocky", "habitability": 0.25, "mineralRichness": 1.4, "fertility": 0.4, "energyPotential": 0.8, "population": 90000, "modifiers": {}, "economicProfileId": "profile_machinery_demand" },
+  { "id": "marrow_b", "name": "Marrow B", "systemId": "sys_marrow", "planetType": "ice", "habitability": 0.1, "mineralRichness": 0.9, "fertility": 0.5, "energyPotential": 0.5, "population": 20000, "modifiers": {} },
+  { "id": "marrow_c", "name": "Marrow C", "systemId": "sys_marrow", "planetType": "barren", "habitability": 0.0, "mineralRichness": 1.7, "fertility": 0.0, "energyPotential": 1.1, "population": 0, "modifiers": {} },
+
+  { "id": "quill_garden", "name": "Quill Garden", "systemId": "sys_quill", "planetType": "terran", "habitability": 0.85, "mineralRichness": 0.5, "fertility": 1.5, "energyPotential": 1.0, "population": 2200000, "modifiers": {}, "economicProfileId": "profile_terran_food_demand" },
+  { "id": "quill_rock", "name": "Quill Rock", "systemId": "sys_quill", "planetType": "rocky", "habitability": 0.2, "mineralRichness": 1.6, "fertility": 0.2, "energyPotential": 0.9, "population": 70000, "modifiers": {}, "economicProfileId": "profile_rocky_mining_supply" },
+  { "id": "quill_storm", "name": "Quill Storm", "systemId": "sys_quill", "planetType": "gas_giant", "habitability": 0.0, "mineralRichness": 0.1, "fertility": 0.0, "energyPotential": 2.0, "population": 0, "modifiers": { "gasHarvest": 1.6 }, "economicProfileId": "profile_gas_giant_fuel_supply" }
+]

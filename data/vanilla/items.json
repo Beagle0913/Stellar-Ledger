@@ -1,0 +1,22 @@
+[
+  { "id": "ore", "name": "Ore", "category": "raw", "baseValue": 10, "volume": 1 },
+  { "id": "rare_ore", "name": "Rare Ore", "category": "raw", "baseValue": 40, "volume": 1 },
+  { "id": "water", "name": "Water", "category": "raw", "baseValue": 5, "volume": 1 },
+  { "id": "biomass", "name": "Biomass", "category": "raw", "baseValue": 8, "volume": 1 },
+  { "id": "energy", "name": "Energy", "category": "energy", "baseValue": 3, "volume": 0.1 },
+  { "id": "food", "name": "Food", "category": "good", "baseValue": 15, "volume": 1 },
+  { "id": "fuel", "name": "Fuel", "category": "refined", "baseValue": 25, "volume": 0.5 },
+  { "id": "metal", "name": "Metal", "category": "refined", "baseValue": 30, "volume": 1 },
+  { "id": "alloys", "name": "Alloys", "category": "refined", "baseValue": 60, "volume": 1 },
+  { "id": "chemicals", "name": "Chemicals", "category": "refined", "baseValue": 35, "volume": 0.8 },
+  { "id": "electronics", "name": "Electronics", "category": "component", "baseValue": 90, "volume": 0.5 },
+  { "id": "machinery", "name": "Machinery", "category": "component", "baseValue": 150, "volume": 2 },
+  { "id": "construction_materials", "name": "Construction Materials", "category": "component", "baseValue": 80, "volume": 3 },
+  { "id": "ship_parts", "name": "Ship Parts", "category": "component", "baseValue": 300, "volume": 2 },
+  { "id": "consumer_goods", "name": "Consumer Goods", "category": "good", "baseValue": 50, "volume": 1 },
+  { "id": "medical_supplies", "name": "Medical Supplies", "category": "good", "baseValue": 70, "volume": 0.5 },
+  { "id": "luxury_goods", "name": "Luxury Goods", "category": "good", "baseValue": 120, "volume": 0.5 },
+  { "id": "research_equipment", "name": "Research Equipment", "category": "good", "baseValue": 200, "volume": 1 },
+  { "id": "industrial_tools", "name": "Industrial Tools", "category": "component", "baseValue": 110, "volume": 1 },
+  { "id": "habitat_modules", "name": "Habitat Modules", "category": "good", "baseValue": 400, "volume": 5 }
+]

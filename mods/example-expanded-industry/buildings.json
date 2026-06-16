@@ -1,0 +1,3 @@
+[
+  { "id": "advanced_foundry", "name": "Advanced Foundry", "buildCost": 22000, "buildMaterials": [{ "itemId": "machinery", "quantity": 5 }, { "itemId": "electronics", "quantity": 4 }] }
+]
