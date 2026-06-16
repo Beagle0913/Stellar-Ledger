@@ -70,10 +70,12 @@ export function mergeMods(mods: LoadedMod[]): GameDefinitions {
     contractTemplates: [],
     economyConfig: mergeEconomyConfig(undefined),
     campaignStartConfig: mergeCampaignStartConfig(undefined),
-    scenarios: []
+    scenarios: [],
+    npcCorporations: []
   }
 
   const scenarioOwners = new Map<string, string>()
+  const npcCorpOwners = new Map<string, string>()
   const itemOwners = new Map<string, string>()
   const recipeOwners = new Map<string, string>()
   const buildingOwners = new Map<string, string>()
@@ -135,6 +137,10 @@ export function mergeMods(mods: LoadedMod[]): GameDefinitions {
     for (const scenario of mod.scenarios) {
       assertUnique('scenario', scenario.id, scenarioOwners, modId)
       defs.scenarios.push(scenario)
+    }
+    for (const npc of mod.npcCorporations) {
+      assertUnique('NPC corporation', npc.id, npcCorpOwners, modId)
+      defs.npcCorporations.push(npc)
     }
     defs.economyConfig = mergeEconomyConfig({ ...defs.economyConfig, ...mod.economyConfig })
     defs.campaignStartConfig = mergeCampaignStartConfig({
@@ -276,6 +282,49 @@ export function mergeMods(mods: LoadedMod[]): GameDefinitions {
       if (tier.shipDefinitionId && !defs.ships.some((s) => s.id === tier.shipDefinitionId)) {
         throw new ModValidationError(
           `Contract template "${template.id}" tier references unknown ship "${tier.shipDefinitionId}".`
+        )
+      }
+    }
+  }
+
+  for (const npc of defs.npcCorporations) {
+    if (npc.id === 'player') {
+      throw new ModValidationError(`NPC corporation id "${npc.id}" is reserved for the player.`)
+    }
+    if (!systemIds.has(npc.homeSystemId)) {
+      throw new ModValidationError(
+        `NPC corporation "${npc.id}" references unknown homeSystemId "${npc.homeSystemId}".`
+      )
+    }
+    if (npc.factionId && !factionIds.has(npc.factionId)) {
+      throw new ModValidationError(
+        `NPC corporation "${npc.id}" references unknown faction "${npc.factionId}".`
+      )
+    }
+    for (const itemId of Object.keys(npc.startingStock)) {
+      if (!itemIds.has(itemId)) {
+        throw new ModValidationError(
+          `NPC corporation "${npc.id}" startingStock references unknown item "${itemId}".`
+        )
+      }
+    }
+    for (const b of npc.buildings) {
+      const planet = defs.planets.find((p) => p.id === b.planetId)
+      if (!planet) {
+        throw new ModValidationError(
+          `NPC corporation "${npc.id}" building references unknown planet "${b.planetId}".`
+        )
+      }
+      if (!buildingIds.has(b.buildingType)) {
+        throw new ModValidationError(
+          `NPC corporation "${npc.id}" building references unknown buildingType "${b.buildingType}".`
+        )
+      }
+    }
+    for (const ship of npc.ships ?? []) {
+      if (!defs.ships.some((s) => s.id === ship.definitionId)) {
+        throw new ModValidationError(
+          `NPC corporation "${npc.id}" ship references unknown definition "${ship.definitionId}".`
         )
       }
     }

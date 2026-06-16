@@ -39,7 +39,8 @@ export const mockSystemDetail: SystemDetail = {
     }
   ],
   marketItems: [],
-  routes: [{ toSystemId: 'sys_cinder', toName: 'Cinder', distance: 12 }]
+  routes: [{ toSystemId: 'sys_cinder', toName: 'Cinder', distance: 12 }],
+  foreignBuildings: []
 }
 
 export const mockPlanetDetail: PlanetDetail = {
@@ -226,7 +227,8 @@ export const mockModsView: ModsView = {
     ships: 2,
     objectives: 5,
     contractTemplates: 4,
-    scenarios: 4
+    scenarios: 4,
+    npcCorporations: 2
   },
   newCampaignDefinitionCounts: {
     items: 10,
@@ -240,7 +242,8 @@ export const mockModsView: ModsView = {
     ships: 2,
     objectives: 5,
     contractTemplates: 4,
-    scenarios: 4
+    scenarios: 4,
+    npcCorporations: 2
   },
   validationErrors: []
 }

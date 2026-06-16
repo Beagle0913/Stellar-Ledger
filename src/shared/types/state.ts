@@ -7,6 +7,7 @@ import type {
   GameDefinitions,
   ItemId,
   MarketId,
+  NpcAiProfile,
   PlanetId,
   RecipeId,
   ScenarioDefinition,
@@ -21,6 +22,8 @@ export interface Corporation {
   name: string
   credits: number
   homeSystemId: SystemId
+  /** Set for NPC corporations seeded at campaign creation. */
+  aiProfile?: NpcAiProfile
 }
 
 export interface InventoryRow {

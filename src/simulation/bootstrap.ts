@@ -8,6 +8,7 @@ import { seedNpcOrders } from './market.js'
 import { syncNpcLiquidityToStockpiles } from './npcLiquidity.js'
 import { initPlanetPopulations } from './planetPopulation.js'
 import { ensureContractBoard, initCampaignProgression } from './progression.js'
+import { seedNpcCorporations } from './seedNpcCorporations.js'
 
 /**
  * Build the initial in-memory game state for a brand new campaign: starting
@@ -127,6 +128,7 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
   })
 
   initLocalStockpiles(state)
+  seedNpcCorporations(state)
   initPlanetPopulations(state)
   seedNpcOrders(state, 0)
   syncNpcLiquidityToStockpiles(state)

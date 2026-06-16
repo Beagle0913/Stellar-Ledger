@@ -9,15 +9,15 @@ import {
   getPlayerCorporationId
 } from '../src/simulation/corporations.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
-import { loadVanillaDefs, newGame, standardScenario } from './helpers.js'
+import { loadVanillaDefs, newGame, sortCorporations, standardScenario } from './helpers.js'
 
 describe('GameState invariants (Phase 3A)', () => {
   it('new game satisfies multi-corporation invariants', () => {
     const state = newGame()
-    expect(state.corporations).toHaveLength(1)
+    expect(state.corporations).toHaveLength(3)
     expect(state.playerCorporationId).toBe(DEFAULT_CORP_ID)
     expect(getPlayerCorporationId(state)).toBe(DEFAULT_CORP_ID)
-    expect(getNpcCorporations(state)).toEqual([])
+    expect(getNpcCorporations(state)).toHaveLength(2)
     assertGameStateInvariants(state)
   })
 
@@ -29,9 +29,9 @@ describe('GameState invariants (Phase 3A)', () => {
 
     saveState(db, state)
     const loaded = loadCampaign(db)
-    expect(loaded.corporations).toEqual(state.corporations)
+    expect(sortCorporations(loaded.corporations)).toEqual(sortCorporations(state.corporations))
     expect(loaded.playerCorporationId).toBe(state.playerCorporationId)
-    expect(getAllCorporations(loaded)).toHaveLength(1)
+    expect(getAllCorporations(loaded)).toHaveLength(3)
     assertGameStateInvariants(loaded)
     db.close()
   })

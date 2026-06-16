@@ -168,30 +168,40 @@ export function saveCorporations(db: DB, corporations: Corporation[]): void {
     }
   }
   const stmt = db.prepare(
-    `INSERT INTO corporations (id, name, credits, home_system_id)
-     VALUES (@id, @name, @credits, @home_system_id)
-     ON CONFLICT(id) DO UPDATE SET name=excluded.name, credits=excluded.credits, home_system_id=excluded.home_system_id`
+    `INSERT INTO corporations (id, name, credits, home_system_id, ai_profile)
+     VALUES (@id, @name, @credits, @home_system_id, @ai_profile)
+     ON CONFLICT(id) DO UPDATE SET name=excluded.name, credits=excluded.credits, home_system_id=excluded.home_system_id, ai_profile=excluded.ai_profile`
   )
   for (const corp of corporations) {
     stmt.run({
       id: corp.id,
       name: corp.name,
       credits: corp.credits,
-      home_system_id: corp.homeSystemId
+      home_system_id: corp.homeSystemId,
+      ai_profile: corp.aiProfile ?? null
     })
   }
 }
 
 export function loadCorporations(db: DB): Corporation[] {
   const rows = db
-    .prepare('SELECT id, name, credits, home_system_id FROM corporations ORDER BY id')
-    .all() as Array<{ id: string; name: string; credits: number; home_system_id: string }>
+    .prepare('SELECT id, name, credits, home_system_id, ai_profile FROM corporations ORDER BY id')
+    .all() as Array<{
+    id: string
+    name: string
+    credits: number
+    home_system_id: string
+    ai_profile: string | null
+  }>
   if (rows.length === 0) throw new Error('No corporation found in save.')
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
     credits: row.credits,
-    homeSystemId: row.home_system_id
+    homeSystemId: row.home_system_id,
+    ...(row.ai_profile
+      ? { aiProfile: row.ai_profile as Corporation['aiProfile'] }
+      : {})
   }))
 }
 
@@ -403,7 +413,8 @@ export function loadDefinitions(
     contractTemplates,
     economyConfig,
     campaignStartConfig,
-    scenarios: []
+    scenarios: [],
+    npcCorporations: []
   }
 }
 

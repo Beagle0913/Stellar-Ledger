@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { getPlayerCorporation } from '../../src/simulation/corporations.js'
 import { createCampaignState, loadVanillaDefs } from '../../src/balance/bootstrap.js'
+import { playerShips } from '../helpers.js'
 import { findForbiddenBalanceImports } from './importBoundary.js'
 
 const BALANCE_ROOT = join(process.cwd(), 'src', 'balance')
@@ -12,7 +13,7 @@ describe('balance bootstrap boundary', () => {
     expect(state.meta.tick).toBe(0)
     expect(getPlayerCorporation(state).credits).toBeGreaterThan(0)
     expect(state.markets.length).toBeGreaterThan(0)
-    expect(state.ships.length).toBe(1)
+    expect(playerShips(state)).toHaveLength(1)
   })
 
   it('src/balance import tree avoids forbidden layers', () => {

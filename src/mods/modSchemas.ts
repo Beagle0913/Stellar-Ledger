@@ -242,3 +242,27 @@ export const scenarioDefinitionSchema = z.object({
 })
 
 export const scenariosFileSchema = z.array(scenarioDefinitionSchema)
+
+export const npcCorporationBuildingSeedSchema = z.object({
+  planetId: idSchema,
+  buildingType: idSchema
+})
+
+export const npcCorporationShipSeedSchema = z.object({
+  definitionId: idSchema,
+  name: z.string().min(1)
+})
+
+export const npcCorporationSchema = z.object({
+  id: idSchema,
+  name: z.string().min(1),
+  factionId: idSchema.optional(),
+  homeSystemId: idSchema,
+  startingCredits: z.number().nonnegative(),
+  startingStock: z.record(idSchema, z.number().nonnegative()).default({}),
+  buildings: z.array(npcCorporationBuildingSeedSchema).default([]),
+  ships: z.array(npcCorporationShipSeedSchema).optional(),
+  aiProfile: z.enum(['extractor', 'refiner', 'trader', 'balanced'])
+})
+
+export const npcCorporationsFileSchema = z.array(npcCorporationSchema)

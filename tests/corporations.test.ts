@@ -24,13 +24,15 @@ describe('corporation helpers', () => {
     expect(isPlayerCorporation(state, 'other')).toBe(false)
   })
 
-  it('getNpcCorporations is empty before Phase 3B', () => {
-    expect(getNpcCorporations(newGame())).toEqual([])
+  it('getNpcCorporations lists passive vanilla NPC corps', () => {
+    const npcs = getNpcCorporations(newGame())
+    expect(npcs).toHaveLength(2)
+    expect(npcs.map((c) => c.id).sort()).toEqual(['corp_helion_mining', 'corp_orion_refining'])
   })
 
-  it('getAllCorporations returns single player corp', () => {
+  it('getAllCorporations returns player plus NPC corps', () => {
     const state = newGame()
-    expect(getAllCorporations(state)).toHaveLength(1)
+    expect(getAllCorporations(state)).toHaveLength(3)
     expect(getAllCorporations(state)[0]!.id).toBe(DEFAULT_CORP_ID)
   })
 })

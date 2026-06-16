@@ -249,6 +249,30 @@ export interface ScenarioDefinition {
   startingObjectiveIds?: string[]
 }
 
+export type NpcAiProfile = 'extractor' | 'refiner' | 'trader' | 'balanced'
+
+export interface NpcCorporationBuildingSeed {
+  planetId: PlanetId
+  buildingType: BuildingTypeId
+}
+
+export interface NpcCorporationShipSeed {
+  definitionId: string
+  name: string
+}
+
+export interface NpcCorporationDefinition {
+  id: CorporationId
+  name: string
+  factionId?: FactionId
+  homeSystemId: SystemId
+  startingCredits: number
+  startingStock: Record<ItemId, number>
+  buildings: NpcCorporationBuildingSeed[]
+  ships?: NpcCorporationShipSeed[]
+  aiProfile: NpcAiProfile
+}
+
 export interface GameDefinitions {
   items: ItemDefinition[]
   recipes: RecipeDefinition[]
@@ -264,4 +288,5 @@ export interface GameDefinitions {
   economyConfig: EconomyConfig
   campaignStartConfig: CampaignStartConfig
   scenarios: ScenarioDefinition[]
+  npcCorporations: NpcCorporationDefinition[]
 }

@@ -13,6 +13,7 @@ import type {
   SystemDefinition,
   ObjectiveDefinition,
   ContractTemplateDefinition,
+  NpcCorporationDefinition,
   ScenarioDefinition
 } from '../shared/types.js'
 
@@ -49,6 +50,7 @@ export interface LoadedMod {
   /** Partial overrides from optional campaign_start.json. */
   campaignStartConfig: Partial<CampaignStartConfig>
   scenarios: ScenarioDefinition[]
+  npcCorporations: NpcCorporationDefinition[]
 }
 
 /** Error type thrown for any mod loading/validation failure (clear messages). */

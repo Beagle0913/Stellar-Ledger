@@ -1,8 +1,10 @@
 import type {
   BuildingTypeId,
+  CorporationId,
   FactionId,
   ItemId,
   MarketId,
+  NpcAiProfile,
   PlanetId,
   PlanetModifiers,
   PlanetType,
@@ -287,6 +289,7 @@ export interface DefinitionCounts {
   objectives: number
   contractTemplates: number
   scenarios: number
+  npcCorporations: number
 }
 
 export interface ModConflictWarning {
@@ -343,12 +346,60 @@ export interface SystemDetail {
   planets: PlanetSummary[]
   marketItems: MarketItemView[]
   routes: RouteView[]
+  foreignBuildings: SystemBuildingView[]
 }
 
 export interface PlanetBuildingView {
   id: string
   definitionId: BuildingTypeId
   definitionName: string
+  ownerId: CorporationId
+  ownerName: string
+  isPlayerOwned: boolean
+}
+
+export interface SystemBuildingView {
+  id: string
+  planetId: PlanetId
+  planetName: string
+  definitionName: string
+  ownerId: CorporationId
+  ownerName: string
+}
+
+export interface DebugNpcCorporationView {
+  id: CorporationId
+  name: string
+  credits: number
+  homeSystemId: SystemId
+  homeSystemName: string
+  aiProfile: NpcAiProfile | null
+  inventory: Array<{
+    systemId: SystemId
+    systemName: string
+    itemId: ItemId
+    itemName: string
+    quantity: number
+  }>
+  buildings: Array<{
+    id: string
+    planetId: PlanetId
+    planetName: string
+    definitionName: string
+  }>
+  ships: Array<{
+    id: string
+    name: string
+    currentSystemId: SystemId
+    systemName: string
+  }>
+  orders: Array<{
+    marketId: MarketId
+    itemId: ItemId
+    side: OrderSide
+    price: number
+    remainingQuantity: number
+  }>
 }
 
 export interface BuildableView {
@@ -382,6 +433,7 @@ export interface MarketView {
 }
 
 export interface DebugStateView {
+  npcCorporations: DebugNpcCorporationView[]
   localStockpiles: LocalStockpileRow[]
   npcOrders: Array<{
     marketId: MarketId

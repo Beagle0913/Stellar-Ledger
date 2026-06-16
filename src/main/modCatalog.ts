@@ -39,7 +39,8 @@ const EMPTY_DEFS = (): GameDefinitions => ({
   contractTemplates: [],
   economyConfig: mergeEconomyConfig(undefined),
   campaignStartConfig: mergeCampaignStartConfig(undefined),
-  scenarios: [defaultStandardScenario()]
+  scenarios: [defaultStandardScenario()],
+  npcCorporations: []
 })
 
 /**

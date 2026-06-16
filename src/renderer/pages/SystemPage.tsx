@@ -5,7 +5,7 @@ import { useCampaignAsync } from '../hooks'
 import { DataTable } from '../components/DataTable'
 import { StatusBanner } from '../components/StatusBanner'
 import { LinkButton } from '../components/LinkButton'
-import type { PlanetSummary, RouteView, SystemDetail, SystemSummary } from '../../shared/types'
+import type { PlanetSummary, RouteView, SystemBuildingView, SystemDetail, SystemSummary } from '../../shared/types'
 
 export function SystemPage(): React.JSX.Element {
   const { selectedSystemId, navigate, token } = useApp()
@@ -94,6 +94,21 @@ export function SystemPage(): React.JSX.Element {
           ]}
         />
       </div>
+
+      {(d?.foreignBuildings.length ?? 0) > 0 && (
+        <div className="panel">
+          <h3>Other corporation facilities</h3>
+          <DataTable<SystemBuildingView>
+            rows={d?.foreignBuildings ?? []}
+            rowKey={(b) => b.id}
+            columns={[
+              { key: 'owner', header: 'Owner', render: (b) => b.ownerName },
+              { key: 'planet', header: 'Planet', render: (b) => b.planetName },
+              { key: 'building', header: 'Building', render: (b) => b.definitionName }
+            ]}
+          />
+        </div>
+      )}
 
       <div className="panel">
         <h3>Routes</h3>

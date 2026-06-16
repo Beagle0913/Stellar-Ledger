@@ -26,7 +26,7 @@ import type {
   SystemSummary
 } from '../shared/types.js'
 import { estimateInventoryValue, explainAffordability, referencePrice, systemDistance } from './economyMath.js'
-import { getPlayerCorporation } from './corporations.js'
+import { getCorporationById, getNpcCorporations, getPlayerCorporation, isPlayerCorporation } from './corporations.js'
 import { aggregateMarketRules, factionPriceBias } from './localEconomy.js'
 import { planetPopulation } from './planetPopulation.js'
 import {
@@ -178,6 +178,29 @@ export function buildSystemDetail(state: GameState, id: string): SystemDetail {
     system.controllingFactionId != null
       ? state.definitions.factions.find((f) => f.id === system.controllingFactionId)
       : undefined
+  const foreignBuildings = state.buildings
+    .filter((b) => {
+      const planet = state.definitions.planets.find((p) => p.id === b.planetId)
+      return planet?.systemId === id && !isPlayerCorporation(state, b.ownerId)
+    })
+    .map((b) => {
+      const planet = state.definitions.planets.find((p) => p.id === b.planetId)!
+      const owner = getCorporationById(state, b.ownerId)
+      return {
+        id: b.id,
+        planetId: b.planetId,
+        planetName: planet.name,
+        definitionName: buildingName(state, b.definitionId),
+        ownerId: b.ownerId,
+        ownerName: owner?.name ?? b.ownerId
+      }
+    })
+    .sort(
+      (a, b) =>
+        a.ownerName.localeCompare(b.ownerName) ||
+        a.planetName.localeCompare(b.planetName) ||
+        a.definitionName.localeCompare(b.definitionName)
+    )
   return {
     id: system.id,
     name: system.name,
@@ -186,7 +209,8 @@ export function buildSystemDetail(state: GameState, id: string): SystemDetail {
     factionPriceBias: system.controllingFactionId ? factionPriceBias(state, system.id) : null,
     planets,
     marketItems: buildMarketItems(state, id),
-    routes
+    routes,
+    foreignBuildings
   }
 }
 
@@ -196,11 +220,17 @@ export function buildPlanetDetail(state: GameState, id: string): PlanetDetail {
   const system = state.definitions.systems.find((s) => s.id === p.systemId)
   const buildings = state.buildings
     .filter((b) => b.planetId === id)
-    .map((b) => ({
-      id: b.id,
-      definitionId: b.definitionId,
-      definitionName: buildingName(state, b.definitionId)
-    }))
+    .map((b) => {
+      const owner = getCorporationById(state, b.ownerId)
+      return {
+        id: b.id,
+        definitionId: b.definitionId,
+        definitionName: buildingName(state, b.definitionId),
+        ownerId: b.ownerId,
+        ownerName: owner?.name ?? b.ownerId,
+        isPlayerOwned: isPlayerCorporation(state, b.ownerId)
+      }
+    })
   const buildable = state.definitions.buildings.map((def) => ({
     definitionId: def.id,
     name: def.name,
@@ -317,7 +347,75 @@ export function buildEventLogViews(state: GameState): EventLogView[] {
 }
 
 export function buildDebugStateView(state: GameState): DebugStateView {
+  const npcCorporations = getNpcCorporations(state)
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((corp) => {
+      const inventory = state.inventories
+        .filter((row) => row.ownerId === corp.id && row.quantity > 0)
+        .map((row) => ({
+          systemId: row.systemId,
+          systemName: systemName(state, row.systemId),
+          itemId: row.itemId,
+          itemName: itemName(state, row.itemId),
+          quantity: row.quantity
+        }))
+        .sort(
+          (a, b) =>
+            a.systemName.localeCompare(b.systemName) || a.itemName.localeCompare(b.itemName)
+        )
+      const buildings = state.buildings
+        .filter((b) => b.ownerId === corp.id)
+        .map((b) => {
+          const planet = state.definitions.planets.find((p) => p.id === b.planetId)
+          return {
+            id: b.id,
+            planetId: b.planetId,
+            planetName: planet?.name ?? b.planetId,
+            definitionName: buildingName(state, b.definitionId)
+          }
+        })
+        .sort((a, b) => a.planetName.localeCompare(b.planetName))
+      const ships = state.ships
+        .filter((s) => s.ownerId === corp.id)
+        .map((s) => ({
+          id: s.id,
+          name: s.name,
+          currentSystemId: s.currentSystemId,
+          systemName: systemName(state, s.currentSystemId)
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+      const orders = state.orders
+        .filter((o) => o.ownerId === corp.id && o.remainingQuantity > 0)
+        .map((o) => ({
+          marketId: o.marketId,
+          itemId: o.itemId,
+          side: o.side,
+          price: o.price,
+          remainingQuantity: o.remainingQuantity
+        }))
+        .sort(
+          (a, b) =>
+            a.marketId.localeCompare(b.marketId) ||
+            a.itemId.localeCompare(b.itemId) ||
+            a.side.localeCompare(b.side)
+        )
+      return {
+        id: corp.id,
+        name: corp.name,
+        credits: Math.round(corp.credits),
+        homeSystemId: corp.homeSystemId,
+        homeSystemName: systemName(state, corp.homeSystemId),
+        aiProfile: corp.aiProfile ?? null,
+        inventory,
+        buildings,
+        ships,
+        orders
+      }
+    })
+
   return {
+    npcCorporations,
     localStockpiles: state.localStockpiles,
     npcOrders: state.orders
       .filter((o) => o.ownerId === 'npc')

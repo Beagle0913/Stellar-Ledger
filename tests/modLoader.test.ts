@@ -23,7 +23,8 @@ function emptyMod(id: string, deps: string[] = [], loadAfter: string[] = []): Lo
     contractTemplates: [],
     economyConfig: {},
     campaignStartConfig: {},
-    scenarios: []
+    scenarios: [],
+    npcCorporations: []
   }
 }
 

@@ -261,6 +261,12 @@ function migrateV11ToV12(db: DatabaseType.Database): void {
   }
 }
 
+function migrateV12ToV13(db: DatabaseType.Database): void {
+  if (!tableHasColumn(db, 'corporations', 'ai_profile')) {
+    db.exec('ALTER TABLE corporations ADD COLUMN ai_profile TEXT')
+  }
+}
+
 interface Migration {
   version: number
   migrate(db: DatabaseType.Database): void
@@ -279,7 +285,8 @@ const MIGRATIONS: Migration[] = [
   { version: 9, migrate: migrateV8ToV9 },
   { version: 10, migrate: migrateV9ToV10 },
   { version: 11, migrate: migrateV10ToV11 },
-  { version: 12, migrate: migrateV11ToV12 }
+  { version: 12, migrate: migrateV11ToV12 },
+  { version: 13, migrate: migrateV12ToV13 }
 ]
 
 const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1]!.version

@@ -5,24 +5,24 @@ import { purchaseShip } from '../src/simulation/ships.js'
 import { createTransportJob } from '../src/simulation/logistics.js'
 import { openDatabase } from '../src/database/db.js'
 import { createCampaign, loadCampaign, saveState } from '../src/database/saveManager.js'
-import { getPlayerCorporation, loadVanillaDefs, newGame, otherSystemId, standardScenario } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, newGame, otherSystemId, playerShips, standardScenario } from './helpers.js'
 
 describe('ships', () => {
   it('purchaseShip adds a second ship at the home system', () => {
     const state = newGame()
-    expect(state.ships).toHaveLength(1)
+    expect(playerShips(state)).toHaveLength(1)
     getPlayerCorporation(state).credits = 50_000
     purchaseShip(state, 'ship_hauler_2')
-    expect(state.ships).toHaveLength(2)
-    expect(state.ships[1]!.cargoCapacity).toBe(200)
-    expect(state.ships[1]!.currentSystemId).toBe(getPlayerCorporation(state).homeSystemId)
+    expect(playerShips(state)).toHaveLength(2)
+    expect(playerShips(state)[1]!.cargoCapacity).toBe(200)
+    expect(playerShips(state)[1]!.currentSystemId).toBe(getPlayerCorporation(state).homeSystemId)
   })
 
   it('two ships can run concurrent transport jobs', () => {
     const state = newGame()
     getPlayerCorporation(state).credits = 50_000
     purchaseShip(state, 'ship_hauler_2')
-    const [shipA, shipB] = state.ships
+    const [shipA, shipB] = playerShips(state)
     const dest = otherSystemId(state)
 
     createTransportJob(state, {
@@ -49,7 +49,7 @@ describe('ships', () => {
     purchaseShip(created, 'ship_hauler_2')
     saveState(db, created)
     const loaded = loadCampaign(db)
-    expect(loaded.ships.length).toBe(2)
+    expect(playerShips(loaded)).toHaveLength(2)
   })
 })
 

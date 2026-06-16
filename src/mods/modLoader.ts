@@ -16,7 +16,8 @@ import {
   contractTemplatesFileSchema,
   economyConfigSchema,
   campaignStartConfigSchema,
-  scenariosFileSchema
+  scenariosFileSchema,
+  npcCorporationsFileSchema
 } from './modSchemas.js'
 import { errorMessage } from '../shared/errors.js'
 import { LoadedMod, ModManifest, ModValidationError } from './modTypes.js'
@@ -105,7 +106,8 @@ export function loadModFromDir(dir: string, source: 'builtin' | 'external'): Loa
     economyConfig: parseOptionalObject(dir, 'economy_config.json', economyConfigSchema) ?? {},
     campaignStartConfig:
       parseOptionalObject(dir, 'campaign_start.json', campaignStartConfigSchema) ?? {},
-    scenarios: parseOptionalFile(dir, 'scenarios.json', scenariosFileSchema)
+    scenarios: parseOptionalFile(dir, 'scenarios.json', scenariosFileSchema),
+    npcCorporations: parseOptionalFile(dir, 'npc_corporations.json', npcCorporationsFileSchema)
   }
 }
 

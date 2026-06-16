@@ -422,7 +422,8 @@ describe('economic profile validation', () => {
       contractTemplates: [],
       economyConfig: {},
       campaignStartConfig: {},
-      scenarios: []
+      scenarios: [],
+      npcCorporations: []
     }
 
     expect(() => mergeMods([mod])).toThrow(ModValidationError)

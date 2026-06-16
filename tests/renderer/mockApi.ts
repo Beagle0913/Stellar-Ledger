@@ -91,6 +91,7 @@ export function createMockRendererApi(overrides: Partial<MockRendererApi> = {}):
     getEvents: vi.fn(async () => []),
     getActivityLog: vi.fn(async () => []),
     getDebugState: vi.fn(async () => ({
+      npcCorporations: [],
       localStockpiles: [],
       npcOrders: [],
       recentPrices: [],

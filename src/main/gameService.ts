@@ -495,7 +495,8 @@ function definitionCountsFrom(defs: GameDefinitions): DefinitionCounts {
     ships: defs.ships.length,
     objectives: defs.objectives.length,
     contractTemplates: defs.contractTemplates.length,
-    scenarios: defs.scenarios.length
+    scenarios: defs.scenarios.length,
+    npcCorporations: defs.npcCorporations.length
   }
 }
 

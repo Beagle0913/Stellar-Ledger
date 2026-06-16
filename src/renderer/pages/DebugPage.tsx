@@ -96,7 +96,37 @@ export function DebugPage(): React.JSX.Element {
 
       {activity.error && <div className="error">{activity.error}</div>}
 
-
+      {(d?.npcCorporations.length ?? 0) > 0 && (
+        <div className="panel">
+          <h3>NPC corporations ({d!.npcCorporations.length})</h3>
+          {d!.npcCorporations.map((corp) => (
+            <div key={corp.id} className="panel" style={{ marginTop: 12 }}>
+              <h4>
+                {corp.name} <span className="mono">({corp.id})</span>
+              </h4>
+              <p className="muted">
+                {corp.aiProfile ?? 'unknown'} · {Math.round(corp.credits).toLocaleString()} cr · home{' '}
+                {corp.homeSystemName}
+              </p>
+              <p className="hint">
+                Inventory {corp.inventory.length} · Buildings {corp.buildings.length} · Ships{' '}
+                {corp.ships.length} · Orders {corp.orders.length}
+              </p>
+              {corp.inventory.length > 0 && (
+                <DataTable
+                  rows={corp.inventory}
+                  rowKey={(r) => `${r.systemId}:${r.itemId}`}
+                  columns={[
+                    { key: 'sys', header: 'System', render: (r) => r.systemName },
+                    { key: 'item', header: 'Item', render: (r) => r.itemName },
+                    { key: 'qty', header: 'Qty', numeric: true, render: (r) => r.quantity }
+                  ]}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="panel">
 

@@ -69,6 +69,11 @@ export function PlanetPage(): React.JSX.Element {
               empty="No buildings here yet."
               columns={[
                 { key: 'name', header: 'Building', render: (b) => b.definitionName },
+                {
+                  key: 'owner',
+                  header: 'Owner',
+                  render: (b) => (b.isPlayerOwned ? 'You' : b.ownerName)
+                },
                 { key: 'id', header: 'Id', render: (b) => <span className="mono">{b.id}</span> }
               ]}
             />

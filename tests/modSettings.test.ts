@@ -41,7 +41,8 @@ function externalMod(id: string): LoadedMod {
     contractTemplates: [],
     economyConfig: {},
     campaignStartConfig: {},
-    scenarios: []
+    scenarios: [],
+    npcCorporations: []
   }
 }
 

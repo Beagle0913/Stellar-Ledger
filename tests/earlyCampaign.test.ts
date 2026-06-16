@@ -13,7 +13,7 @@ import { purchaseShip } from '../src/simulation/ships.js'
 import { runTick } from '../src/simulation/tick.js'
 import { buildObjectiveViews } from '../src/simulation/progression.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { getPlayerCorporation, homeSystemId, newGame } from './helpers.js'
+import { getPlayerCorporation, homeSystemId, newGame, playerShips } from './helpers.js'
 
 function refinery(state: ReturnType<typeof newGame>) {
   const b = state.buildings.find((x) => x.definitionId === 'refinery')
@@ -111,7 +111,7 @@ describe('early campaign balance (first 30 days)', () => {
     expect(affordableDay!).toBeLessThanOrEqual(50)
 
     purchaseShip(state, 'ship_hauler_2')
-    expect(state.ships.length).toBe(2)
+    expect(playerShips(state)).toHaveLength(2)
     expect(getPlayerCorporation(state).credits).toBeGreaterThanOrEqual(0)
   })
 
