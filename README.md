@@ -9,6 +9,23 @@ than shipping the full game.
 
 ---
 
+## Contents
+
+- [Quick start (play)](#quick-start-windows--just-play)
+- [How to play](#how-to-play)
+- [What you get today](#what-you-get-today)
+- [Clone and develop](#clone-and-develop-any-machine)
+- [Commands](#commands)
+- [Packaging a portable exe](#packaging-a-portable-windows-exe)
+- [Troubleshooting](#troubleshooting)
+- [Project layout](#project-layout)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [Documentation](#documentation)
+- [License](#license)
+
+---
+
 ## Quick start (Windows — just play)
 
 You only need Node.js **once** to build the game. After that, play with a single exe.
@@ -21,6 +38,32 @@ launch it creates editable `data/`, `mods/`, and `saves/` folders **beside the e
 
 > No install wizard, no registry entries — one portable exe.
 
+**Don't want to build?** After a push to `main`, GitHub Actions builds a portable exe.
+Open [Actions](https://github.com/Beagle0913/Stellar-Ledger/actions) → latest green
+`dist-windows` run → download the **GalacticEconomy-portable** artifact.
+
+---
+
+## How to play
+
+Stellar Ledger is a **turn-based planner**: time only advances when you tick.
+
+1. **Save / Load** — create a **New Campaign** (pick a name; mods can be toggled before starting).
+2. **Dashboard** — see credits, day, objectives, and contextual hints. Use **Run 1 Day Tick**,
+   **Run 7 Days**, or smart advance (jump to next production, transport, or change).
+3. **Explore** — **Star Map** → **System** → **Planet** for world stats and buildings.
+4. **Produce** — queue jobs on the **Production** page; inputs are consumed when a job starts.
+5. **Trade** — place orders or use quick buy/sell on the **Market** page.
+6. **Ship goods** — buy ships and dispatch **Logistics** transport between systems.
+7. **Progress** — complete **objectives** and **contracts** for credits and faction standing.
+8. **Save** — the game autosaves on actions and ticks; use **Save Now** anytime.
+
+Tips:
+
+- Read the “why” lines under market moves, events, and objectives — they explain what happened.
+- Enable/disable mods on the **Mods** page before a **new** campaign; loaded saves keep frozen definitions.
+- Edit `data/` and `mods/` beside the portable exe (or in the project root when running from source).
+
 ---
 
 ## What you get today
@@ -31,6 +74,17 @@ launch it creates editable `data/`, `mods/`, and `saves/` folders **beside the e
 - **Campaign loop.** Objectives, contract board, faction reputation, fleet logistics, production queues, quick market trades, and smart time advance on the Dashboard.
 - **Economy depth.** Regional stockpiles, NPC liquidity, cross-system NPC trade, population dynamics, and player-facing “why did this happen?” explanations.
 - **Saves & mods.** SQLite campaigns with frozen mod snapshots; enable/disable mods per new campaign; reload JSON from disk in dev.
+
+| Vanilla content | Count |
+|-----------------|-------|
+| Items | 20 |
+| Buildings | 12 |
+| Recipes | 20 |
+| Star systems | 5 |
+| Planets | 15 |
+| Factions | 3 |
+| Events | 7 |
+| Objectives | 7 |
 
 > **Tech:** TypeScript (strict) · Electron · React · Vite (`electron-vite`) · better-sqlite3 · Zod · Vitest
 
@@ -44,13 +98,14 @@ launch it creates editable `data/`, `mods/`, and `saves/` folders **beside the e
 git clone https://github.com/Beagle0913/Stellar-Ledger.git
 cd Stellar-Ledger
 
-# Install dependencies (builds native better-sqlite3 / electron / esbuild binaries)
-corepack pnpm install
+# Install dependencies (native modules compile during postinstall)
+corepack pnpm install --frozen-lockfile
 
-# Headless verification
-corepack pnpm test
-corepack pnpm typecheck
-corepack pnpm lint
+# postinstall targets Electron's ABI — rebuild for Node before tests
+npm run rebuild:node
+
+# Full health check (typecheck + lint + test + balance)
+corepack pnpm verify
 ```
 
 If `pnpm` is already on your `PATH`, you can drop the `corepack` prefix. `npm` also works as a fallback (`npm install`, `npm test`, …).
@@ -68,16 +123,25 @@ corepack pnpm run rebuild:electron
 corepack pnpm dev
 ```
 
-After using the GUI, you can restore the Node ABI manually:
+After using the GUI, run tests with:
 
 ```powershell
-corepack pnpm run rebuild:node
 corepack pnpm test
 ```
 
-Or just run `corepack pnpm test` — **`pretest` runs automatically** and rebuilds for Node if `better-sqlite3` was left on the Electron ABI after `dist` or `rebuild:electron`.
+**`pretest` runs automatically** and rebuilds for Node if `better-sqlite3` was left on the Electron ABI after `dist` or `rebuild:electron`. You can also run `npm run rebuild:node` manually.
 
 > **Why two ABIs?** Vitest runs on Node; the app runs on Electron. `better-sqlite3` is a native addon compiled for one ABI at a time. The rebuild scripts flip between them.
+
+### Pick your path
+
+| I want to… | Start here |
+|------------|------------|
+| Play without cloning | `Build Game.bat` → `Play.bat` |
+| Code on another PC | Clone → `pnpm install` → `rebuild:node` → `pnpm verify` |
+| Hack game content | [`docs/MODDING.md`](docs/MODDING.md) + `data/vanilla/` |
+| Understand the economy | [`docs/ECONOMY.md`](docs/ECONOMY.md) |
+| Add an IPC feature | [Adding a new IPC endpoint](#adding-a-new-ipc-endpoint) below |
 
 ---
 
@@ -85,18 +149,21 @@ Or just run `corepack pnpm test` — **`pretest` runs automatically** and rebuil
 
 ```powershell
 corepack pnpm install          # Install dependencies
+corepack pnpm verify           # typecheck + lint + test + balance (recommended before push)
 corepack pnpm test             # Full Vitest suite (pretest fixes Node ABI if needed)
-corepack pnpm verify           # typecheck + lint + test + balance
 corepack pnpm typecheck        # Strict TypeScript check
 corepack pnpm lint             # ESLint
 corepack pnpm build            # Build main / preload / renderer → out/
-corepack pnpm dev              # Dev desktop app
+corepack pnpm dev              # Dev desktop app (HMR)
 corepack pnpm play             # Production build from source (no packaging)
 corepack pnpm run play:portable # Launch packaged exe (after dist)
 corepack pnpm run dist         # Full portable exe pipeline
 corepack pnpm start            # Preview a production build
 corepack pnpm balance          # Headless balance CI gates
 corepack pnpm run balance:report  # Balance run + reports in reports/balance/
+corepack pnpm run rebuild:electron  # Native module → Electron ABI
+corepack pnpm run rebuild:node      # Native module → Node ABI (tests)
+corepack pnpm scaffold:ipc     # Print IPC wiring snippets
 ```
 
 ---
@@ -109,15 +176,13 @@ corepack pnpm run dist
 
 Or double-click **`Build Game.bat`** on Windows.
 
-Pipeline (`scripts/dist.mjs`): stop running exe → rebuild `better-sqlite3` for Electron → build → package → verify → restore Node ABI for tests.
+Pipeline (`scripts/dist.mjs`): stop running exe → rebuild `better-sqlite3` for Electron → build → package → verify native module + smoke launch → restore Node ABI for tests.
 
 Output:
 
 ```
 release/GalacticEconomy.exe
 ```
-
-**If you see `NODE_MODULE_VERSION 127` vs `130`:** close any running `GalacticEconomy.exe`, then run **`Build Game.bat`** again.
 
 ### First-run folder behavior (editable content)
 
@@ -148,6 +213,20 @@ The in-game **Debug** page (dev builds only) shows the full persisted activity l
 
 ---
 
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `NODE_MODULE_VERSION 127` vs `130` | Close `GalacticEconomy.exe`. Run **`Build Game.bat`** or `pnpm run dist`. For tests: `pnpm test` (pretest auto-rebuilds) or `npm run rebuild:node`. |
+| Tests fail after `pnpm dev` / `dist` | Run `corepack pnpm test` — pretest rebuilds for Node. |
+| `electron-rebuild failed` | Game exe still running — close it and retry `rebuild:electron`. |
+| Build can't overwrite files | Close all `GalacticEconomy.exe` instances. |
+| Fresh clone, tests crash on Linux CI | Run `npm run rebuild:node` after install (CI does this automatically). |
+| `pnpm` not found | Use `corepack pnpm …` or `corepack enable` (Node 22+). |
+| Portable exe won't start | Rebuild with `Build Game.bat`; check `release/verify-smoke-failure.log` if verify failed locally. |
+
+---
+
 ## Project layout
 
 ```
@@ -164,6 +243,7 @@ mods/            External mods (see docs/README.md)
 saves/           Local SQLite campaign files (dev; gitignored except .gitkeep)
 tests/           Vitest suites (unit + renderer smoke tests)
 docs/            Design, economy, modding, persistence, balance, roadmap
+scripts/         Build, dist, verify, balance-report, IPC scaffold helpers
 ```
 
 ### UI pages
@@ -174,7 +254,7 @@ Dashboard · Star Map · System · Planet · Market · Production · Inventory �
 
 1. **Shared contracts** (`src/shared/types/`) — `definitions`, `state`, `views`, `api`; every layer uses the IPC `GameApi` surface.
 2. **Mod system** — Zod-validated JSON, dependency resolution, merge, reference-integrity checks.
-3. **Vanilla content** — 20 items, 12 buildings, 20 recipes, 5 systems, 15 planets, factions, events, objectives, contracts.
+3. **Vanilla content** — see table above; plus contract templates and economic profiles.
 4. **Simulation core** (`src/simulation`) — pure TS: production, markets, logistics, extraction, events, deterministic daily tick.
 5. **Database** (`src/database`) — SQLite schema, migrations, frozen mod definitions per save.
 6. **Electron main + preload** — typed IPC bridge; renderer never touches Node.
@@ -204,6 +284,56 @@ corepack pnpm scaffold:ipc verify                  # GameApi vs HANDLED_METHODS
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart TB
+  subgraph content [Data layer]
+    vanilla[data/vanilla JSON]
+    extmods[mods/ JSON]
+  end
+  subgraph electron [Electron app]
+    renderer[React renderer]
+    preload[preload contextBridge]
+    main[main process GameService]
+  end
+  subgraph core [Pure TypeScript]
+    sim[simulation tick]
+    mods[mod loader merge]
+  end
+  db[(SQLite saves)]
+  vanilla --> mods
+  extmods --> mods
+  mods --> main
+  renderer --> preload --> main
+  main --> sim
+  main --> db
+  sim --> main
+```
+
+**Rules:**
+
+- The **renderer never imports Node** — only the typed `window.api` bridge.
+- The **simulation core** has no Electron, React, or database imports; it runs on in-memory `GameState`.
+- **Saves freeze** mod definitions at campaign creation so later content edits cannot corrupt old campaigns.
+
+---
+
+## Contributing
+
+1. Fork / branch from `main`.
+2. `corepack pnpm install` → `npm run rebuild:node` → `corepack pnpm verify`.
+3. Push — GitHub Actions runs the same checks plus a Windows portable build.
+
+| CI job | Runner | What it does |
+|--------|--------|--------------|
+| `check` | ubuntu-latest | typecheck, lint, test |
+| `dist-windows` | windows-latest | `npm run dist`, uploads `GalacticEconomy.exe` artifact |
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for milestone status and [`CHANGELOG.md`](CHANGELOG.md) for release notes.
+
+---
+
 ## Documentation
 
 | Doc | Topic |
@@ -216,3 +346,9 @@ corepack pnpm scaffold:ipc verify                  # GameApi vs HANDLED_METHODS
 | [`docs/BALANCE_ANALYTICS.md`](docs/BALANCE_ANALYTICS.md) | Headless balance runs |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Milestones and planned work |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release notes |
+
+---
+
+## License
+
+MIT — see [`package.json`](package.json).
