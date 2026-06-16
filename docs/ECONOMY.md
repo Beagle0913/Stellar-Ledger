@@ -182,6 +182,23 @@ population grows slowly; during shortages it declines. Live population feeds
 Optional `economy_config.json` in any mod merges field-by-field (later mods in load order
 win). See `docs/MODDING.md`.
 
+## Player market shortcuts
+
+The Market page supports **quick trades** against NPC liquidity:
+
+- **Preview** (`previewMarketTrade`) — read-only check of quantity, price, and affordability.
+- **Execute** (`executeMarketTrade`) — sell at best bid or buy at best ask in one step.
+
+These use the same matching and midpoint pricing rules as resting orders.
+
+## Smart time advance
+
+The Dashboard exposes `runTicksSmart` with modes `production`, `transport`, and `changes`.
+Each mode advances day-by-day until a stop condition is met or **30 days** elapse (whichever
+comes first). Saves run once at the end, same as `runTicks(n)`.
+
 ## Balance analytics
 
-Automated headless simulations (`src/balance/`) run scripted player strategies against the vanilla economy and evaluate hard gates (arc completion, stockpile bounds, event cooldowns, etc.). See [`docs/BALANCE_ANALYTICS.md`](BALANCE_ANALYTICS.md).
+Automated headless simulations (`src/balance/`) run scripted player strategies against the
+vanilla economy and evaluate hard gates (arc completion, stockpile bounds, event cooldowns,
+etc.). See [`docs/BALANCE_ANALYTICS.md`](BALANCE_ANALYTICS.md).

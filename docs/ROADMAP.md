@@ -1,42 +1,85 @@
 # ROADMAP
 
-## Milestone 0 — MVP architecture (done)
+Milestone status for the Stellar Ledger prototype. **Done** = shipped in this repo;
+**Partial** = foundation exists but not the full vision; **Planned** = not started.
 
-- Shared domain types + IPC contract.
-- Data-driven mod system with Zod validation, dependency resolution, and merge.
-- Pure simulation core (production, market, logistics, extraction, events, tick).
-- SQLite persistence with frozen mod-definition snapshots.
-- Electron main/preload with a single typed contextBridge API.
-- React UI shell with all ten pages.
-- Headless Vitest suites + strict typecheck.
+---
 
-## Milestone 1 — First playable prototype (this slice)
+## Milestone 0 — MVP architecture ✅ Done
 
-- New/Load/Save campaigns from the UI.
-- Dashboard with credits, day, counts, inventory value, and a **Run 1 Day Tick** button.
-- Star map → system → planet drill-down.
-- Inventory, market order placement, production jobs, transport jobs.
-- Visible state changes after a tick (prices, jobs, deliveries, events).
-- Launch the Electron GUI on a machine with a display and rebuild `better-sqlite3`
-  for the Electron ABI (see README).
+- Shared domain types + IPC contract (`src/shared/types/`)
+- Data-driven mod system (Zod validation, dependency resolution, merge)
+- Pure simulation core (production, market, logistics, extraction, events, tick)
+- SQLite persistence with frozen mod-definition snapshots
+- Electron main/preload with typed `contextBridge` API
+- React UI with all campaign pages + dev Debug page
+- Headless Vitest suites, ESLint, GitHub Actions CI
 
-## Milestone 2 — Modding maturity
+---
 
-- Per-mod enable/disable persisted to disk (currently conceptual in the UI).
-- Mod load-order editor and conflict diagnostics.
-- Hot-reload of vanilla/mod JSON in dev.
-- Versioned save migrations when frozen definitions need upgrading.
+## Milestone 1 — First playable prototype ✅ Done
 
-## Milestone 3 — Economy balancing
+- New / Load / Save / Delete / Rename campaigns from the UI
+- Dashboard: credits, day, inventory value, tick controls (1 day, 7 days, smart advance)
+- Star Map → System → Planet drill-down
+- Inventory, market orders, quick trades, production queues, transport jobs, ship purchase
+- Objectives, contract board, faction standing, contextual action suggestions
+- Visible state changes after ticks (prices, jobs, deliveries, events, explanations)
+- Autosave on player actions + save on tick; save-status indicator in layout
+- Portable Windows exe (`GalacticEconomy.exe`) + `Build Game.bat` / `Play.bat`
 
-- Population consumption that generates real demand and drives prices endogenously.
-- NPC corporations that extract, produce, and trade (beyond static liquidity).
-- Price charts and a production/logistics planner.
-- Tunable difficulty and starting conditions.
+---
 
-## Milestone 4 — Depth & shipping
+## Milestone 2 — Modding maturity 🟡 Partial
 
-- Research/tech trees and colonization/habitat growth.
-- Multiple ships, standing trade routes, and logistics contracts.
-- Richer, chained events and faction relations.
-- Packaged installers (electron-builder) for Windows/Linux/macOS.
+| Item | Status |
+|------|--------|
+| Per-mod enable/disable (`mod-settings.json`, Mods page) | ✅ Done |
+| Mod load-order / dependency resolution | ✅ Done |
+| Conflict & duplicate-id diagnostics on Mods page | ✅ Done |
+| Reload mod JSON from disk without restart (`reloadModData`) | ✅ Done |
+| `campaign_start.json` for starting conditions | ✅ Done |
+| Interactive load-order editor in UI | Planned |
+| Versioned migration of **frozen** definitions inside old saves | Planned |
+| Mod-injected renderer pages / nav hooks | Planned |
+
+---
+
+## Milestone 3 — Economy balancing 🟡 Partial
+
+| Item | Status |
+|------|--------|
+| Population dynamics & per-capita demand | ✅ Done |
+| NPC regional trade convoys | ✅ Done |
+| Stockpile-scaled NPC liquidity | ✅ Done |
+| Headless balance harness + CI gates | ✅ Done |
+| Player-facing price diagnostics & explanations | ✅ Done |
+| First-hour objective arc + contract pacing | ✅ Done |
+| Full NPC corporations (autonomous industry) | Planned |
+| Interactive price charts & production planner | Planned |
+| Difficulty presets & scenario starts | Planned |
+
+---
+
+## Milestone 4 — Depth & shipping 🟡 Partial
+
+| Item | Status |
+|------|--------|
+| Fleet logistics (multiple ships, concurrent routes) | ✅ Done |
+| Gated drama events + cooldowns | ✅ Done |
+| Activity log + Debug page | ✅ Done |
+| Windows portable packaging + CI dist artifact | ✅ Done |
+| Research / tech trees | Planned |
+| Colonization & habitat growth | Planned |
+| Standing trade routes & logistics contracts | Planned |
+| Richer faction relations & event chains | Planned |
+| Installers for Linux / macOS | Planned |
+
+---
+
+## How to contribute
+
+1. Read [`docs/README.md`](README.md) for documentation index.
+2. Run `corepack pnpm test` and `corepack pnpm lint` before opening a PR.
+3. For economy changes, run `corepack pnpm balance` and note results in the PR.
+4. Update [`CHANGELOG.md`](../CHANGELOG.md) for player- or developer-visible changes.

@@ -4,6 +4,11 @@ All notable changes to this prototype are documented here.
 
 ## [Unreleased]
 
+### Changed — documentation
+- **README** refreshed: GitHub clone instructions, current feature list, docs index, removed machine-specific dev notes.
+- **`docs/README.md`** added as documentation index with reading order.
+- **DESIGN**, **ROADMAP**, **MODDING**, **ECONOMY**, **PERSISTENCE** updated to match shipped features (objectives, fleet, star map, balance harness, autosave, example mods).
+
 ### Added — balance analytics
 - **Headless balance harness** (`src/balance/`) with scripted strategies (`idle`, `arcPlay`, `smeltAndSell`, `smeltAndSellOptimal`, `logistics`, `contracts`), daily metric snapshots, hard CI gates, and diagnostic warnings.
 - **Pure campaign bootstrap** extracted to `src/simulation/bootstrap.ts` (re-exported from save manager) so analytics never imports SQLite.

@@ -14,7 +14,13 @@ How campaign data is stored, and where to put new fields.
 
 When a **new campaign** starts, merged mod definitions are written once into SQLite (`item_definitions`, `planets`, … plus JSON blobs on `campaign_meta`). Later mod edits affect **future** campaigns only.
 
-Mutable state (credits, inventory, jobs, progression) is persisted **after every player action** (autosave) and on each tick / explicit **Save Now** via `saveManager.persistMutable()`.
+Mutable state (credits, inventory, jobs, progression) is persisted:
+
+- **After every player action** — `CampaignSession.persistAfterMutation()` from command handlers.
+- **After each tick** — `runTick`, `runTicks`, and `runTicksSmart` call `session.save()`.
+- **On explicit Save Now** — `saveCurrent()` via `saveManager.persistMutable()`.
+
+The layout shows save status (`saved` / `saving` / `error`) and the last saved tick.
 
 ## Adding a new persisted field — checklist
 

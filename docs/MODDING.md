@@ -51,6 +51,14 @@ Two behaviors to know:
 | `ships.json`     | Purchasable ship types                               |
 | `objectives.json`| Campaign objective definitions                       |
 | `contract_templates.json` | Rotating contract board templates         |
+| `content_version.json` | Integer bumped when vanilla content changes (portable seed updates) |
+
+## Example mods
+
+| Folder | What it demonstrates |
+|--------|----------------------|
+| `mods/example-expanded-industry/` | New items, building, and recipes merged on top of vanilla |
+| `mods/example-star-map/` | How to consume `getStarMap` IPC from external tools (see its README) |
 
 ## Creating a mod
 
