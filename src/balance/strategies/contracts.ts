@@ -1,3 +1,4 @@
+import { getPlayerCorporation } from '../../simulation/corporations.js'
 import { executeMarketTrade } from '../../simulation/marketTrade.js'
 import {
   acceptContract,
@@ -37,7 +38,7 @@ export const contractsStrategy: PlayerStrategy = {
         const itemId = active.params.itemId
         const row = state.inventories.find(
           (i) =>
-            i.ownerId === state.corporation.id && i.systemId === home && i.itemId === itemId
+            i.ownerId === getPlayerCorporation(state).id && i.systemId === home && i.itemId === itemId
         )
         if ((row?.quantity ?? 0) >= (active.params.quantity ?? 1)) {
           executeMarketTrade(state, { action: 'sell_max', systemId: home, itemId })

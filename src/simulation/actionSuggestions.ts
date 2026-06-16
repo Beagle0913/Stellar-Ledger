@@ -1,4 +1,5 @@
 import type { GameState } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import { availableQuantity, referencePrice } from './economyMath.js'
 import { aggregateMarketRules, getRegionalStockpile } from './localEconomy.js'
 import { maxAffordableRuns, recipesForBuildingType } from './production.js'
@@ -27,7 +28,8 @@ function currentGoalHint(state: GameState): string | null {
  */
 export function buildActionSuggestions(state: GameState): string[] {
   const suggestions: string[] = []
-  const corpId = state.corporation.id
+  const corp = getPlayerCorporation(state)
+  const corpId = corp.id
   const ownedBuildings = state.buildings.filter((b) => b.ownerId === corpId)
 
   const goal = currentGoalHint(state)
@@ -53,7 +55,7 @@ export function buildActionSuggestions(state: GameState): string[] {
     .filter(
       (s) =>
         s.purchaseCost > 0 &&
-        state.corporation.credits >= s.purchaseCost &&
+        corp.credits >= s.purchaseCost &&
         !ownedDefs.has(s.id)
     )
     .sort((a, b) => b.purchaseCost - a.purchaseCost)[0]

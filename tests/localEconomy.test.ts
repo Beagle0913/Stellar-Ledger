@@ -21,7 +21,7 @@ import {
 } from '../src/simulation/localEconomy.js'
 import { runTick } from '../src/simulation/tick.js'
 import { setPlanetPopulation } from '../src/simulation/planetPopulation.js'
-import { loadVanillaDefs, newGame, standardScenario } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, newGame, standardScenario } from './helpers.js'
 
 function helionMarketId(): string {
   return marketIdForSystem('sys_helion')
@@ -251,9 +251,9 @@ describe('local economy', () => {
 describe('market economy loop', () => {
   it('NPC liquidity replenishes after matching so depth never permanently drains', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     const market = state.markets.find((m) => m.systemId === home)!
-    const food = findInventory(state, state.corporation.id, home, 'food')!
+    const food = findInventory(state, getPlayerCorporation(state).id, home, 'food')!
     food.quantity = 50_000
     food.reserved = 0
 

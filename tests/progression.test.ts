@@ -6,7 +6,7 @@ import {
   notePlayerSellProceeds,
   noteProductionOutput
 } from '../src/simulation/progression.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('objectives and contracts', () => {
   it('tracks metal production objectives and unlocks the next step', () => {
@@ -82,13 +82,13 @@ describe('objectives and contracts', () => {
         params: { netWorthTarget: 1000, target: 1000 }
       }
     ]
-    state.corporation.credits = 5000
+    getPlayerCorporation(state).credits = 5000
 
-    const creditsBefore = state.corporation.credits
+    const creditsBefore = getPlayerCorporation(state).credits
     const repBefore = state.progression.factionReputation.faction_consortium ?? 0
 
     completeContract(state, 'contract_test')
-    expect(state.corporation.credits).toBe(creditsBefore + 500)
+    expect(getPlayerCorporation(state).credits).toBe(creditsBefore + 500)
     expect(state.progression.factionReputation.faction_consortium).toBe(repBefore + 2)
   })
 
@@ -114,9 +114,9 @@ describe('objectives and contracts', () => {
         params: { netWorthTarget: 1000, target: 1000 }
       }
     ]
-    state.corporation.credits = 5000
-    const before = state.corporation.credits
+    getPlayerCorporation(state).credits = 5000
+    const before = getPlayerCorporation(state).credits
     completeContract(state, 'contract_bonus')
-    expect(state.corporation.credits).toBe(before + 1050)
+    expect(getPlayerCorporation(state).credits).toBe(before + 1050)
   })
 })

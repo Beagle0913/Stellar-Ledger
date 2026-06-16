@@ -13,7 +13,7 @@ import { purchaseShip } from '../src/simulation/ships.js'
 import { runTick } from '../src/simulation/tick.js'
 import { buildObjectiveViews } from '../src/simulation/progression.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { homeSystemId, newGame } from './helpers.js'
+import { getPlayerCorporation, homeSystemId, newGame } from './helpers.js'
 
 function refinery(state: ReturnType<typeof newGame>) {
   const b = state.buildings.find((x) => x.definitionId === 'refinery')
@@ -28,11 +28,11 @@ function refineryBusy(state: ReturnType<typeof newGame>, buildingId: string): bo
 }
 
 function metalQty(state: ReturnType<typeof newGame>): number {
-  return findInventory(state, state.corporation.id, homeSystemId(state), 'metal')?.quantity ?? 0
+  return findInventory(state, getPlayerCorporation(state).id, homeSystemId(state), 'metal')?.quantity ?? 0
 }
 
 function netWorth(state: ReturnType<typeof newGame>): number {
-  return Math.round(state.corporation.credits + estimateInventoryValue(state, state.corporation.id))
+  return Math.round(getPlayerCorporation(state).credits + estimateInventoryValue(state, getPlayerCorporation(state).id))
 }
 
 function playDayNormal(state: ReturnType<typeof newGame>): void {
@@ -78,18 +78,18 @@ describe('early campaign balance (first 30 days)', () => {
 
   it('bad play (ticks only) does not create free wealth', () => {
     const state = newGame()
-    const startCredits = state.corporation.credits
+    const startCredits = getPlayerCorporation(state).credits
     for (let i = 0; i < 30; i += 1) runTick(state)
-    expect(state.corporation.credits).toBeLessThanOrEqual(startCredits + 500)
+    expect(getPlayerCorporation(state).credits).toBeLessThanOrEqual(startCredits + 500)
     expect(netWorth(state)).toBeLessThan(130_000)
   })
 
   it('normal smelt-and-sell loop grows modestly without hitting net-worth objective', () => {
     const state = newGame()
-    const startCredits = state.corporation.credits
+    const startCredits = getPlayerCorporation(state).credits
     for (let i = 0; i < 30; i += 1) playDayNormal(state)
-    expect(state.corporation.credits).toBeGreaterThan(startCredits * 0.85)
-    expect(state.corporation.credits).toBeLessThan(startCredits * 1.35)
+    expect(getPlayerCorporation(state).credits).toBeGreaterThan(startCredits * 0.85)
+    expect(getPlayerCorporation(state).credits).toBeLessThan(startCredits * 1.35)
     const objectives = buildObjectiveViews(state)
     expect(objectives.find((o) => o.id === 'obj_net_worth')?.completed).toBe(false)
   })
@@ -97,12 +97,12 @@ describe('early campaign balance (first 30 days)', () => {
   it('optimal play can afford Hauler II after several weeks but not on day one', () => {
     const state = newGame()
     const hauler2 = state.definitions.ships.find((s) => s.id === 'ship_hauler_2')!
-    expect(state.corporation.credits).toBeLessThan(hauler2.purchaseCost)
+    expect(getPlayerCorporation(state).credits).toBeLessThan(hauler2.purchaseCost)
 
     let affordableDay: number | null = null
     for (let day = 1; day <= 55; day += 1) {
       playDayOptimal(state)
-      if (state.corporation.credits >= hauler2.purchaseCost && affordableDay === null) {
+      if (getPlayerCorporation(state).credits >= hauler2.purchaseCost && affordableDay === null) {
         affordableDay = day
       }
     }
@@ -112,7 +112,7 @@ describe('early campaign balance (first 30 days)', () => {
 
     purchaseShip(state, 'ship_hauler_2')
     expect(state.ships.length).toBe(2)
-    expect(state.corporation.credits).toBeGreaterThanOrEqual(0)
+    expect(getPlayerCorporation(state).credits).toBeGreaterThanOrEqual(0)
   })
 
   it('starting energy supports several smelts then becomes a constraint', () => {
@@ -128,7 +128,7 @@ describe('early campaign balance (first 30 days)', () => {
       runTick(state)
     }
     expect(smeltStarts).toBeGreaterThan(3)
-    const energy = findInventory(state, state.corporation.id, home, 'energy')?.quantity ?? 0
+    const energy = findInventory(state, getPlayerCorporation(state).id, home, 'energy')?.quantity ?? 0
     expect(energy).toBeLessThan(STARTING_STOCK.energy ?? 65)
   })
 })

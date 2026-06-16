@@ -1,4 +1,5 @@
 import type { GameDefinitions } from '../shared/types.js'
+import { getPlayerCorporation } from '../simulation/corporations.js'
 import { GameError } from '../shared/errors.js'
 import { runTick } from '../simulation/tick.js'
 import { createCampaignState, loadVanillaDefs } from './bootstrap.js'
@@ -16,7 +17,7 @@ export function runBalanceSimulation(options: RunBalanceOptions): BalanceReport 
   const defs = options.defs ?? loadVanillaDefs()
   const state = createCampaignState(defs, options.campaignName ?? 'Balance Run')
   const strategy = getStrategy(options.strategyId)
-  const startingCredits = state.corporation.credits
+  const startingCredits = getPlayerCorporation(state).credits
 
   strategy.onStart?.(state)
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { GameError } from '../../src/shared/errors.js'
+import { getPlayerCorporation } from '../../src/simulation/corporations.js'
 import { createCampaignState, loadVanillaDefs } from '../../src/balance/bootstrap.js'
 import { collectDailySnapshot } from '../../src/balance/metrics.js'
 import { allHardGatesPassed, runBalanceSimulation } from '../../src/balance/harness.js'
@@ -45,7 +46,7 @@ describe('balance harness', () => {
     }
     expect(failed).toBe(1)
     const result = runTick(state)
-    const { snapshot } = collectDailySnapshot(state, result, failed, new Set(), state.corporation.credits)
+    const { snapshot } = collectDailySnapshot(state, result, failed, new Set(), getPlayerCorporation(state).credits)
     expect(snapshot.failedActions).toBe(1)
   })
 

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { buildActionSuggestions } from '../src/simulation/actionSuggestions.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('actionSuggestions', () => {
   it('suggests an idle building and an affordable ship when applicable', () => {
     const state = newGame()
-    state.corporation.credits = 45_000
+    getPlayerCorporation(state).credits = 45_000
     const suggestions = buildActionSuggestions(state)
     // Data-driven: any owned building with no job is reported as idle.
     expect(suggestions.some((s) => /is idle\.$/.test(s))).toBe(true)

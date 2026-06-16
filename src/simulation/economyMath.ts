@@ -7,6 +7,7 @@ import type {
   PriceHistoryRow,
   SystemId
 } from '../shared/types.js'
+import { getCorporationById } from './corporations.js'
 import { itemById, marketBySystemId, systemById } from './stateIndex.js'
 
 // Pure economy math + inventory bookkeeping helpers used throughout the
@@ -43,9 +44,11 @@ export function explainAffordability(
   creditCost: number,
   materials: Array<{ itemId: ItemId; quantity: number }>
 ): string | null {
-  if (state.corporation.credits < creditCost) {
+  const corp = getCorporationById(state, ownerId)
+  if (!corp) return 'Unknown corporation.'
+  if (corp.credits < creditCost) {
     return `Not enough credits to build: need ${creditCost.toLocaleString()} cr, have ${Math.round(
-      state.corporation.credits
+      corp.credits
     ).toLocaleString()} cr.`
   }
   for (const mat of materials) {

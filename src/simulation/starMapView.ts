@@ -16,6 +16,7 @@ import {
   MAP_EVENT_PULSE_TICKS,
   factionMapColor
 } from '../shared/starMap.js'
+import { getPlayerCorporation } from './corporations.js'
 import { itemLabel, referencePrice, systemDistance } from './economyMath.js'
 import { aggregateMarketRules, getRegionalStockpile } from './localEconomy.js'
 import type { RegionalTrade } from './npcRegionalTrade.js'
@@ -189,8 +190,9 @@ export function recordRegionalTradesForMap(
 
 /** Build the enriched star map read model for the renderer. */
 export function buildStarMapView(state: GameState): StarMapView {
-  const corpId = state.corporation.id
-  const homeSystemId = state.corporation.homeSystemId
+  const corp = getPlayerCorporation(state)
+  const corpId = corp.id
+  const homeSystemId = corp.homeSystemId
   const eventAgo = eventTicksAgoBySystem(state)
   const contractHighlights = contractHighlightsBySystem(state)
 

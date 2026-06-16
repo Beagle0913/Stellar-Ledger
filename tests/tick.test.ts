@@ -2,16 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { PRICE_HISTORY_RETENTION_TICKS, runTick, runTicks } from '../src/simulation/tick.js'
 import { startProductionJob } from '../src/simulation/production.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('simulation tick', () => {
   it('advances the day counter and completes a production job in one tick', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     const powerPlant = state.buildings.find((b) => b.definitionId === 'power_plant')!
     startProductionJob(state, powerPlant.id, 'recipe_energy_generation', 1)
 
-    const energyBefore = findInventory(state, state.corporation.id, home, 'energy')?.quantity ?? 0
+    const energyBefore = findInventory(state, getPlayerCorporation(state).id, home, 'energy')?.quantity ?? 0
     const result = runTick(state)
 
     expect(result.tick).toBe(1)
@@ -20,7 +20,7 @@ describe('simulation tick', () => {
     expect(state.meta.ticking).toBe(false)
     expect(Array.isArray(result.marketChanges)).toBe(true)
 
-    const energyAfter = findInventory(state, state.corporation.id, home, 'energy')?.quantity ?? 0
+    const energyAfter = findInventory(state, getPlayerCorporation(state).id, home, 'energy')?.quantity ?? 0
     expect(energyAfter).toBeGreaterThan(energyBefore)
   })
 
@@ -72,7 +72,7 @@ describe('runTicks batch advancement', () => {
     expect(batchResult.tick).toBe(lastTick)
     expect(batchResult.trades).toBe(trades)
     expect(batched.meta.tick).toBe(sequential.meta.tick)
-    expect(batched.corporation.credits).toBe(sequential.corporation.credits)
+    expect(getPlayerCorporation(batched).credits).toBe(getPlayerCorporation(sequential).credits)
     expect(batched.priceHistory.length).toBe(sequential.priceHistory.length)
     expect(batched.localStockpiles).toEqual(sequential.localStockpiles)
   })

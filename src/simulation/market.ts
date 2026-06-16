@@ -9,6 +9,7 @@ import {
   OrderSide,
   PriceHistoryRow
 } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import {
   addInventory,
   availableQuantity,
@@ -67,7 +68,7 @@ export function createMarketOrder(
     throw new GameError('NOT_FOUND', `Unknown item "${itemId}".`)
   }
   const market = marketBySystem(state, systemId)
-  const corp = state.corporation
+  const corp = getPlayerCorporation(state)
 
   if (side === 'sell') {
     const have = availableQuantity(findInventory(state, corp.id, systemId, itemId))
@@ -164,9 +165,10 @@ function settlePlayerBuy(
   tradePrice: number
 ): void {
   // Player receives goods; refund the escrow difference (escrowed at order price).
-  addInventory(state, state.corporation.id, systemId, itemId, qty)
+  const corp = getPlayerCorporation(state)
+  addInventory(state, corp.id, systemId, itemId, qty)
   const refund = (order.price - tradePrice) * qty
-  if (refund > 0) state.corporation.credits += refund
+  if (refund > 0) corp.credits += refund
 }
 
 function settlePlayerSell(
@@ -177,8 +179,9 @@ function settlePlayerSell(
   tradePrice: number
 ): void {
   // Player delivers reserved goods and is paid the trade price.
-  consumeReserved(state, state.corporation.id, systemId, itemId, qty)
-  state.corporation.credits += tradePrice * qty
+  const corp = getPlayerCorporation(state)
+  consumeReserved(state, corp.id, systemId, itemId, qty)
+  corp.credits += tradePrice * qty
 }
 
 function executeTrade(
@@ -204,7 +207,7 @@ function executeTrade(
   buy.remainingQuantity -= qty
   sell.remainingQuantity -= qty
 
-  const corpId = state.corporation.id
+  const corpId = getPlayerCorporation(state).id
   let playerSide: Trade['playerSide']
   if (buy.ownerId === corpId && sell.ownerId === NPC_OWNER) {
     playerSide = 'buy'
@@ -307,10 +310,11 @@ export function cancelOrder(state: GameState, orderId: string): void {
   if (!order || order.ownerId === NPC_OWNER) return
   const market = marketById(state, order.marketId)
   if (!market) return
+  const corp = getPlayerCorporation(state)
   if (order.side === 'sell') {
-    releaseReservation(state, state.corporation.id, market.systemId, order.itemId, order.remainingQuantity)
+    releaseReservation(state, corp.id, market.systemId, order.itemId, order.remainingQuantity)
   } else {
-    state.corporation.credits += order.remainingQuantity * order.price
+    corp.credits += order.remainingQuantity * order.price
   }
   state.orders = state.orders.filter((o) => o.id !== orderId)
 }
@@ -321,5 +325,5 @@ export function hasSellableInventory(
   systemId: string,
   itemId: string
 ): boolean {
-  return availableQuantity(findInventory(state, state.corporation.id, systemId, itemId)) > 0
+  return availableQuantity(findInventory(state, getPlayerCorporation(state).id, systemId, itemId)) > 0
 }

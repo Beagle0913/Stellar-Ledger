@@ -1,3 +1,4 @@
+import { DEFAULT_CORP_ID } from '../shared/constants.js'
 import type { DB } from './db.js'
 import type { GameDefinitions, GameState, ScenarioDefinition } from '../shared/types.js'
 import {
@@ -32,7 +33,7 @@ import {
 } from './repositories/productionRepo.js'
 import {
   loadBuildings,
-  loadCorporation,
+  loadCorporations,
   loadDefinitions,
   loadEventsLog,
   loadMeta,
@@ -40,7 +41,7 @@ import {
   loadPlanetPopulations,
   loadShips,
   saveBuildings,
-  saveCorporation,
+  saveCorporations,
   saveEventsLog,
   saveMeta,
   saveMetaProgress,
@@ -62,8 +63,8 @@ export function createCampaign(
   state.meta.scenario = scenarioSnapshotFrom(scenario)
   const tx = db.transaction(() => {
     writeDefinitions(db, applied)
-    saveMeta(db, state.meta, applied)
-    saveCorporation(db, state.corporation)
+    saveMeta(db, state.meta, applied, state.playerCorporationId)
+    saveCorporations(db, state.corporations)
     persistMutable(db, state)
   })
   tx()
@@ -75,6 +76,7 @@ export function loadCampaign(db: DB): GameState {
   clearLoadValidationWarnings()
   const {
     meta,
+    playerCorporationId: storedPlayerCorpId,
     factions,
     events,
     economicProfiles,
@@ -97,11 +99,14 @@ export function loadCampaign(db: DB): GameState {
   )
   const progression = loadProgression(db, definitions.objectives)
   const planetPopulations = loadPlanetPopulations(db, definitions.planets)
+  const corporations = loadCorporations(db)
+  const playerCorporationId = storedPlayerCorpId ?? corporations[0]?.id ?? DEFAULT_CORP_ID
   const priceSinceTick = Math.max(0, meta.tick - PRICE_HISTORY_RETENTION_TICKS)
   return {
     meta,
     definitions,
-    corporation: loadCorporation(db),
+    corporations,
+    playerCorporationId,
     inventories: loadInventories(db),
     markets: loadMarkets(db),
     orders: loadOrders(db),
@@ -123,7 +128,7 @@ export function loadCampaign(db: DB): GameState {
 export function saveState(db: DB, state: GameState): void {
   const tx = db.transaction(() => {
     saveMetaProgress(db, state.meta, state.planetPopulations, state.activityLog)
-    saveCorporation(db, state.corporation)
+    saveCorporations(db, state.corporations)
     persistMutable(db, state)
   })
   tx()

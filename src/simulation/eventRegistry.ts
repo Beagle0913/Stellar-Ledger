@@ -2,6 +2,7 @@ import { newId } from '../shared/ids.js'
 import type { EventEligibilityResult } from '../shared/explanations/types.js'
 import { NPC_OWNER } from '../shared/types.js'
 import type { EventDefinition, EventEffect, EventTrigger, GameState } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import { totalAvailable } from './economyMath.js'
 
 type TriggerHandler = (state: GameState, trigger: EventTrigger, tick: number) => boolean
@@ -12,7 +13,7 @@ const TRIGGER_HANDLERS: Record<EventTrigger['type'], TriggerHandler> = {
     trigger.type === 'tickInterval' && tick > 0 && tick % trigger.everyTicks === 0,
   lowStock: (state, trigger) =>
     trigger.type === 'lowStock' &&
-    totalAvailable(state, state.corporation.id, trigger.itemId) < trigger.threshold,
+    totalAvailable(state, getPlayerCorporation(state).id, trigger.itemId) < trigger.threshold,
   stockpileShortage: (state, trigger) =>
     trigger.type === 'stockpileShortage' &&
     state.localStockpiles.some((s) => s.itemId === trigger.itemId && s.quantity < trigger.threshold)
@@ -42,7 +43,8 @@ const EFFECT_HANDLERS: Record<EventEffect['type'], EffectHandler> = {
   creditBonus: (state, event) => {
     if (event.effect.type !== 'creditBonus') return event.name
     const { amount } = event.effect
-    state.corporation.credits = Math.max(0, state.corporation.credits + amount)
+    const corp = getPlayerCorporation(state)
+    corp.credits = Math.max(0, corp.credits + amount)
     const verb = amount >= 0 ? 'received' : 'paid'
     return `${event.name}: ${verb} ${Math.abs(amount).toLocaleString()} cr.`
   }

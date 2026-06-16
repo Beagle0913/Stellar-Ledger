@@ -7,7 +7,7 @@ import {
 } from '../src/simulation/progression.js'
 import { purchaseShip } from '../src/simulation/ships.js'
 import { runTick } from '../src/simulation/tick.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 function objective(state: ReturnType<typeof newGame>, id: string) {
   return buildObjectiveViews(state).find((o) => o.id === id)
@@ -31,8 +31,8 @@ describe('first-hour campaign arc', () => {
     const hauler2 = state.definitions.ships.find((s) => s.id === 'ship_hauler_2')!
 
     // A major upgrade is unaffordable on day one; the starter Hauler I is not.
-    expect(state.corporation.credits).toBeLessThan(hauler2.purchaseCost)
-    expect(state.corporation.credits).toBeGreaterThanOrEqual(hauler1.purchaseCost)
+    expect(getPlayerCorporation(state).credits).toBeLessThan(hauler2.purchaseCost)
+    expect(getPlayerCorporation(state).credits).toBeGreaterThanOrEqual(hauler1.purchaseCost)
 
     // Step 1: first metal.
     noteProductionOutput(state, 'metal', 4)
@@ -56,7 +56,7 @@ describe('first-hour campaign arc', () => {
 
     // Step 5: expand the fleet with an affordable second Hauler I.
     purchaseShip(state, 'ship_hauler_1')
-    expect(state.ships.filter((s) => s.ownerId === state.corporation.id)).toHaveLength(2)
+    expect(state.ships.filter((s) => s.ownerId === getPlayerCorporation(state).id)).toHaveLength(2)
     expect(objective(state, 'obj_arc_fleet')?.completed).toBe(true)
     expect(objective(state, 'obj_net_worth')?.status).toBe('active')
   })

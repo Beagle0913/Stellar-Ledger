@@ -18,6 +18,7 @@ import type {
   ObjectiveView,
   ContractView
 } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import { explainObjectiveView } from '../shared/explanations/objectives.js'
 import type { Trade } from './market.js'
 import {
@@ -332,7 +333,7 @@ export function completeContract(state: GameState, contractId: string): void {
   }
   const repBefore = state.progression.factionReputation[contract.factionId] ?? 0
   const payout = effectiveContractCreditReward(contract.creditReward, repBefore)
-  state.corporation.credits += payout
+  getPlayerCorporation(state).credits += payout
   state.progression.factionReputation[contract.factionId] = repBefore + contract.reputationReward
   state.progression.completedContractIds.push(contract.id)
   state.progression.activeContracts = state.progression.activeContracts.filter(

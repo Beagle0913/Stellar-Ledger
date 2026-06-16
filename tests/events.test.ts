@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { EventDefinition } from '../src/shared/types.js'
 import { NPC_OWNER } from '../src/shared/types.js'
 import { eventEligible, processEvents } from '../src/simulation/events.js'
-import { loadVanillaDefs } from './helpers.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, newGame } from './helpers.js'
 
 // Tests for the event trigger/effect unions, focusing on the v0.1.3 additions:
 // stockpileShortage trigger, stockpileShock and creditBonus effects.
@@ -267,10 +266,10 @@ describe('creditBonus effect', () => {
         effect: { type: 'creditBonus', amount: 2500 }
       })
     ]
-    const before = state.corporation.credits
+    const before = getPlayerCorporation(state).credits
 
     processEvents(state, 1)
-    expect(state.corporation.credits).toBe(before + 2500)
+    expect(getPlayerCorporation(state).credits).toBe(before + 2500)
     expect(state.eventsLog[0]!.message).toMatch(/received 2,500 cr/)
   })
 
@@ -284,7 +283,7 @@ describe('creditBonus effect', () => {
     ]
 
     processEvents(state, 1)
-    expect(state.corporation.credits).toBe(0)
+    expect(getPlayerCorporation(state).credits).toBe(0)
     expect(state.eventsLog[0]!.message).toMatch(/paid/)
   })
 })

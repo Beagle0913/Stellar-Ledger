@@ -4,12 +4,12 @@ import { findInventory } from '../src/simulation/economyMath.js'
 import { marketIdForSystem } from '../src/shared/ids.js'
 import { setRegionalStockpile } from '../src/simulation/localEconomy.js'
 import { syncNpcLiquidityToStockpiles } from '../src/simulation/npcLiquidity.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('market trade preview', () => {
   it('previews sell max at best bid with fill breakdown', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     const marketId = marketIdForSystem(home)
     setRegionalStockpile(state, marketId, 'ore', 800)
     syncNpcLiquidityToStockpiles(state)
@@ -27,9 +27,9 @@ describe('market trade preview', () => {
 
   it('executeMarketTrade matches immediately and updates inventory/credits', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
-    const oreBefore = findInventory(state, state.corporation.id, home, 'ore')!.quantity
-    const creditsBefore = state.corporation.credits
+    const home = getPlayerCorporation(state).homeSystemId
+    const oreBefore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
+    const creditsBefore = getPlayerCorporation(state).credits
 
     const preview = executeMarketTrade(state, {
       systemId: home,
@@ -39,8 +39,8 @@ describe('market trade preview', () => {
     })
 
     expect(preview.quantity).toBe(5)
-    const oreAfter = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const oreAfter = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
     expect(oreAfter).toBe(oreBefore - 5)
-    expect(state.corporation.credits).toBeGreaterThan(creditsBefore)
+    expect(getPlayerCorporation(state).credits).toBeGreaterThan(creditsBefore)
   })
 })

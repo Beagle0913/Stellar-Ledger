@@ -26,6 +26,7 @@ import type {
   SystemSummary
 } from '../shared/types.js'
 import { estimateInventoryValue, explainAffordability, referencePrice, systemDistance } from './economyMath.js'
+import { getPlayerCorporation } from './corporations.js'
 import { aggregateMarketRules, factionPriceBias } from './localEconomy.js'
 import { planetPopulation } from './planetPopulation.js'
 import {
@@ -113,16 +114,17 @@ export function buildMarketItems(state: GameState, systemId: string): MarketItem
 }
 
 export function buildDashboard(state: GameState): DashboardData {
+  const corp = getPlayerCorporation(state)
   const openJobs = state.productionJobs.filter(
     (j) => j.status === 'running' || j.status === 'queued'
   )
   return {
     campaignName: state.meta.name,
-    credits: Math.round(state.corporation.credits),
+    credits: Math.round(corp.credits),
     tick: state.meta.tick,
     systemCount: state.definitions.systems.length,
     planetCount: state.definitions.planets.length,
-    inventoryValueEstimate: estimateInventoryValue(state, state.corporation.id),
+    inventoryValueEstimate: estimateInventoryValue(state, corp.id),
     activeProductionJobs: state.productionJobs.filter((j) => j.status === 'running').length,
     activeTransportJobs: state.transportJobs.filter((j) => j.status === 'running').length,
     productionJobs: openJobs.map((j) => ({
@@ -206,7 +208,7 @@ export function buildPlanetDetail(state: GameState, id: string): PlanetDetail {
     buildMaterials: def.buildMaterials,
     affordable: explainAffordability(
       state,
-      state.corporation.id,
+      getPlayerCorporation(state).id,
       p.systemId,
       def.buildCost,
       def.buildMaterials
@@ -237,7 +239,7 @@ export function buildMarketView(state: GameState, systemId: string): MarketView 
 
 export function buildInventoryView(state: GameState): InventoryView[] {
   return state.inventories
-    .filter((r) => r.ownerId === state.corporation.id && r.quantity > 0)
+    .filter((r) => r.ownerId === getPlayerCorporation(state).id && r.quantity > 0)
     .map((r) => ({
       systemId: r.systemId,
       systemName: systemName(state, r.systemId),
@@ -250,7 +252,7 @@ export function buildInventoryView(state: GameState): InventoryView[] {
 }
 
 export function buildProductionView(state: GameState): ProductionView {
-  const corpId = state.corporation.id
+  const corpId = getPlayerCorporation(state).id
   const buildings = state.buildings.map((b) => {
     const busy = state.productionJobs.some(
       (j) =>

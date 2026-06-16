@@ -1,6 +1,7 @@
 import { TRADE_PRICE_RULE } from '../shared/constants.js'
 import { GameError } from '../shared/errors.js'
 import type { GameState, MarketOrder, MarketTradePreview, PreviewMarketTradeArgs } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import { availableQuantity, findInventory, itemLabel } from './economyMath.js'
 import { createMarketOrder, matchMarket, recordPriceHistory } from './market.js'
 import { applyTradesToLocalStockpiles } from './localEconomy.js'
@@ -45,7 +46,7 @@ function resolveQuantity(state: GameState, args: PreviewMarketTradeArgs): number
     if (qty <= 0) throw new GameError('VALIDATION', 'Quantity must be positive.')
     return qty
   }
-  const row = findInventory(state, state.corporation.id, args.systemId, args.itemId)
+  const row = findInventory(state, getPlayerCorporation(state).id, args.systemId, args.itemId)
   const available = availableQuantity(row)
   if (available <= 0) {
     throw new GameError(

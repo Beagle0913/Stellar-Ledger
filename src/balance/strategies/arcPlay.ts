@@ -1,3 +1,4 @@
+import { getPlayerCorporation } from '../../simulation/corporations.js'
 import { executeMarketTrade } from '../../simulation/marketTrade.js'
 import { createTransportJob } from '../../simulation/logistics.js'
 import {
@@ -29,7 +30,7 @@ function buildingBusy(state: Parameters<typeof refineryBusy>[0], buildingId: str
 function availableAtHome(state: Parameters<typeof homeSystemId>[0], itemId: string): number {
   const home = homeSystemId(state)
   const row = state.inventories.find(
-    (i) => i.ownerId === state.corporation.id && i.systemId === home && i.itemId === itemId
+    (i) => i.ownerId === getPlayerCorporation(state).id && i.systemId === home && i.itemId === itemId
   )
   return (row?.quantity ?? 0) - (row?.reserved ?? 0)
 }
@@ -115,8 +116,9 @@ export const arcPlayStrategy: PlayerStrategy = {
 
     if (fleetActive) {
       const hauler1 = state.definitions.ships.find((s) => s.id === 'ship_hauler_1')
-      const playerShips = state.ships.filter((s) => s.ownerId === state.corporation.id)
-      if (hauler1 && playerShips.length < 2 && state.corporation.credits >= hauler1.purchaseCost) {
+      const playerCorp = getPlayerCorporation(state)
+      const playerShips = state.ships.filter((s) => s.ownerId === playerCorp.id)
+      if (hauler1 && playerShips.length < 2 && playerCorp.credits >= hauler1.purchaseCost) {
         purchaseShip(state, 'ship_hauler_1')
       }
     }

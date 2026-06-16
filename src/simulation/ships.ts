@@ -2,6 +2,8 @@ import { GameError } from '../shared/errors.js'
 import { newId } from '../shared/ids.js'
 import type { GameState, Ship } from '../shared/types.js'
 
+import { getPlayerCorporation } from './corporations.js'
+
 /** Purchase a ship from merged definitions; spawns at the corporation home system. */
 export function purchaseShip(
   state: GameState,
@@ -10,13 +12,14 @@ export function purchaseShip(
 ): Ship {
   const def = state.definitions.ships.find((s) => s.id === shipDefinitionId)
   if (!def) throw new GameError('NOT_FOUND', `Unknown ship type "${shipDefinitionId}".`)
-  if (state.corporation.credits < def.purchaseCost) {
+  const corp = getPlayerCorporation(state)
+  if (corp.credits < def.purchaseCost) {
     throw new GameError(
       'VALIDATION',
-      `Not enough credits: need ${def.purchaseCost}, have ${Math.round(state.corporation.credits)}.`
+      `Not enough credits: need ${def.purchaseCost}, have ${Math.round(corp.credits)}.`
     )
   }
-  state.corporation.credits -= def.purchaseCost
+  corp.credits -= def.purchaseCost
   const ship: Ship = {
     id: newId('ship'),
     name: (customName?.trim() || def.name).slice(0, 64),
@@ -24,8 +27,8 @@ export function purchaseShip(
     cargoCapacity: def.cargoCapacity,
     fuelUsePerDistance: def.fuelUsePerDistance,
     speed: def.speed,
-    currentSystemId: state.corporation.homeSystemId,
-    ownerId: state.corporation.id
+    currentSystemId: corp.homeSystemId,
+    ownerId: corp.id
   }
   state.ships.push(ship)
   return ship
@@ -35,5 +38,5 @@ export function purchaseShip(
 export function canAffordShip(state: GameState, shipDefinitionId: string): boolean {
   const def = state.definitions.ships.find((s) => s.id === shipDefinitionId)
   if (!def) return false
-  return state.corporation.credits >= def.purchaseCost
+  return getPlayerCorporation(state).credits >= def.purchaseCost
 }

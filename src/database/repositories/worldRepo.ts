@@ -32,11 +32,16 @@ import type {
 
 // ---- Campaign meta ----------------------------------------------------------
 
-export function saveMeta(db: DB, meta: CampaignMeta, defs: GameDefinitions): void {
+export function saveMeta(
+  db: DB,
+  meta: CampaignMeta,
+  defs: GameDefinitions,
+  playerCorporationId: string
+): void {
   const scenario = meta.scenario
   db.prepare(
-    `INSERT INTO campaign_meta (id, name, tick, created_at, ticking, game_version, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, progression_json, economy_config_json, campaign_start_config_json, planet_populations_json, activity_log_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json)
-     VALUES (@id, @name, @tick, @created_at, @ticking, @game_version, @factions_json, @events_json, @economic_profiles_json, @ships_json, @objectives_json, @contract_templates_json, @progression_json, @economy_config_json, @campaign_start_config_json, @planet_populations_json, @activity_log_json, @scenario_id, @scenario_name, @scenario_difficulty, @scenario_config_json)
+    `INSERT INTO campaign_meta (id, name, tick, created_at, ticking, game_version, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, progression_json, economy_config_json, campaign_start_config_json, planet_populations_json, activity_log_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json, player_corporation_id)
+     VALUES (@id, @name, @tick, @created_at, @ticking, @game_version, @factions_json, @events_json, @economic_profiles_json, @ships_json, @objectives_json, @contract_templates_json, @progression_json, @economy_config_json, @campaign_start_config_json, @planet_populations_json, @activity_log_json, @scenario_id, @scenario_name, @scenario_difficulty, @scenario_config_json, @player_corporation_id)
      ON CONFLICT(id) DO UPDATE SET
        name=excluded.name, tick=excluded.tick, ticking=excluded.ticking,
        planet_populations_json=excluded.planet_populations_json`
@@ -61,7 +66,8 @@ export function saveMeta(db: DB, meta: CampaignMeta, defs: GameDefinitions): voi
     scenario_id: scenario?.id ?? 'standard',
     scenario_name: scenario?.name ?? 'Standard',
     scenario_difficulty: scenario?.difficulty ?? 'normal',
-    scenario_config_json: JSON.stringify(scenario?.config ?? null)
+    scenario_config_json: JSON.stringify(scenario?.config ?? null),
+    player_corporation_id: playerCorporationId
   })
 }
 
@@ -85,6 +91,7 @@ export function saveMetaProgress(
 
 export function loadMeta(db: DB): {
   meta: CampaignMeta
+  playerCorporationId: string | null
   factions: FactionDefinition[]
   events: EventDefinition[]
   economicProfiles: EconomicProfileDefinition[]
@@ -97,7 +104,7 @@ export function loadMeta(db: DB): {
 } {
   const row = db
     .prepare(
-      'SELECT id, name, tick, created_at, ticking, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, economy_config_json, campaign_start_config_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json FROM campaign_meta LIMIT 1'
+      'SELECT id, name, tick, created_at, ticking, factions_json, events_json, economic_profiles_json, ships_json, objectives_json, contract_templates_json, economy_config_json, campaign_start_config_json, scenario_id, scenario_name, scenario_difficulty, scenario_config_json, player_corporation_id FROM campaign_meta LIMIT 1'
     )
     .get() as
     | {
@@ -118,6 +125,7 @@ export function loadMeta(db: DB): {
         scenario_name: string | null
         scenario_difficulty: string | null
         scenario_config_json: string | null
+        player_corporation_id: string | null
       }
     | undefined
   if (!row) throw new Error('No campaign_meta row found in save.')
@@ -136,6 +144,7 @@ export function loadMeta(db: DB): {
       ticking: false,
       scenario
     },
+    playerCorporationId: row.player_corporation_id,
     factions: parseStoredFactions(row.factions_json),
     events: parseStoredEvents(row.events_json),
     economicProfiles: parseStoredEconomicProfiles(row.economic_profiles_json),
@@ -148,22 +157,52 @@ export function loadMeta(db: DB): {
   }
 }
 
-// ---- Corporation ------------------------------------------------------------
+// ---- Corporations -----------------------------------------------------------
 
-export function saveCorporation(db: DB, corp: Corporation): void {
-  db.prepare(
+export function saveCorporations(db: DB, corporations: Corporation[]): void {
+  const existing = db.prepare('SELECT id FROM corporations').all() as Array<{ id: string }>
+  const ids = new Set(corporations.map((c) => c.id))
+  for (const row of existing) {
+    if (!ids.has(row.id)) {
+      db.prepare('DELETE FROM corporations WHERE id = ?').run(row.id)
+    }
+  }
+  const stmt = db.prepare(
     `INSERT INTO corporations (id, name, credits, home_system_id)
      VALUES (@id, @name, @credits, @home_system_id)
      ON CONFLICT(id) DO UPDATE SET name=excluded.name, credits=excluded.credits, home_system_id=excluded.home_system_id`
-  ).run({ id: corp.id, name: corp.name, credits: corp.credits, home_system_id: corp.homeSystemId })
+  )
+  for (const corp of corporations) {
+    stmt.run({
+      id: corp.id,
+      name: corp.name,
+      credits: corp.credits,
+      home_system_id: corp.homeSystemId
+    })
+  }
 }
 
+export function loadCorporations(db: DB): Corporation[] {
+  const rows = db
+    .prepare('SELECT id, name, credits, home_system_id FROM corporations ORDER BY id')
+    .all() as Array<{ id: string; name: string; credits: number; home_system_id: string }>
+  if (rows.length === 0) throw new Error('No corporation found in save.')
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    credits: row.credits,
+    homeSystemId: row.home_system_id
+  }))
+}
+
+/** @deprecated Use saveCorporations */
+export function saveCorporation(db: DB, corp: Corporation): void {
+  saveCorporations(db, [corp])
+}
+
+/** @deprecated Use loadCorporations */
 export function loadCorporation(db: DB): Corporation {
-  const row = db
-    .prepare('SELECT id, name, credits, home_system_id FROM corporations LIMIT 1')
-    .get() as { id: string; name: string; credits: number; home_system_id: string } | undefined
-  if (!row) throw new Error('No corporation found in save.')
-  return { id: row.id, name: row.name, credits: row.credits, homeSystemId: row.home_system_id }
+  return loadCorporations(db)[0]!
 }
 
 // ---- Frozen definitions (written once at campaign creation) -----------------

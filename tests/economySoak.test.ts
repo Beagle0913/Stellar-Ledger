@@ -5,7 +5,7 @@ import { addInventory, referencePrice } from '../src/simulation/economyMath.js'
 import { aggregateMarketRules, factionPriceBias } from '../src/simulation/localEconomy.js'
 import { createMarketOrder } from '../src/simulation/market.js'
 import { PRICE_HISTORY_RETENTION_TICKS, runTick } from '../src/simulation/tick.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 // Long-horizon stability check: 300 simulated days with scripted player trading
 // every 10th day. The economy must stay within its authored bounds throughout.
@@ -13,7 +13,7 @@ import { newGame } from './helpers.js'
 describe('economy soak (300 ticks with scripted trading)', () => {
   it('keeps prices bounded, stockpiles non-negative, and NPC depth replenished', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     const homeMarket = state.markets.find((m) => m.systemId === home)!
 
     const npcPrice = (itemId: string, side: 'buy' | 'sell'): number =>
@@ -31,8 +31,8 @@ describe('economy soak (300 ticks with scripted trading)', () => {
       // a trade against the NPC ask prints ~1.1x the reference price.)
       if (day % 10 === 0 && day <= 290) {
         // Keep the scripted trader solvent and stocked so orders stay valid.
-        state.corporation.credits = Math.max(state.corporation.credits, 100_000)
-        addInventory(state, state.corporation.id, home, 'ore', 5)
+        getPlayerCorporation(state).credits = Math.max(getPlayerCorporation(state).credits, 100_000)
+        addInventory(state, getPlayerCorporation(state).id, home, 'ore', 5)
 
         // Buy 5 food at the NPC ask; sell 5 ore at the NPC bid.
         createMarketOrder(state, {

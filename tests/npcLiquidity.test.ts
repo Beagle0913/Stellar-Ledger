@@ -6,7 +6,7 @@ import { marketIdForSystem } from '../src/shared/ids.js'
 import { createMarketOrder, matchMarket } from '../src/simulation/market.js'
 import { syncNpcLiquidityToStockpiles } from '../src/simulation/npcLiquidity.js'
 import { setRegionalStockpile } from '../src/simulation/localEconomy.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('NPC stockpile-scaled liquidity', () => {
   it('reduces NPC sell depth when regional stockpile is low', () => {
@@ -28,7 +28,7 @@ describe('NPC stockpile-scaled liquidity', () => {
 
   it('caps player buy volume when NPC sell depth is depleted', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     const marketId = marketIdForSystem(home)
     const config = mergeEconomyConfig(undefined)
     const lowDepth = npcLiquidityQuantity(config, 10, 500, 'sell', NPC_ORDER_QUANTITY)

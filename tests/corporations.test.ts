@@ -10,10 +10,11 @@ import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
 import { newGame } from './helpers.js'
 
 describe('corporation helpers', () => {
-  it('getPlayerCorporation returns state.corporation in pre-3A shape', () => {
+  it('getPlayerCorporation returns player entry from corporations[]', () => {
     const state = newGame()
     expect(getPlayerCorporation(state).id).toBe(DEFAULT_CORP_ID)
-    expect(getPlayerCorporation(state)).toBe(state.corporation)
+    expect(getPlayerCorporation(state)).toBe(state.corporations[0])
+    expect(state.playerCorporationId).toBe(DEFAULT_CORP_ID)
   })
 
   it('getPlayerCorporationId matches default player id', () => {

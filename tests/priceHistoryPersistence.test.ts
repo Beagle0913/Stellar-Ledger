@@ -4,7 +4,7 @@ import { createCampaign, loadCampaign, saveState } from '../src/database/saveMan
 import { runTick } from '../src/simulation/tick.js'
 import { executeMarketTrade } from '../src/simulation/marketTrade.js'
 import type { PriceHistoryRow } from '../src/shared/types.js'
-import { loadVanillaDefs, standardScenario } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, standardScenario } from './helpers.js'
 
 // price_history is persisted INCREMENTALLY (marketRepo.savePriceHistory) rather
 // than wiped+reinserted every tick. These tests pin the round-trip behaviour so
@@ -48,7 +48,7 @@ describe('incremental price history persistence', () => {
 
     // An instant trade records a price-history row at the CURRENT (already
     // persisted) tick. The incremental save must re-sync that tick, not skip it.
-    const homeSystemId = state.corporation.homeSystemId
+    const homeSystemId = getPlayerCorporation(state).homeSystemId
     const itemId = state.definitions.items[0]!.id
     executeMarketTrade(state, { systemId: homeSystemId, itemId, action: 'buy_amount', quantity: 1 })
     expect(state.priceHistory.length).toBeGreaterThan(afterTick)

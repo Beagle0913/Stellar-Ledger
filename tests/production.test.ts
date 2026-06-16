@@ -5,7 +5,7 @@ import {
   startProductionJob
 } from '../src/simulation/production.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('production', () => {
   it('runs a power plant job: consumes inputs on start, yields outputs on completion', () => {
@@ -13,8 +13,8 @@ describe('production', () => {
     const powerPlant = state.buildings.find((b) => b.definitionId === 'power_plant')
     expect(powerPlant).toBeDefined()
 
-    const homeSystem = state.corporation.homeSystemId
-    const energyBefore = findInventory(state, state.corporation.id, homeSystem, 'energy')?.quantity ?? 0
+    const homeSystem = getPlayerCorporation(state).homeSystemId
+    const energyBefore = findInventory(state, getPlayerCorporation(state).id, homeSystem, 'energy')?.quantity ?? 0
 
     const job = startProductionJob(state, powerPlant!.id, 'recipe_energy_generation', 1)
     expect(job.status).toBe('running')
@@ -23,20 +23,20 @@ describe('production', () => {
     processProductionJobs(state)
     expect(state.productionJobs[0]!.status).toBe('completed')
 
-    const energyAfter = findInventory(state, state.corporation.id, homeSystem, 'energy')?.quantity ?? 0
+    const energyAfter = findInventory(state, getPlayerCorporation(state).id, homeSystem, 'energy')?.quantity ?? 0
     expect(energyAfter).toBeGreaterThan(energyBefore)
   })
 
   it('consumes inputs immediately when a job with inputs starts', () => {
     const state = newGame()
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
     // Ensure there is a refinery + enough ore/energy to smelt metal.
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')
     expect(refinery).toBeDefined()
-    const oreBefore = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const oreBefore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
 
     startProductionJob(state, refinery!.id, 'recipe_metal_smelting', 2)
-    const oreAfter = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const oreAfter = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
     // recipe consumes 4 ore per run * 2 runs = 8.
     expect(oreBefore - oreAfter).toBe(8)
   })

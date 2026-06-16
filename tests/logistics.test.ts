@@ -5,7 +5,7 @@ import {
   processTransportJobs
 } from '../src/simulation/logistics.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { homeSystemId, newGame, otherSystemId, playerShip } from './helpers.js'
+import { getPlayerCorporation, homeSystemId, newGame, otherSystemId, playerShip } from './helpers.js'
 
 describe('logistics', () => {
   it('rejects transport when cargo exceeds ship capacity', () => {
@@ -30,7 +30,7 @@ describe('logistics', () => {
     const dest = otherSystemId(state)
 
     // Drain all fuel at the origin.
-    const fuelRow = findInventory(state, state.corporation.id, home, 'fuel')!
+    const fuelRow = findInventory(state, getPlayerCorporation(state).id, home, 'fuel')!
     fuelRow.quantity = 0
     fuelRow.reserved = 0
 
@@ -50,7 +50,7 @@ describe('logistics', () => {
     const home = homeSystemId(state)
     const dest = otherSystemId(state)
 
-    const oreRow = findInventory(state, state.corporation.id, home, 'ore')!
+    const oreRow = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!
     oreRow.quantity = 0
     oreRow.reserved = 0
 
@@ -99,8 +99,8 @@ describe('logistics', () => {
 
     expect(job.status).toBe('completed')
     expect(ship.currentSystemId).toBe(dest)
-    expect(findInventory(state, state.corporation.id, dest, 'ore')?.quantity).toBe(10)
-    expect(findInventory(state, state.corporation.id, home, 'ore')?.quantity ?? 0).toBe(130)
+    expect(findInventory(state, getPlayerCorporation(state).id, dest, 'ore')?.quantity).toBe(10)
+    expect(findInventory(state, getPlayerCorporation(state).id, home, 'ore')?.quantity ?? 0).toBe(130)
   })
 
   it('cancelling a running job releases the cargo but does not refund fuel', () => {
@@ -108,7 +108,7 @@ describe('logistics', () => {
     const ship = playerShip(state)
     const home = homeSystemId(state)
     const dest = otherSystemId(state)
-    const fuelBefore = findInventory(state, state.corporation.id, home, 'fuel')!.quantity
+    const fuelBefore = findInventory(state, getPlayerCorporation(state).id, home, 'fuel')!.quantity
 
     const job = createTransportJob(state, {
       shipId: ship.id,
@@ -116,9 +116,9 @@ describe('logistics', () => {
       itemId: 'ore',
       quantity: 10
     })
-    const ore = findInventory(state, state.corporation.id, home, 'ore')!
+    const ore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!
     expect(ore.reserved).toBe(10)
-    const fuelAfterDispatch = findInventory(state, state.corporation.id, home, 'fuel')!.quantity
+    const fuelAfterDispatch = findInventory(state, getPlayerCorporation(state).id, home, 'fuel')!.quantity
     expect(fuelAfterDispatch).toBeLessThan(fuelBefore)
 
     cancelTransportJob(state, job.id)
@@ -128,14 +128,14 @@ describe('logistics', () => {
     expect(ore.reserved).toBe(0)
     expect(ore.quantity).toBe(140)
     // Fuel is NOT refunded.
-    expect(findInventory(state, state.corporation.id, home, 'fuel')!.quantity).toBe(
+    expect(findInventory(state, getPlayerCorporation(state).id, home, 'fuel')!.quantity).toBe(
       fuelAfterDispatch
     )
 
     // A cancelled job never delivers, no matter how many ticks pass.
     for (let i = 0; i < 20; i += 1) processTransportJobs(state)
     expect(job.status).toBe('cancelled')
-    expect(findInventory(state, state.corporation.id, dest, 'ore')?.quantity ?? 0).toBe(0)
+    expect(findInventory(state, getPlayerCorporation(state).id, dest, 'ore')?.quantity ?? 0).toBe(0)
     expect(ship.currentSystemId).toBe(home)
   })
 

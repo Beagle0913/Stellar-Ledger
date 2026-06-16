@@ -1,6 +1,7 @@
 import { computePriceDelta } from '../shared/economyDiagnostics.js'
 import { marketIdForSystem } from '../shared/ids.js'
 import type { GameState, TickResult } from '../shared/types.js'
+import { getPlayerCorporation } from '../simulation/corporations.js'
 import { estimateInventoryValue, referencePrice } from '../simulation/economyMath.js'
 import { aggregateMarketRules, factionPriceBias, getRegionalStockpile } from '../simulation/localEconomy.js'
 import { buildObjectiveViews } from '../simulation/progression.js'
@@ -36,7 +37,7 @@ function countSeverity(explanations: TickResult['explanations']): ExplanationSev
 function playerItemTotal(state: GameState, itemId: string): number {
   let total = 0
   for (const row of state.inventories) {
-    if (row.ownerId === state.corporation.id && row.itemId === itemId) {
+    if (row.ownerId === getPlayerCorporation(state).id && row.itemId === itemId) {
       total += row.quantity
     }
   }
@@ -47,7 +48,8 @@ function collectStockouts(state: GameState, homeMarketId: string): string[] {
   const config = state.definitions.economyConfig
   const threshold = config.regionalTradeMinShortageFraction
   const out: string[] = []
-  for (const rule of aggregateMarketRules(state, state.corporation.homeSystemId)) {
+  const homeSystemId = getPlayerCorporation(state).homeSystemId
+  for (const rule of aggregateMarketRules(state, homeSystemId)) {
     const stock = getRegionalStockpile(state, homeMarketId, rule.itemId, rule.targetStockpile)
     if (stock < rule.targetStockpile * threshold) {
       out.push(rule.itemId)
@@ -57,9 +59,10 @@ function collectStockouts(state: GameState, homeMarketId: string): string[] {
 }
 
 function collectHomeVolatility(state: GameState, tick: number): Record<string, number> {
-  const homeMarket = marketIdForSystem(state.corporation.homeSystemId)
+  const homeMarket = marketIdForSystem(getPlayerCorporation(state).homeSystemId)
   const out: Record<string, number> = {}
-  for (const rule of aggregateMarketRules(state, state.corporation.homeSystemId)) {
+  const homeSystemId = getPlayerCorporation(state).homeSystemId
+  for (const rule of aggregateMarketRules(state, homeSystemId)) {
     const rows = state.priceHistory.filter(
       (r) => r.marketId === homeMarket && r.itemId === rule.itemId && r.tick <= tick
     )
@@ -78,7 +81,7 @@ function collectHomeVolatility(state: GameState, tick: number): Record<string, n
 function foodSecurityRatio(state: GameState): number {
   const config = state.definitions.economyConfig
   const foodItemId = config.populationFoodItemId
-  const homeMarket = marketIdForSystem(state.corporation.homeSystemId)
+  const homeMarket = marketIdForSystem(getPlayerCorporation(state).homeSystemId)
   let foodTarget = 100
   for (const profile of state.definitions.economicProfiles) {
     const rule = profile.items.find((r) => r.itemId === foodItemId)
@@ -98,12 +101,13 @@ export function collectDailySnapshot(
   priorCompletedObjectives: Set<string>,
   startingCredits: number
 ): { snapshot: DailySnapshot; completedNow: Set<string> } {
+  const corp = getPlayerCorporation(state)
   const views = buildObjectiveViews(state)
   const completedNow = new Set(views.filter((o) => o.completed).map((o) => o.id))
   const objectivesCompleted = [...completedNow].filter((id) => !priorCompletedObjectives.has(id))
   const objectivesActive = views.filter((o) => o.status === 'active').map((o) => o.id)
 
-  const playerShips = state.ships.filter((s) => s.ownerId === state.corporation.id)
+  const playerShips = state.ships.filter((s) => s.ownerId === corp.id)
   const productionJobsRunning = state.productionJobs.filter(
     (j) => j.status === 'running' || j.status === 'queued'
   ).length
@@ -115,8 +119,8 @@ export function collectDailySnapshot(
   )
   const idleBuildings = state.buildings.filter((b) => !busyBuildingIds.has(b.id)).length
 
-  const inventoryValue = estimateInventoryValue(state, state.corporation.id)
-  const netWorth = Math.round(state.corporation.credits + inventoryValue)
+  const inventoryValue = estimateInventoryValue(state, corp.id)
+  const netWorth = Math.round(corp.credits + inventoryValue)
 
   const eventIds = state.eventsLog
     .filter((e) => e.tick === result.tick)
@@ -124,7 +128,7 @@ export function collectDailySnapshot(
 
   const snapshot: DailySnapshot = {
     day: result.tick,
-    credits: state.corporation.credits,
+    credits: corp.credits,
     netWorth,
     inventoryValue,
     objectivesCompleted,
@@ -140,7 +144,7 @@ export function collectDailySnapshot(
     eventIds,
     marketChangesCount: result.marketChanges.length,
     priceVolatility: collectHomeVolatility(state, result.tick),
-    stockoutItems: collectStockouts(state, marketIdForSystem(state.corporation.homeSystemId)),
+    stockoutItems: collectStockouts(state, marketIdForSystem(corp.homeSystemId)),
     foodSecurityRatio: foodSecurityRatio(state),
     playerFuel: playerItemTotal(state, state.definitions.economyConfig.fuelItemId),
     playerFood: playerItemTotal(state, configFoodId(state)),
@@ -209,8 +213,8 @@ function buildSummary(snapshots: DailySnapshot[], state: GameState): BalanceSumm
     explanationActiveDays,
     totalFailedActions: snapshots.length ? snapshots[snapshots.length - 1]!.failedActions : 0,
     totalEventsFired: snapshots.reduce((n, s) => n + s.eventsFired, 0),
-    startingCredits: snapshots[0]?.startingCredits ?? state.corporation.credits,
-    endingCredits: last?.credits ?? state.corporation.credits,
+    startingCredits: snapshots[0]?.startingCredits ?? getPlayerCorporation(state).credits,
+    endingCredits: last?.credits ?? getPlayerCorporation(state).credits,
     endingNetWorth: last?.netWorth ?? 0
   }
 }

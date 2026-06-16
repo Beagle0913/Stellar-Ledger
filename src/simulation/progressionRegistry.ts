@@ -8,6 +8,7 @@ import type {
   ObjectiveProgressEntry,
   ObjectiveType
 } from '../shared/types.js'
+import { getPlayerCorporation } from './corporations.js'
 import { estimateInventoryValue } from './economyMath.js'
 
 export type ContractBuildContext = {
@@ -99,7 +100,8 @@ const CONTRACT_BUILDERS: Record<ContractTemplateType, ContractBuilder> = {
 
 const CONTRACT_PROGRESS: Record<ContractTemplateType, ContractProgressFn> = {
   deliver_item: (state, contract) => {
-    const corpId = state.corporation.id
+    const corp = getPlayerCorporation(state)
+    const corpId = corp.id
     const qty =
       state.inventories.find(
         (r) =>
@@ -116,7 +118,8 @@ const CONTRACT_PROGRESS: Record<ContractTemplateType, ContractProgressFn> = {
   },
   sell_in_faction: (_state, contract) => Math.min(contract.target, contract.progress),
   own_asset: (state, contract) => {
-    const corpId = state.corporation.id
+    const corp = getPlayerCorporation(state)
+    const corpId = corp.id
     const wantedId = contract.params.shipDefinitionId
     const def = state.definitions.ships.find((s) => s.id === wantedId)
     if (!def) return 0
@@ -134,8 +137,9 @@ const CONTRACT_PROGRESS: Record<ContractTemplateType, ContractProgressFn> = {
     return owned ? 1 : 0
   },
   reach_net_worth: (state, contract) => {
-    const corpId = state.corporation.id
-    const nw = Math.round(state.corporation.credits + estimateInventoryValue(state, corpId))
+    const corp = getPlayerCorporation(state)
+    const corpId = corp.id
+    const nw = Math.round(corp.credits + estimateInventoryValue(state, corpId))
     return Math.min(contract.target, nw)
   }
 }
@@ -169,14 +173,16 @@ function markComplete(entry: ObjectiveProgressEntry): void {
 const OBJECTIVE_SYNC: Record<ObjectiveType, ObjectiveSyncFn> = {
   own_ships: (state, _def, entry) => {
     if (entry.completed) return
-    const count = state.ships.filter((s) => s.ownerId === state.corporation.id).length
+    const corpId = getPlayerCorporation(state).id
+    const count = state.ships.filter((s) => s.ownerId === corpId).length
     entry.current = count
     if (count >= entry.target) markComplete(entry)
   },
   net_worth: (state, _def, entry) => {
     if (entry.completed) return
+    const corp = getPlayerCorporation(state)
     const nw = Math.round(
-      state.corporation.credits + estimateInventoryValue(state, state.corporation.id)
+      corp.credits + estimateInventoryValue(state, corp.id)
     )
     entry.current = nw
     if (nw >= entry.target) markComplete(entry)

@@ -8,19 +8,19 @@ import {
   tryPromoteQueuedJob
 } from '../src/simulation/production.js'
 import { findInventory } from '../src/simulation/economyMath.js'
-import { newGame } from './helpers.js'
+import { getPlayerCorporation, newGame } from './helpers.js'
 
 describe('production queue', () => {
   it('queues a second job without consuming inputs until the first completes', () => {
     const state = newGame()
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')!
-    const home = state.corporation.homeSystemId
-    const oreBefore = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const home = getPlayerCorporation(state).homeSystemId
+    const oreBefore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
 
     startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
     startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
 
-    const oreAfterQueue = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const oreAfterQueue = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
     expect(oreAfterQueue).toBe(oreBefore - 4)
     expect(state.productionJobs.filter((j) => j.status === 'running')).toHaveLength(1)
     expect(state.productionJobs.filter((j) => j.status === 'queued')).toHaveLength(1)
@@ -29,7 +29,7 @@ describe('production queue', () => {
   it('promotes queued job and consumes inputs when running job completes', () => {
     const state = newGame()
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')!
-    const home = state.corporation.homeSystemId
+    const home = getPlayerCorporation(state).homeSystemId
 
     startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
     startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
@@ -38,7 +38,7 @@ describe('production queue', () => {
     expect(state.productionJobs.some((j) => j.status === 'running')).toBe(true)
 
     processProductionJobs(state)
-    const ore = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const ore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
     expect(ore).toBeLessThan(200 - 4)
     expect(state.productionJobs.filter((j) => j.status === 'completed')).toHaveLength(1)
   })
@@ -46,17 +46,17 @@ describe('production queue', () => {
   it('cancel queued job without input loss; cancel running without refund', () => {
     const state = newGame()
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')!
-    const home = state.corporation.homeSystemId
-    const oreBefore = findInventory(state, state.corporation.id, home, 'ore')!.quantity
+    const home = getPlayerCorporation(state).homeSystemId
+    const oreBefore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity
 
     const running = startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
     const queued = startProductionJob(state, refinery.id, 'recipe_metal_smelting', 1)
 
     cancelProductionJob(state, queued.id)
-    expect(findInventory(state, state.corporation.id, home, 'ore')!.quantity).toBe(oreBefore - 4)
+    expect(findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity).toBe(oreBefore - 4)
 
     cancelProductionJob(state, running.id)
-    expect(findInventory(state, state.corporation.id, home, 'ore')!.quantity).toBe(oreBefore - 4)
+    expect(findInventory(state, getPlayerCorporation(state).id, home, 'ore')!.quantity).toBe(oreBefore - 4)
   })
 
   it('runProductionUntilExhausted queues affordable runs', () => {
@@ -72,8 +72,8 @@ describe('production queue', () => {
   it('tryPromoteQueuedJob leaves job queued when inputs are insufficient', () => {
     const state = newGame()
     const refinery = state.buildings.find((b) => b.definitionId === 'refinery')!
-    const home = state.corporation.homeSystemId
-    const ore = findInventory(state, state.corporation.id, home, 'ore')!
+    const home = getPlayerCorporation(state).homeSystemId
+    const ore = findInventory(state, getPlayerCorporation(state).id, home, 'ore')!
     ore.quantity = 3
 
     state.productionJobs.push({

@@ -32,6 +32,13 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
     systemId: s.id
   }))
 
+  const playerCorp = {
+    id: DEFAULT_CORP_ID,
+    name: DEFAULT_CORP_NAME,
+    credits: start.startingCredits,
+    homeSystemId
+  }
+
   const state: GameState = {
     meta: {
       id: newId('campaign'),
@@ -41,12 +48,8 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
       ticking: false
     },
     definitions: defs,
-    corporation: {
-      id: DEFAULT_CORP_ID,
-      name: DEFAULT_CORP_NAME,
-      credits: start.startingCredits,
-      homeSystemId
-    },
+    corporations: [playerCorp],
+    playerCorporationId: DEFAULT_CORP_ID,
     inventories: [],
     markets,
     orders: [],
@@ -79,7 +82,7 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
   for (const [itemId, qty] of startingStock) {
     if (defs.items.some((i) => i.id === itemId)) {
       state.inventories.push({
-        ownerId: state.corporation.id,
+        ownerId: playerCorp.id,
         systemId: homeSystemId,
         itemId,
         quantity: qty,
@@ -95,7 +98,7 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
           id: newId('bld'),
           definitionId: type,
           planetId: homePlanet.id,
-          ownerId: state.corporation.id
+          ownerId: playerCorp.id
         })
       }
     }
@@ -120,7 +123,7 @@ export function buildInitialState(defs: GameDefinitions, campaignName: string): 
     fuelUsePerDistance: starterDef.fuelUsePerDistance,
     speed: starterDef.speed,
     currentSystemId: homeSystemId,
-    ownerId: state.corporation.id
+    ownerId: playerCorp.id
   })
 
   initLocalStockpiles(state)

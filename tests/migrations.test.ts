@@ -2,6 +2,12 @@ import Database from 'better-sqlite3'
 import { describe, expect, it } from 'vitest'
 import { runMigrations } from '../src/database/migrations.js'
 import { loadCampaign } from '../src/database/saveManager.js'
+import {
+  getAllCorporations,
+  getNpcCorporations,
+  getPlayerCorporation
+} from '../src/simulation/corporations.js'
+import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
 
 // Real v1 -> v2 migration test. We build a genuine v1 database BY HAND (the
 // current schema minus everything added in v2) and assert runMigrations()
@@ -212,7 +218,7 @@ describe('v1 -> v2 migration', () => {
 
     runMigrations(db)
 
-    expect(db.pragma('user_version', { simple: true })).toBe(11)
+    expect(db.pragma('user_version', { simple: true })).toBe(12)
     expect(columnNames(db, 'campaign_meta')).toContain('economic_profiles_json')
     expect(columnNames(db, 'campaign_meta')).toContain('ships_json')
     expect(columnNames(db, 'campaign_meta')).toContain('progression_json')
@@ -226,6 +232,7 @@ describe('v1 -> v2 migration', () => {
     expect(columnNames(db, 'campaign_meta')).toContain('scenario_name')
     expect(columnNames(db, 'campaign_meta')).toContain('scenario_difficulty')
     expect(columnNames(db, 'campaign_meta')).toContain('scenario_config_json')
+    expect(columnNames(db, 'campaign_meta')).toContain('player_corporation_id')
     expect(columnNames(db, 'star_systems')).toContain('economic_profile_id')
     expect(columnNames(db, 'star_systems')).toContain('controlling_faction_id')
     expect(columnNames(db, 'planets')).toContain('economic_profile_id')
@@ -238,7 +245,10 @@ describe('v1 -> v2 migration', () => {
     const state = loadCampaign(db)
     expect(state.meta.name).toBe('Legacy Campaign')
     expect(state.meta.tick).toBe(12)
-    expect(state.corporation.credits).toBe(100000)
+    expect(getPlayerCorporation(state).credits).toBe(100000)
+    expect(state.playerCorporationId).toBe(DEFAULT_CORP_ID)
+    expect(getAllCorporations(state)).toHaveLength(1)
+    expect(getNpcCorporations(state)).toEqual([])
     expect(state.definitions.systems).toHaveLength(1)
     expect(state.definitions.planets).toHaveLength(1)
     expect(state.definitions.items).toHaveLength(1)
@@ -271,7 +281,7 @@ describe('v1 -> v2 migration', () => {
     const db = buildV1Database()
     runMigrations(db)
     runMigrations(db)
-    expect(db.pragma('user_version', { simple: true })).toBe(11)
+    expect(db.pragma('user_version', { simple: true })).toBe(12)
     expect(() => loadCampaign(db)).not.toThrow()
     db.close()
   })

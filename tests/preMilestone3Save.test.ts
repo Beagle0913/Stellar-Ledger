@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { openDatabase } from '../src/database/db.js'
 import { createCampaign, loadCampaign, saveState } from '../src/database/saveManager.js'
-import { getAllCorporations, getNpcCorporations } from '../src/simulation/corporations.js'
+import { getAllCorporations, getNpcCorporations, getPlayerCorporationId } from '../src/simulation/corporations.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
 import { loadVanillaDefs, standardScenario } from './helpers.js'
 
@@ -27,6 +27,9 @@ describe('pre-Milestone-3 save fixture', () => {
     expect(loaded.meta.name).toBe('Fixture Campaign')
     expect(getAllCorporations(loaded)).toHaveLength(1)
     expect(getAllCorporations(loaded)[0]!.id).toBe(DEFAULT_CORP_ID)
+    expect(getPlayerCorporationId(loaded)).toBe(DEFAULT_CORP_ID)
+    expect(loaded.playerCorporationId).toBe(DEFAULT_CORP_ID)
+    expect(loaded.corporations).toHaveLength(1)
     expect(getNpcCorporations(loaded)).toEqual([])
   })
 

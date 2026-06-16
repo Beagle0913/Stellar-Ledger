@@ -8,7 +8,7 @@ import {
   STANDARD_SCENARIO_ID
 } from '../src/shared/scenarios.js'
 import { DEFAULT_CAMPAIGN_START_CONFIG } from '../src/shared/campaignStartConfig.js'
-import { loadVanillaDefs, standardScenario } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, standardScenario } from './helpers.js'
 
 describe('scenarios', () => {
   const defs = loadVanillaDefs()
@@ -48,7 +48,7 @@ describe('scenarios', () => {
     const scenario = resolveScenario(defs, 'prospector_easy')
     const state = createCampaign(db, defs, 'Easy Run', scenario)
     expect(state.meta.scenario?.id).toBe('prospector_easy')
-    expect(state.corporation.credits).toBe(52_000)
+    expect(getPlayerCorporation(state).credits).toBe(52_000)
 
     const reloaded = loadCampaign(db)
     expect(reloaded.meta.scenario?.id).toBe('prospector_easy')
