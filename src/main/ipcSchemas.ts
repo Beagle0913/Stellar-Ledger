@@ -36,6 +36,10 @@ export const ipcPayloadSchemas = {
     recipeId: nonEmptyString,
     quantity: z.number().positive()
   }),
+  getProductionPlan: z.object({
+    targetItemId: nonEmptyString,
+    targetQty: z.number().positive()
+  }),
   buildBuilding: z.object({
     planetId: nonEmptyString,
     buildingType: nonEmptyString

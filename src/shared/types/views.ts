@@ -28,6 +28,33 @@ import type {
   MarketChangeEntry
 } from './state.js'
 
+export interface ProductionPlanView {
+  feasible: boolean
+  targetItemId: ItemId
+  targetQty: number
+  estimatedDays: number
+  requiredInputs: {
+    itemId: ItemId
+    itemName: string
+    requiredQty: number
+    availableQty: number
+    missingQty: number
+  }[]
+  requiredBuildings: {
+    buildingTypeId: BuildingTypeId
+    buildingName: string
+    available: number
+    required: number
+  }[]
+  bottlenecks: string[]
+  warnings: string[]
+}
+
+export interface ProductionPlanArgs {
+  targetItemId: ItemId
+  targetQty: number
+}
+
 export interface ProductionJobSummary {
   id: string
   recipeName: string

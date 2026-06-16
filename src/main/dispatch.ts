@@ -28,6 +28,7 @@ export const HANDLED_METHODS = [
   'cancelMarketOrder',
   'getInventory',
   'getProduction',
+  'getProductionPlan',
   'startProductionJob',
   'buildBuilding',
   'getLogistics',
@@ -93,6 +94,8 @@ export function invokeMethod(service: GameService, method: string, payload: unkn
       return service.getInventory()
     case 'getProduction':
       return service.getProduction()
+    case 'getProductionPlan':
+      return service.getProductionPlan(parseIpcPayload(method, payload))
     case 'startProductionJob':
       return service.startProductionJob(parseIpcPayload(method, payload))
     case 'buildBuilding':

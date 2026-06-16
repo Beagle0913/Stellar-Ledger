@@ -25,6 +25,8 @@ import type {
   PriceHistoryArgs,
   PricePoint,
   ProductionView,
+  ProductionPlanArgs,
+  ProductionPlanView,
   PurchaseShipArgs,
   RepeatProductionJobArgs,
   RunProductionUntilExhaustedArgs,
@@ -82,6 +84,7 @@ import {
   buildPlanetDetail,
   buildPriceHistory,
   buildProductionView,
+  buildProductionPlanView,
   buildSystemDetail,
   buildSystemSummaries
 } from '../simulation/viewQueries.js'
@@ -292,6 +295,11 @@ export class GameService {
   getProduction(): ProductionView {
     const { state } = this.session.require()
     return buildProductionView(state)
+  }
+
+  getProductionPlan(args: ProductionPlanArgs): ProductionPlanView {
+    const { state } = this.session.require()
+    return buildProductionPlanView(state, args)
   }
 
   getLogistics(): LogisticsView {

@@ -29,6 +29,7 @@ const api: GameApi = {
   cancelMarketOrder: (orderId) => call('cancelMarketOrder', orderId),
   getInventory: () => call('getInventory'),
   getProduction: () => call('getProduction'),
+  getProductionPlan: (args) => call('getProductionPlan', args),
   startProductionJob: (args) => call('startProductionJob', args),
   buildBuilding: (args) => call('buildBuilding', args),
   getLogistics: () => call('getLogistics'),

@@ -20,6 +20,8 @@ import type {
   PriceHistoryArgs,
   PricePoint,
   ProductionView,
+  ProductionPlanArgs,
+  ProductionPlanView,
   SystemDetail,
   SystemSummary
 } from '../shared/types.js'
@@ -35,6 +37,7 @@ import {
   buildObjectiveViews
 } from './progression.js'
 import { recipesForBuildingType, canStartProduction } from './production.js'
+import { planChain } from './productionPlanner.js'
 import { canAffordShip } from './ships.js'
 
 function itemName(state: GameState, id: string): string {
@@ -341,4 +344,24 @@ export function buildPriceHistory(state: GameState, args: PriceHistoryArgs): Pri
     points = points.slice(-args.limit)
   }
   return points
+}
+
+export function buildProductionPlanView(state: GameState, args: ProductionPlanArgs): ProductionPlanView {
+  const plan = planChain(state, args)
+  return {
+    feasible: plan.feasible,
+    targetItemId: plan.targetItemId,
+    targetQty: plan.targetQty,
+    estimatedDays: plan.estimatedDays,
+    requiredInputs: plan.requiredInputs.map((l) => ({
+      ...l,
+      itemName: itemName(state, l.itemId)
+    })),
+    requiredBuildings: plan.requiredBuildings.map((b) => ({
+      ...b,
+      buildingName: buildingName(state, b.buildingTypeId)
+    })),
+    bottlenecks: plan.bottlenecks,
+    warnings: plan.warnings
+  }
 }

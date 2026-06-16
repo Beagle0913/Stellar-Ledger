@@ -49,6 +49,16 @@ export function createMockRendererApi(overrides: Partial<MockRendererApi> = {}):
     cancelMarketOrder: vi.fn(async () => true as const),
     getInventory: vi.fn(async () => mockInventory),
     getProduction: vi.fn(async () => mockProduction),
+    getProductionPlan: vi.fn(async () => ({
+      feasible: true,
+      targetItemId: 'metal',
+      targetQty: 10,
+      estimatedDays: 4,
+      requiredInputs: [],
+      requiredBuildings: [],
+      bottlenecks: [],
+      warnings: []
+    })),
     startProductionJob: vi.fn(async () => true as const),
     buildBuilding: vi.fn(async () => true as const),
     getLogistics: vi.fn(async () => mockLogistics),

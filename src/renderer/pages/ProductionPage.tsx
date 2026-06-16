@@ -8,6 +8,7 @@ import { DataTable } from '../components/DataTable'
 import type {
   ItemDefinition,
   ProductionJob,
+  ProductionPlanView,
   ProductionView,
   RecipeDefinition,
   RecipeIO,
@@ -69,6 +70,10 @@ export function ProductionPage(): React.JSX.Element {
 
   const [selected, setSelected] = useState<Record<string, string>>({})
   const [qty, setQty] = useState<Record<string, number>>({})
+  const [planItemId, setPlanItemId] = useState('metal')
+  const [planQty, setPlanQty] = useState(10)
+  const [plan, setPlan] = useState<ProductionPlanView | null>(null)
+  const [planError, setPlanError] = useState<string | null>(null)
 
   const mutationError =
     startMut.error ?? repeatMut.error ?? exhaustedMut.error ?? cancelMut.error
@@ -110,6 +115,17 @@ export function ProductionPage(): React.JSX.Element {
     const recipeId = selected[buildingId] ?? recipes[0]?.id
     if (!recipeId) return
     await exhaustedMut.run({ buildingId, recipeId })
+  }
+
+  async function runPlan(): Promise<void> {
+    setPlanError(null)
+    try {
+      const result = await api.getProductionPlan({ targetItemId: planItemId, targetQty: planQty })
+      setPlan(result)
+    } catch (e) {
+      setPlan(null)
+      setPlanError(e instanceof Error ? e.message : 'Plan failed.')
+    }
   }
 
   const p = prod.data
@@ -255,6 +271,86 @@ export function ProductionPage(): React.JSX.Element {
             }
           ]}
         />
+      </div>
+
+      <div className="panel">
+        <h3>Production planner</h3>
+        <p className="muted">Read-only estimate from current stock and buildings (no market buying).</p>
+        <div className="form-line">
+          <label>Target item</label>
+          <select value={planItemId} onChange={(e) => setPlanItemId(e.target.value)}>
+            {(items.data ?? []).map((it) => (
+              <option key={it.id} value={it.id}>
+                {it.name}
+              </option>
+            ))}
+          </select>
+          <label>Qty</label>
+          <input
+            type="number"
+            min={1}
+            style={{ width: 72 }}
+            value={planQty}
+            onChange={(e) => setPlanQty(Math.max(1, Number(e.target.value) || 1))}
+          />
+          <button type="button" onClick={() => void runPlan()}>
+            Plan
+          </button>
+        </div>
+        {planError && <div className="error">{planError}</div>}
+        {plan && (
+          <>
+            <p>
+              {plan.feasible ? (
+                <span className="tag green">Feasible</span>
+              ) : (
+                <span className="tag yellow">Not feasible</span>
+              )}{' '}
+              Estimated <span className="mono">{plan.estimatedDays}</span> production-days.
+            </p>
+            {plan.warnings.length > 0 && (
+              <ul className="ticklog">
+                {plan.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            )}
+            {plan.requiredInputs.length > 0 && (
+              <>
+                <div className="subhead">Required inputs</div>
+                <DataTable
+                  rows={plan.requiredInputs}
+                  rowKey={(r) => r.itemId}
+                  columns={[
+                    { key: 'item', header: 'Item', render: (r) => r.itemName },
+                    { key: 'need', header: 'Need', numeric: true, render: (r) => r.requiredQty },
+                    { key: 'have', header: 'Have', numeric: true, render: (r) => r.availableQty },
+                    {
+                      key: 'miss',
+                      header: 'Missing',
+                      numeric: true,
+                      render: (r) => (r.missingQty > 0 ? r.missingQty : '—')
+                    }
+                  ]}
+                />
+              </>
+            )}
+            {plan.requiredBuildings.length > 0 && (
+              <>
+                <div className="subhead">Buildings</div>
+                <DataTable
+                  rows={plan.requiredBuildings}
+                  rowKey={(r) => r.buildingTypeId}
+                  columns={[
+                    { key: 'type', header: 'Type', render: (r) => r.buildingName },
+                    { key: 'avail', header: 'Available', numeric: true, render: (r) => r.available },
+                    { key: 'req', header: 'Required runs', numeric: true, render: (r) => r.required }
+                  ]}
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

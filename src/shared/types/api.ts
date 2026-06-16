@@ -22,6 +22,8 @@ import type {
   PlanetDetail,
   PricePoint,
   ProductionView,
+  ProductionPlanView,
+  ProductionPlanArgs,
   SaveSummary,
   StarMapView,
   SystemDetail,
@@ -141,6 +143,7 @@ export interface GameApi {
   cancelMarketOrder(orderId: string): Promise<IpcResult<true>>
   getInventory(): Promise<IpcResult<InventoryView[]>>
   getProduction(): Promise<IpcResult<ProductionView>>
+  getProductionPlan(args: ProductionPlanArgs): Promise<IpcResult<ProductionPlanView>>
   startProductionJob(args: StartProductionJobArgs): Promise<IpcResult<true>>
   buildBuilding(args: BuildBuildingArgs): Promise<IpcResult<true>>
   getLogistics(): Promise<IpcResult<LogisticsView>>
