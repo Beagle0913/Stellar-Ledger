@@ -4,6 +4,7 @@ import { collectMarketChangesForTick } from '../shared/economyDiagnostics.js'
 import { buildTickDigest } from '../shared/explanations/digest.js'
 import type { GameState, ProductionJob, TickResult, TransportJob } from '../shared/types.js'
 import { processEvents } from './events.js'
+import { processNpcProductionAI } from './npcProductionAI.js'
 import { processTransportJobs } from './logistics.js'
 import { applyTradesToLocalStockpiles, processLocalEconomy } from './localEconomy.js'
 import { matchMarket, recordPriceHistory, replenishNpcLiquidity } from './market.js'
@@ -25,15 +26,16 @@ export const PRICE_HISTORY_RETENTION_TICKS = 365
  * Advance the simulation by one day. Steps (in order, matching ECONOMY.md):
  *   1) process production jobs
  *   2) process transport jobs
- *   3) process local economy (daily flows + demand/supply price pressure)
- *   4) process population dynamics (food security → growth/decline)
- *   5) NPC regional trade (convoys between stockpiles / arbitrage)
- *   6) sync NPC order depth to regional stockpiles
- *   7) match market orders
- *   8) apply player trades to regional stockpiles
- *   9) replenish NPC order depth
- *  10) record trade price history (overrides economy rows for traded items)
- *  11) trigger events
+ *   3) NPC production AI queues new jobs
+ *   4) process local economy (daily flows + demand/supply price pressure)
+ *   5) process population dynamics (food security → growth/decline)
+ *   6) NPC regional trade (convoys between stockpiles / arbitrage)
+ *   7) sync NPC order depth to regional stockpiles
+ *   8) match market orders
+ *   9) apply player trades to regional stockpiles
+ *  10) replenish NPC order depth
+ *  11) record trade price history (overrides economy rows for traded items)
+ *  12) trigger events
  * Afterwards price history older than PRICE_HISTORY_RETENTION_TICKS is pruned
  * (latest rows are never dropped, so the reference-price index stays correct).
  * Persistence is handled by the caller / save manager, not by the tick itself.
@@ -70,6 +72,8 @@ export function runTick(state: GameState): TickResult {
       transportSnapshot,
       state.transportJobs
     ) as TransportJob[]
+
+    processNpcProductionAI(state)
 
     processLocalEconomy(state, nextTick)
     const populationChanges = processPopulationDynamics(state)

@@ -8,7 +8,8 @@
     "startingStock": {
       "ore": 120,
       "machinery": 4,
-      "fuel": 40
+      "fuel": 40,
+      "energy": 80
     },
     "buildings": [
       { "planetId": "cinder_core", "buildingType": "mine" }

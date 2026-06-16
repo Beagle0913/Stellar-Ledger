@@ -99,7 +99,9 @@ function depositJobOutputs(
     const perRun = effectiveOutput(planet, recipe, output.quantity)
     const total = perRun * job.quantity
     addInventory(state, building.ownerId, systemId, output.itemId, total)
-    noteProductionOutput(state, output.itemId, total)
+    if (building.ownerId === state.playerCorporationId) {
+      noteProductionOutput(state, output.itemId, total)
+    }
   }
 }
 
