@@ -54,6 +54,8 @@ Two behaviors to know:
 | `ships.json`     | Purchasable ship types                               |
 | `objectives.json`| Campaign objective definitions                       |
 | `contract_templates.json` | Rotating contract board templates         |
+| `npc_corporations.json` | NPC corporation seeds (new campaigns only) |
+| `scenarios.json` | Named campaign start presets |
 | `content_version.json` | Integer bumped when vanilla content changes (portable seed updates) |
 
 ## Example mods
@@ -84,7 +86,7 @@ Two behaviors to know:
 3. Add any of the optional content files (`items.json`, `recipes.json`,
    `buildings.json`, `systems.json`, `planets.json`, `factions.json`, `events.json`,
    `economic_profiles.json`, `economy_config.json`, `ships.json`, `objectives.json`,
-   `contract_templates.json`).
+   `contract_templates.json`, `npc_corporations.json`, `scenarios.json`).
    Each file is a JSON **array** of entries. Omit files you don't need.
 4. Start a **new campaign** — its loaded mod definitions are frozen into the save, so
    existing saves are unaffected by your new mod.
@@ -274,6 +276,29 @@ errors in-app on the **Mods** page.
 **Reload mod data from disk** (`reloadModData` IPC, Mods page button) re-reads JSON from
 `data/` and `mods/` into the mod catalog. It affects **new campaigns only** — loaded
 saves keep their frozen definitions snapshot.
+
+## NPC corporations (`npc_corporations.json`)
+
+Optional. Seeds **passive NPC corporations on new campaigns only** — runtime state
+(inventory, buildings, ships, credits, jobs, orders) is saved in SQLite and is **not**
+rebuilt from JSON when a save loads.
+
+```json
+{
+  "id": "corp_helion_mining",
+  "name": "Helion Mining",
+  "factionId": "faction_consortium",
+  "homeSystemId": "sys_cinder",
+  "startingCredits": 55000,
+  "startingStock": { "ore": 120, "energy": 80 },
+  "buildings": [{ "planetId": "cinder_core", "buildingType": "mine" }],
+  "ships": [{ "definitionId": "ship_hauler_1", "name": "Helion Hauler" }],
+  "aiProfile": "extractor"
+}
+```
+
+`aiProfile`: `extractor` | `refiner` | `balanced` | `trader` — controls production and
+market AI (trader skips industrial production). See [`ECONOMY.md`](ECONOMY.md).
 
 ## Star map
 

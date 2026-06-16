@@ -68,6 +68,19 @@ NPC orders provide baseline liquidity: for every item, an NPC sell order is seed
 Each NPC order is backed by `NPC_ORDER_QUANTITY` (1000) units. After matching each
 tick, depleted NPC depth is **replenished** so liquidity never permanently drains.
 
+**Order ownership split (Milestone 3):**
+
+| `ownerId` | Role |
+|-----------|------|
+| `"npc"` (`NPC_OWNER`) | Abstract market maker / regional liquidity for non-industrial goods |
+| `corp_*` | Real NPC corporations listing industrial surplus or covering shortages |
+| player corp id | Player resting orders |
+
+NPC corporations (`npcMarketAI.ts`) place at most **one open buy or sell** per
+corp/system/item. Surplus inventory becomes sell listings; shortages become buy orders
+priced near reference (`×1.05` sell, `×0.95` buy). Player production and objectives
+ignore NPC output — only the player corporation increments campaign production totals.
+
 ### Order placement
 
 - **Sell orders** reserve the corresponding inventory in the market's system.
@@ -132,18 +145,40 @@ is **not refunded** — fuel is consumed the moment the ship departs.
 
 `runTick(state)` advances exactly one day and is deterministic. Steps, in order:
 
-1. process production jobs
-2. process transport jobs
-3. process local economy (daily flows + price pressure for profiled items)
-4. process population dynamics (food security → growth/decline on live planet counts)
-5. NPC regional trade (convoys move goods between surplus and shortage markets)
-6. sync NPC order depth to regional stockpiles (profiled items only)
-7. match market orders
-8. apply player trades to regional stockpiles
-9. replenish NPC order depth (stockpile-scaled for profiled items)
-10. record trade price history
-11. trigger events
-12. (persistence is handled by the caller / save manager)
+1. process production jobs (player + NPC buildings)
+2. process transport jobs (player + NPC convoys)
+3. NPC production AI — queue new jobs on idle NPC buildings
+4. NPC market AI — refresh corp buy/sell orders from inventory targets
+5. NPC logistics AI — dispatch at most one inter-system haul per NPC corp
+6. process local economy (daily flows + price pressure for profiled items)
+7. process population dynamics (food security → growth/decline on live planet counts)
+8. NPC regional trade (abstract convoys move goods between surplus and shortage markets)
+9. sync NPC order depth to regional stockpiles (profiled items only)
+10. match market orders
+11. apply player trades to regional stockpiles
+12. replenish NPC order depth (stockpile-scaled for profiled items)
+13. record trade price history
+14. trigger events
+15. (persistence is handled by the caller / save manager)
+
+### Abstract demand vs industrial supply
+
+**Economic profiles** (`economic_profiles.json`) model abstract regional demand and
+background supply (food, fuel, generic ore flows). **NPC corporations** add real
+buildings, inventories, production jobs, corp-owned market listings, and ship convoys.
+After Milestone 3, profile `producedPerDay` for items NPC corps now produce industrially
+(ore) was reduced to avoid double-counting supply.
+
+### NPC corporations (industrial layer)
+
+Seeded on **new campaigns only** from `data/vanilla/npc_corporations.json` (see
+`docs/MODDING.md`). Vanilla corps:
+
+- **Helion Mining** (`corp_helion_mining`, extractor) — mine at Cinder, hauler ship
+- **Orion Refining** (`corp_orion_refining`, refiner) — refinery at Marrow
+
+Runtime state (inventory, credits, jobs, orders, ships) is persisted in SQLite; editing
+the JSON later does not mutate existing saves.
 
 A `ticking` guard flag on the campaign meta protects against accidental re-entry, and
 the tick number increments atomically once all steps succeed.

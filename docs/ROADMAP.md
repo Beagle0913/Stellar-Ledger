@@ -45,7 +45,7 @@ Milestone status for the Stellar Ledger prototype. **Done** = shipped in this re
 
 ---
 
-## Milestone 3 — Economy balancing 🟡 Partial
+## Milestone 3 — Economy balancing ✅ Done
 
 | Item | Status |
 |------|--------|
@@ -55,9 +55,11 @@ Milestone status for the Stellar Ledger prototype. **Done** = shipped in this re
 | Headless balance harness + CI gates | ✅ Done |
 | Player-facing price diagnostics & explanations | ✅ Done |
 | First-hour objective arc + contract pacing | ✅ Done |
-| Full NPC corporations (autonomous industry) | Planned |
-| Interactive price charts & production planner | Planned |
-| Difficulty presets & scenario starts | Planned |
+| Multi-corporation state + save/load | ✅ Done |
+| Scenario starts with frozen snapshots | ✅ Done |
+| Interactive price charts & production planner | ✅ Done |
+| NPC corporations (production, market, logistics AI) | ✅ Done |
+| Economic profile retune (avoid double ore supply) | ✅ Done |
 
 ---
 

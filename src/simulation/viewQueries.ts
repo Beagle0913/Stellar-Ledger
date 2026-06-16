@@ -400,6 +400,31 @@ export function buildDebugStateView(state: GameState): DebugStateView {
             a.itemId.localeCompare(b.itemId) ||
             a.side.localeCompare(b.side)
         )
+      const corpBuildingIds = new Set(
+        state.buildings.filter((b) => b.ownerId === corp.id).map((b) => b.id)
+      )
+      const productionJobs = state.productionJobs
+        .filter((j) => corpBuildingIds.has(j.buildingId))
+        .map((j) => ({
+          buildingId: j.buildingId,
+          recipeId: j.recipeId,
+          status: j.status,
+          quantity: j.quantity,
+          progress: j.progress,
+          duration: j.duration
+        }))
+        .sort((a, b) => a.buildingId.localeCompare(b.buildingId))
+      const transportJobs = state.transportJobs
+        .filter((j) => j.ownerId === corp.id)
+        .map((j) => ({
+          id: j.id,
+          itemId: j.itemId,
+          quantity: j.quantity,
+          status: j.status,
+          originSystemName: systemName(state, j.originSystemId),
+          destinationSystemName: systemName(state, j.destinationSystemId)
+        }))
+        .sort((a, b) => a.id.localeCompare(b.id))
       return {
         id: corp.id,
         name: corp.name,
@@ -410,7 +435,9 @@ export function buildDebugStateView(state: GameState): DebugStateView {
         inventory,
         buildings,
         ships,
-        orders
+        orders,
+        productionJobs,
+        transportJobs
       }
     })
 

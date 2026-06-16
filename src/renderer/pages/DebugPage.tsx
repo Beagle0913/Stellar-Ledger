@@ -110,7 +110,8 @@ export function DebugPage(): React.JSX.Element {
               </p>
               <p className="hint">
                 Inventory {corp.inventory.length} · Buildings {corp.buildings.length} · Ships{' '}
-                {corp.ships.length} · Orders {corp.orders.length}
+                {corp.ships.length} · Orders {corp.orders.length} · Production{' '}
+                {corp.productionJobs.length} · Transport {corp.transportJobs.length}
               </p>
               {corp.inventory.length > 0 && (
                 <DataTable

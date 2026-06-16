@@ -4,6 +4,17 @@ All notable changes to this prototype are documented here.
 
 ## [Unreleased]
 
+### Added — Milestone 3 NPC economy (Phases 3A–3G)
+- **Multi-corporation state** (`corporations[]`, `playerCorporationId`) with save/load migration v12–v13.
+- **Passive NPC corporation definitions** (`npc_corporations.json`) seed Helion Mining and Orion Refining on new campaigns only.
+- **NPC production AI** — deterministic job queueing on idle NPC buildings after production completes.
+- **NPC market AI** — corp-owned buy/sell orders (`corp_*`) alongside abstract `NPC_OWNER` liquidity.
+- **NPC logistics AI** — inter-system convoys using the same transport job model as the player.
+- **Economic profile retune** — reduced abstract `producedPerDay` for ore where NPC miners operate.
+- **Debug / System / Planet visibility** for foreign NPC buildings; Debug panel shows corp jobs, orders, and transport.
+- **Balance gates** — `market_not_empty_day_30`, `npc_orders_bounded`, `no_npc_inventory_negative`, `no_price_explosion_day_100`.
+- **Docs** — `ECONOMY.md`, `MODDING.md`, `ROADMAP.md` updated for Milestone 3 completion.
+
 ### Changed — documentation
 - **README** expanded: gameplay guide, troubleshooting, architecture diagram, CI badge, contributor workflow.
 - **Docs cross-linked:** DESIGN, ECONOMY, MODDING, PERSISTENCE, BALANCE_ANALYTICS, ROADMAP, and `docs/README.md` aligned on clone flow, commands, content counts, and portable exe naming.

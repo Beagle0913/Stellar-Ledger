@@ -400,6 +400,22 @@ export interface DebugNpcCorporationView {
     price: number
     remainingQuantity: number
   }>
+  productionJobs: Array<{
+    buildingId: string
+    recipeId: string
+    status: string
+    quantity: number
+    progress: number
+    duration: number
+  }>
+  transportJobs: Array<{
+    id: string
+    itemId: ItemId
+    quantity: number
+    status: string
+    originSystemName: string
+    destinationSystemName: string
+  }>
 }
 
 export interface BuildableView {
