@@ -247,6 +247,10 @@ export interface GameState {
   meta: CampaignMeta
   definitions: GameDefinitions
   corporation: Corporation
+  /** Phase 3A+: all corps; until then use getPlayerCorporation(). */
+  corporations?: Corporation[]
+  /** Phase 3A+: player corp id; until then defaults to corporation.id. */
+  playerCorporationId?: CorporationId
   inventories: InventoryRow[]
   markets: Market[]
   orders: MarketOrder[]
