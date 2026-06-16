@@ -2,6 +2,9 @@ import {
   CONTRACT_TIER1_MAX_MARKET_MULTIPLIER
 } from '../shared/balance.js'
 import type { GameState } from '../shared/types.js'
+import { getNpcCorporations, getPlayerCorporation } from '../simulation/corporations.js'
+import { marketIdForSystem } from '../shared/ids.js'
+import { countOpenNpcCorpOrders } from '../simulation/npcMarketAI.js'
 import { generateContractOffer } from '../simulation/progression.js'
 import { sampleProfilePrices } from './metrics.js'
 import type { BalanceReport, ThresholdResult } from './types.js'
@@ -236,6 +239,62 @@ export function evaluateHardGates(report: BalanceReport, state?: GameState): Thr
         'contract_tier1_not_op',
         violations === 0,
         violations === 0 ? 'Tier-1 sell contracts within cap' : `${violations} over cap`
+      )
+    )
+  }
+
+  if (state && report.meta.days >= 30) {
+    const day30 = snapshotAtDay(report, 30)
+    const homeMarket = marketIdForSystem(getPlayerCorporation(state).homeSystemId)
+    const homeOpenOrders = state.orders.filter(
+      (o) => o.marketId === homeMarket && o.remainingQuantity > 0
+    ).length
+    gates.push(
+      gate(
+        'market_not_empty_day_30',
+        day30 !== undefined &&
+          (day30.marketChangesCount > 0 || homeOpenOrders >= state.definitions.items.length),
+        day30
+          ? `Day 30 market changes ${day30.marketChangesCount}, open orders ${homeOpenOrders}`
+          : 'No day-30 snapshot'
+      )
+    )
+
+    const npcCorps = getNpcCorporations(state)
+    const maxCorpOrders =
+      npcCorps.length * state.markets.length * state.definitions.items.length * 2
+    const openCorpOrders = countOpenNpcCorpOrders(state)
+    gates.push(
+      gate(
+        'npc_orders_bounded',
+        openCorpOrders <= maxCorpOrders,
+        `${openCorpOrders} open corp orders (max ${maxCorpOrders})`
+      )
+    )
+
+    const npcIds = new Set(npcCorps.map((c) => c.id))
+    const badInv = state.inventories.some(
+      (r) => npcIds.has(r.ownerId) && (r.quantity < 0 || r.reserved > r.quantity)
+    )
+    gates.push(
+      gate(
+        'no_npc_inventory_negative',
+        !badInv,
+        badInv ? 'NPC inventory/reservation invalid' : 'NPC inventories valid'
+      )
+    )
+  }
+
+  if (state && report.meta.days >= 100) {
+    const day100 = snapshotAtDay(report, 100)
+    const maxVol = day100
+      ? Math.max(0, ...Object.values(day100.priceVolatility))
+      : 0
+    gates.push(
+      gate(
+        'no_price_explosion_day_100',
+        maxVol <= 50,
+        day100 ? `Day 100 max home volatility ${maxVol.toFixed(1)}%` : 'No day-100 snapshot'
       )
     )
   }

@@ -9,7 +9,7 @@ import {
   OrderSide,
   PriceHistoryRow
 } from '../shared/types.js'
-import { getPlayerCorporation } from './corporations.js'
+import { getCorporationById, getPlayerCorporation, isPlayerCorporation } from './corporations.js'
 import {
   addInventory,
   availableQuantity,
@@ -156,6 +156,36 @@ export function seedNpcOrders(state: GameState, tick: number): void {
   }
 }
 
+function settleCorpBuy(
+  state: GameState,
+  corpId: string,
+  systemId: string,
+  itemId: string,
+  qty: number,
+  tradePrice: number,
+  orderPrice: number
+): void {
+  const corp = getCorporationById(state, corpId)
+  if (!corp) return
+  addInventory(state, corpId, systemId, itemId, qty)
+  const refund = (orderPrice - tradePrice) * qty
+  if (refund > 0) corp.credits += refund
+}
+
+function settleCorpSell(
+  state: GameState,
+  corpId: string,
+  systemId: string,
+  itemId: string,
+  qty: number,
+  tradePrice: number
+): void {
+  const corp = getCorporationById(state, corpId)
+  if (!corp) return
+  consumeReserved(state, corpId, systemId, itemId, qty)
+  corp.credits += tradePrice * qty
+}
+
 function settlePlayerBuy(
   state: GameState,
   order: MarketOrder,
@@ -198,10 +228,18 @@ function executeTrade(
       : sell.price
 
   if (buy.ownerId !== NPC_OWNER) {
-    settlePlayerBuy(state, buy, market.systemId, sell.itemId, qty, tradePrice)
+    if (isPlayerCorporation(state, buy.ownerId)) {
+      settlePlayerBuy(state, buy, market.systemId, sell.itemId, qty, tradePrice)
+    } else {
+      settleCorpBuy(state, buy.ownerId, market.systemId, sell.itemId, qty, tradePrice, buy.price)
+    }
   }
   if (sell.ownerId !== NPC_OWNER) {
-    settlePlayerSell(state, market.systemId, sell.itemId, qty, tradePrice)
+    if (isPlayerCorporation(state, sell.ownerId)) {
+      settlePlayerSell(state, market.systemId, sell.itemId, qty, tradePrice)
+    } else {
+      settleCorpSell(state, sell.ownerId, market.systemId, sell.itemId, qty, tradePrice)
+    }
   }
 
   buy.remainingQuantity -= qty
@@ -209,9 +247,15 @@ function executeTrade(
 
   const corpId = getPlayerCorporation(state).id
   let playerSide: Trade['playerSide']
-  if (buy.ownerId === corpId && sell.ownerId === NPC_OWNER) {
+  if (
+    buy.ownerId === corpId &&
+    (sell.ownerId === NPC_OWNER || !isPlayerCorporation(state, sell.ownerId))
+  ) {
     playerSide = 'buy'
-  } else if (sell.ownerId === corpId && buy.ownerId === NPC_OWNER) {
+  } else if (
+    sell.ownerId === corpId &&
+    (buy.ownerId === NPC_OWNER || !isPlayerCorporation(state, buy.ownerId))
+  ) {
     playerSide = 'sell'
   }
 
@@ -279,7 +323,7 @@ export function matchMarket(state: GameState): Trade[] {
     }
   }
 
-  // Drop fully-filled player orders (NPC orders are kept for liquidity).
+  // Drop fully-filled non-liquidity orders (NPC_OWNER depth is replenished separately).
   state.orders = state.orders.filter(
     (o) => o.remainingQuantity > 0 || o.ownerId === NPC_OWNER
   )

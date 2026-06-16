@@ -47,4 +47,35 @@ describe('GameState invariants (Phase 3A)', () => {
     expect(getPlayerCorporation(state)).toBe(state.corporations[0])
     expect(getPlayerCorporation(state).id).toBe(DEFAULT_CORP_ID)
   })
+
+  it('rejects duplicate open NPC corp market orders', () => {
+    const state = newGame()
+    const helion = getNpcCorporations(state)[0]!
+    const marketId = state.markets[0]!.id
+    state.orders.push(
+      {
+        id: 'dup_a',
+        marketId,
+        itemId: 'ore',
+        side: 'sell',
+        quantity: 10,
+        remainingQuantity: 10,
+        price: 50,
+        ownerId: helion.id,
+        createdAt: 0
+      },
+      {
+        id: 'dup_b',
+        marketId,
+        itemId: 'ore',
+        side: 'sell',
+        quantity: 10,
+        remainingQuantity: 10,
+        price: 51,
+        ownerId: helion.id,
+        createdAt: 1
+      }
+    )
+    expect(() => assertGameStateInvariants(state)).toThrow(/Duplicate open NPC corp order/)
+  })
 })

@@ -86,4 +86,18 @@ export function assertGameStateInvariants(state: GameState): void {
       )
     }
   }
+
+  const openCorpOrderKeys = new Set<string>()
+  for (const order of state.orders) {
+    if (order.ownerId === NPC_OWNER || order.ownerId === state.playerCorporationId) continue
+    if (order.remainingQuantity <= 0) continue
+    const key = `${order.ownerId}:${order.marketId}:${order.itemId}:${order.side}`
+    if (openCorpOrderKeys.has(key)) {
+      throw new GameError(
+        'INTERNAL',
+        `Duplicate open NPC corp order for ${key}.`
+      )
+    }
+    openCorpOrderKeys.add(key)
+  }
 }
