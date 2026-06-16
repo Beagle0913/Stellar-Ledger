@@ -34,7 +34,7 @@
       {
         "itemId": "ore",
         "consumedPerDay": 0,
-        "producedPerDay": 80,
+        "producedPerDay": 35,
         "targetStockpile": 800,
         "minPriceMultiplier": 0.5,
         "maxPriceMultiplier": 1.5,
@@ -92,7 +92,7 @@
       {
         "itemId": "ore",
         "consumedPerDay": 0,
-        "producedPerDay": 60,
+        "producedPerDay": 25,
         "targetStockpile": 600,
         "minPriceMultiplier": 0.5,
         "maxPriceMultiplier": 1.5,

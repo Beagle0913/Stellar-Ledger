@@ -69,7 +69,9 @@ describe('local economy', () => {
     const afterOne = referencePrice(state, marketId, 'ore')
     expect(afterOne).toBeLessThan(startPrice)
 
-    const row = state.priceHistory.find((h) => h.itemId === 'ore' && h.tick === 1)
+    const row = state.priceHistory.find(
+      (h) => h.itemId === 'ore' && h.marketId === marketId && h.tick === 1
+    )
     expect(row?.reason).toBe('npc_supply')
   })
 
