@@ -330,8 +330,15 @@ export function buildDebugStateView(state: GameState): DebugStateView {
 export function buildPriceHistory(state: GameState, args: PriceHistoryArgs): PricePoint[] {
   const market = state.markets.find((m) => m.systemId === args.systemId)
   if (!market) return []
-  return state.priceHistory
-    .filter((h) => h.marketId === market.id && h.itemId === args.itemId)
+  let rows = state.priceHistory.filter((h) => h.marketId === market.id && h.itemId === args.itemId)
+  if (args.sinceTick !== undefined) {
+    rows = rows.filter((h) => h.tick >= args.sinceTick!)
+  }
+  let points: PricePoint[] = rows
     .map((h) => ({ tick: h.tick, price: h.price, ...(h.reason ? { reason: h.reason } : {}) }))
     .sort((a, b) => a.tick - b.tick)
+  if (args.limit !== undefined && points.length > args.limit) {
+    points = points.slice(-args.limit)
+  }
+  return points
 }

@@ -98,6 +98,8 @@ export interface RunProductionUntilExhaustedArgs {
 export interface PriceHistoryArgs {
   systemId: SystemId
   itemId: ItemId
+  sinceTick?: number
+  limit?: number
 }
 
 export interface RenameSaveArgs {

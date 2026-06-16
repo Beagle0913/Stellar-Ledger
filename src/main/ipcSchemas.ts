@@ -19,7 +19,9 @@ export const ipcPayloadSchemas = {
   getMarket: nonEmptyString,
   getPriceHistory: z.object({
     systemId: nonEmptyString,
-    itemId: nonEmptyString
+    itemId: nonEmptyString,
+    sinceTick: z.number().int().nonnegative().optional(),
+    limit: z.number().int().positive().max(500).optional()
   }),
   createMarketOrder: z.object({
     systemId: nonEmptyString,

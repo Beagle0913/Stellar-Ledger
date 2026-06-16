@@ -5,7 +5,7 @@ import { useCampaignAsync, useApiMutationWithArg } from '../hooks'
 import { DataTable } from '../components/DataTable'
 import { LinkButton } from '../components/LinkButton'
 import { MarketEconomyGuide, PriceDiagnosticsPanel } from '../components/PriceDiagnosticsPanel'
-import { Sparkline } from '../components/Sparkline'
+import { PriceChart } from '../components/PriceChart'
 import { StatusBanner } from '../components/StatusBanner'
 import {
   formatPriceChange,
@@ -326,7 +326,7 @@ export function MarketPage(): React.JSX.Element {
           <h3>Price History — {selectedItem?.itemName ?? '—'}</h3>
         </div>
         {(history.data ?? []).length > 0 ? (
-          <Sparkline points={history.data ?? []} />
+          <PriceChart points={history.data ?? []} loading={history.loading} />
         ) : (
           <p className="muted">No recorded prices yet for this item in this system.</p>
         )}
