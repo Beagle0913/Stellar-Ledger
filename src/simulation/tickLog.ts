@@ -1,6 +1,7 @@
 import { formatPriceChange, formatPriceReason } from '../shared/economyDiagnostics.js'
 import { createLogEntry } from '../shared/gameLog.js'
 import type { GameLogEntry, GameState, MarketChangeEntry } from '../shared/types.js'
+import { getCorporationById } from './corporations.js'
 import { itemLabel } from './economyMath.js'
 import type { Trade } from './market.js'
 import type { RegionalTrade } from './npcRegionalTrade.js'
@@ -56,11 +57,13 @@ export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext
   for (const job of ctx.completedTransport) {
     const dest = systemName(state, job.destinationSystemId)
     const origin = systemName(state, job.originSystemId)
+    const owner = getCorporationById(state, job.ownerId)
+    const ownerLabel = owner?.name ?? job.ownerId
     entries.push(
       createLogEntry(
         tick,
         'transport',
-        `Delivered ${job.quantity} ${itemLabel(state, job.itemId)} from ${origin} to ${dest} (fuel ${job.fuelCost}).`
+        `${ownerLabel} delivered ${job.quantity} ${itemLabel(state, job.itemId)} from ${origin} to ${dest} (fuel ${job.fuelCost}).`
       )
     )
   }

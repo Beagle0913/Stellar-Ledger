@@ -239,7 +239,7 @@ export function buildStarMapView(state: GameState): StarMapView {
   const lanes = buildLanes(state, systems)
 
   const transportArcs: StarMapTransportArc[] = state.transportJobs
-    .filter((j) => j.ownerId === corpId && j.status === 'running')
+    .filter((j) => j.status === 'running')
     .map((j) => {
       const origin = systemCoords(state, j.originSystemId)
       const dest = systemCoords(state, j.destinationSystemId)

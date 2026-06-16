@@ -4,6 +4,7 @@ import { collectMarketChangesForTick } from '../shared/economyDiagnostics.js'
 import { buildTickDigest } from '../shared/explanations/digest.js'
 import type { GameState, ProductionJob, TickResult, TransportJob } from '../shared/types.js'
 import { processEvents } from './events.js'
+import { processNpcLogisticsAI } from './npcLogisticsAI.js'
 import { processNpcMarketAI } from './npcMarketAI.js'
 import { processNpcProductionAI } from './npcProductionAI.js'
 import { processTransportJobs } from './logistics.js'
@@ -29,15 +30,16 @@ export const PRICE_HISTORY_RETENTION_TICKS = 365
  *   2) process transport jobs
  *   3) NPC production AI queues new jobs
  *   4) NPC market AI refreshes corp buy/sell orders
- *   5) process local economy (daily flows + demand/supply price pressure)
- *   6) process population dynamics (food security → growth/decline)
- *   7) NPC regional trade (convoys between stockpiles / arbitrage)
- *   8) sync NPC order depth to regional stockpiles
- *   9) match market orders
- *  10) apply player trades to regional stockpiles
- *  11) replenish NPC order depth
- *  12) record trade price history (overrides economy rows for traded items)
- *  13) trigger events
+ *   5) NPC logistics AI dispatches corp convoys
+ *   6) process local economy (daily flows + demand/supply price pressure)
+ *   7) process population dynamics (food security → growth/decline)
+ *   8) NPC regional trade (convoys between stockpiles / arbitrage)
+ *   9) sync NPC order depth to regional stockpiles
+ *  10) match market orders
+ *  11) apply player trades to regional stockpiles
+ *  12) replenish NPC order depth
+ *  13) record trade price history (overrides economy rows for traded items)
+ *  14) trigger events
  * Afterwards price history older than PRICE_HISTORY_RETENTION_TICKS is pruned
  * (latest rows are never dropped, so the reference-price index stays correct).
  * Persistence is handled by the caller / save manager, not by the tick itself.
@@ -77,6 +79,7 @@ export function runTick(state: GameState): TickResult {
 
     processNpcProductionAI(state)
     processNpcMarketAI(state)
+    processNpcLogisticsAI(state)
 
     processLocalEconomy(state, nextTick)
     const populationChanges = processPopulationDynamics(state)

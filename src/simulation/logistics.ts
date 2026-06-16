@@ -12,6 +12,7 @@ import {
   reserveInventory,
   systemDistance
 } from './economyMath.js'
+import { isPlayerCorporation } from './corporations.js'
 import { noteInterSystemDelivery } from './progression.js'
 import { itemById } from './stateIndex.js'
 
@@ -129,7 +130,7 @@ export function processTransportJobs(state: GameState): void {
     job.status = 'completed'
     consumeReserved(state, job.ownerId, job.originSystemId, job.itemId, job.quantity)
     addInventory(state, job.ownerId, job.destinationSystemId, job.itemId, job.quantity)
-    if (job.originSystemId !== job.destinationSystemId) {
+    if (job.originSystemId !== job.destinationSystemId && isPlayerCorporation(state, job.ownerId)) {
       noteInterSystemDelivery(state)
     }
     if (ship) ship.currentSystemId = job.destinationSystemId
