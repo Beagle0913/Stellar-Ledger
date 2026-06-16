@@ -3,11 +3,33 @@
  * (--sqlite-probe uses production module resolution), then GUI smoke launch.
  */
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
+const releaseDir = join(root, 'release')
+const failureLog = join(releaseDir, 'verify-smoke-failure.log')
+
+function writeFailureLog(title, body) {
+  try {
+    mkdirSync(releaseDir, { recursive: true })
+    writeFileSync(
+      failureLog,
+      `${title}\n${'='.repeat(title.length)}\n\n${body}\n`,
+      'utf8'
+    )
+    console.error(`[verify] Failure details written to ${failureLog}`)
+  } catch {
+    /* best effort */
+  }
+}
+
+function fail(title, body) {
+  writeFailureLog(title, body)
+  console.error(body)
+  process.exit(1)
+}
 const unpacked = join(root, 'release', 'win-unpacked')
 const exe = join(unpacked, 'GalacticEconomy.exe')
 const nativeBinary = join(
@@ -37,14 +59,15 @@ function killProcessTree(child) {
 }
 
 if (!existsSync(exe)) {
-  console.error(`Packaged exe not found:\n  ${exe}`)
-  process.exit(1)
+  fail('Packaged exe missing', `Packaged exe not found:\n  ${exe}`)
 }
 
 if (!existsSync(nativeBinary)) {
-  console.error(`Packaged better_sqlite3.node not found:\n  ${nativeBinary}`)
-  console.error('electron-builder should unpack better-sqlite3; rebuild and dist again.')
-  process.exit(1)
+  fail(
+    'Packaged native binary missing',
+    `Packaged better_sqlite3.node not found:\n  ${nativeBinary}\n` +
+      'electron-builder should unpack better-sqlite3; rebuild and dist again.'
+  )
 }
 
 console.log('[verify] Running --sqlite-probe (packaged better-sqlite3 under Electron)…')
@@ -56,18 +79,17 @@ const probe = spawnSync(exe, ['--sqlite-probe'], {
 })
 
 if (probe.error) {
-  console.error(`SQLite probe failed: ${probe.error.message}`)
-  process.exit(1)
+  fail('SQLite probe spawn error', `SQLite probe failed: ${probe.error.message}`)
 }
 
 const probeOut = `${probe.stdout ?? ''}${probe.stderr ?? ''}`.trim()
 if (probe.status !== 0) {
-  console.error(probeOut)
-  console.error(
-    '\nPackaged better-sqlite3 failed to load under Electron (NODE_MODULE_VERSION mismatch?).\n' +
-      'Close GalacticEconomy.exe and run Build Game.bat again.\n'
+  fail(
+    'SQLite probe failed',
+    `${probeOut}\n\nexit code: ${probe.status ?? 'unknown'}\n\n` +
+      'Packaged better-sqlite3 failed to load under Electron (NODE_MODULE_VERSION mismatch?).\n' +
+      'Close GalacticEconomy.exe and run Build Game.bat again.'
   )
-  process.exit(1)
 }
 
 console.log(`[verify] ${probeOut || 'SQLite probe OK'}`)
@@ -100,24 +122,23 @@ await sleep(SMOKE_MS)
 const abiMismatch = /NODE_MODULE_VERSION|was compiled against a different Node\.js version/i.test(output)
 
 if (spawnError) {
-  console.error(`Packaged exe smoke test failed: ${spawnError.message}`)
-  process.exit(1)
+  fail('GUI smoke spawn error', `Packaged exe smoke test failed: ${spawnError.message}`)
 }
 
 if (abiMismatch) {
   killProcessTree(child)
-  console.error(output.trim())
-  console.error(
-    '\nThe packaged exe would crash with a NODE_MODULE_VERSION mismatch.\n' +
-      'Close GalacticEconomy.exe and run Build Game.bat again.\n'
+  fail(
+    'GUI smoke ABI mismatch',
+    `${output.trim()}\n\nThe packaged exe would crash with a NODE_MODULE_VERSION mismatch.\n` +
+      'Close GalacticEconomy.exe and run Build Game.bat again.'
   )
-  process.exit(1)
 }
 
 if (exitCode !== null && exitCode !== 0) {
-  console.error(output.trim())
-  console.error(`\nPackaged exe exited early with code ${exitCode}.`)
-  process.exit(1)
+  fail(
+    'GUI smoke early exit',
+    `${output.trim()}\n\nPackaged exe exited early with code ${exitCode}.`
+  )
 }
 
 killProcessTree(child)

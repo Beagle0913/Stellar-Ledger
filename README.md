@@ -68,12 +68,14 @@ corepack pnpm run rebuild:electron
 corepack pnpm dev
 ```
 
-After using the GUI, restore the Node ABI used by tests:
+After using the GUI, you can restore the Node ABI manually:
 
 ```powershell
 corepack pnpm run rebuild:node
 corepack pnpm test
 ```
+
+Or just run `corepack pnpm test` — **`pretest` runs automatically** and rebuilds for Node if `better-sqlite3` was left on the Electron ABI after `dist` or `rebuild:electron`.
 
 > **Why two ABIs?** Vitest runs on Node; the app runs on Electron. `better-sqlite3` is a native addon compiled for one ABI at a time. The rebuild scripts flip between them.
 
@@ -83,7 +85,8 @@ corepack pnpm test
 
 ```powershell
 corepack pnpm install          # Install dependencies
-corepack pnpm test             # Full Vitest suite
+corepack pnpm test             # Full Vitest suite (pretest fixes Node ABI if needed)
+corepack pnpm verify           # typecheck + lint + test + balance
 corepack pnpm typecheck        # Strict TypeScript check
 corepack pnpm lint             # ESLint
 corepack pnpm build            # Build main / preload / renderer → out/
