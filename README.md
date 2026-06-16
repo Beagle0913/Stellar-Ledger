@@ -52,12 +52,12 @@ Stellar Ledger is a **turn-based planner**: time only advances when you tick.
 
 For design rationale and the full core loop, see [`docs/DESIGN.md`](docs/DESIGN.md).
 
-1. **Save / Load** — create a **New Campaign** (pick a name; mods can be toggled before starting).
+1. **Save / Load** — create a **New Campaign**: pick a name, choose a **scenario** (Standard, Prospector, Barebones, Trade Focus), and toggle mods before starting.
 2. **Dashboard** — see credits, day, objectives, and contextual hints. Use **Run 1 Day Tick**,
    **Run 7 Days**, or smart advance (jump to next production, transport, or change).
-3. **Explore** — **Star Map** → **System** → **Planet** for world stats and buildings.
-4. **Produce** — queue jobs on the **Production** page; inputs are consumed when a job starts.
-5. **Trade** — place orders or use quick buy/sell on the **Market** page.
+3. **Explore** — **Star Map** → **System** → **Planet** for world stats, buildings, and foreign NPC owners. The Star Map shows player and NPC convoy arcs.
+4. **Produce** — queue jobs on the **Production** page; use the **Planner** panel to check whether a target item chain is feasible from current stock (read-only — it does not queue jobs).
+5. **Trade** — place orders or use quick buy/sell on the **Market** page; expand the **price chart** (7 / 30 / 90 / all ranges with hover tooltip).
 6. **Ship goods** — buy ships and dispatch **Logistics** transport between systems.
 7. **Progress** — complete **objectives** and **contracts** for credits and faction standing.
 8. **Save** — the game autosaves on actions and ticks; use **Save Now** anytime.
@@ -65,7 +65,8 @@ For design rationale and the full core loop, see [`docs/DESIGN.md`](docs/DESIGN.
 Tips:
 
 - Read the “why” lines under market moves, events, and objectives — they explain what happened.
-- Enable/disable mods on the **Mods** page before a **new** campaign; loaded saves keep frozen definitions.
+- NPC corporations (Helion Mining, Orion Refining) run their own production, list surplus on markets, and ship goods between systems — you can trade against their orders like any other seller.
+- Enable/disable mods on the **Mods** page before a **new** campaign; loaded saves keep frozen definitions and scenario snapshots.
 - Edit `data/` and `mods/` beside the portable exe (or in the project root when running from source).
 
 ---
@@ -75,9 +76,12 @@ Tips:
 - **Single-player, fully local.** No server, no cloud, no accounts, no telemetry.
 - **Spreadsheet-first UI.** Dense tables and panels plus a 2D **Star Map** trade-network view. No 3D.
 - **Data-driven & moddable.** All content lives in JSON; the base game is a built-in mod called `vanilla`.
+- **Scenario starts.** Four named presets (Standard, Prospector, Barebones, Trade Focus) with difficulty badges and frozen scenario snapshots in each save.
 - **Campaign loop.** Objectives, contract board, faction reputation, fleet logistics, production queues, quick market trades, and smart time advance on the Dashboard.
-- **Economy depth.** Regional stockpiles, NPC liquidity, cross-system NPC trade, population dynamics, and player-facing “why did this happen?” explanations.
-- **Saves & mods.** SQLite campaigns with frozen mod snapshots; enable/disable mods per new campaign; reload JSON from disk in dev.
+- **Planning tools.** Interactive **price charts** on the Market page and a read-only **production planner** for chain feasibility from current stock.
+- **Living NPC economy.** Two vanilla NPC corporations with autonomous production, corp-owned market listings, and inter-system logistics — alongside abstract regional liquidity (`NPC_OWNER`).
+- **Economy depth.** Regional stockpiles, population dynamics, cross-system trade convoys, and player-facing “why did this happen?” explanations.
+- **Saves & mods.** SQLite campaigns (schema v13) with frozen mod and scenario snapshots; enable/disable mods per new campaign; reload JSON from disk in dev.
 
 | Vanilla content | Count |
 |-----------------|-------|
@@ -89,6 +93,8 @@ Tips:
 | Factions | 3 |
 | Events | 7 |
 | Objectives | 7 |
+| Scenarios | 4 |
+| NPC corporations | 2 |
 
 > **Tech:** TypeScript (strict) · Electron · React · Vite (`electron-vite`) · better-sqlite3 · Zod · Vitest
 
@@ -259,12 +265,12 @@ Dashboard · Star Map · System · Planet · Market · Production · Inventory �
 
 1. **Shared contracts** (`src/shared/types/`) — `definitions`, `state`, `views`, `api`; every layer uses the IPC `GameApi` surface.
 2. **Mod system** — Zod-validated JSON, dependency resolution, merge, reference-integrity checks.
-3. **Vanilla content** — see table above; plus contract templates and economic profiles.
-4. **Simulation core** (`src/simulation`) — pure TS: production, markets, logistics, extraction, events, deterministic daily tick.
-5. **Database** (`src/database`) — SQLite schema, migrations, frozen mod definitions per save.
+3. **Vanilla content** — see table above; plus contract templates, economic profiles, scenarios, and NPC corporation seeds.
+4. **Simulation core** (`src/simulation`) — pure TS: production, markets, logistics, extraction, events, NPC corporation AI (production, market, logistics), deterministic daily tick.
+5. **Database** (`src/database`) — SQLite schema v13, migrations, frozen mod/scenario snapshots, multi-corporation save/load.
 6. **Electron main + preload** — typed IPC bridge; renderer never touches Node.
-7. **React renderer** — all pages above, explanations, autosave status, tutorial hints.
-8. **Tests + docs** — headless Vitest; see [`docs/README.md`](docs/README.md).
+7. **React renderer** — all pages above, price charts, production planner, explanations, autosave status.
+8. **Tests + docs** — 330+ headless Vitest tests plus balance CI gates; see [`docs/README.md`](docs/README.md).
 
 ### Adding a new IPC endpoint
 

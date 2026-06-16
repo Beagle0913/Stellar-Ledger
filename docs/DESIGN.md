@@ -11,7 +11,7 @@ refine them through production chains, move goods between star systems, and buy/
 on local markets to grow your credit balance and industrial footprint.
 
 The aesthetic is deliberately minimal and information-dense: tables, panels, sparklines,
-and a 2D star map — closer to a planning tool than an action game. It draws on the
+price charts, and a 2D star map — closer to a planning tool than an action game. It draws on the
 broad *design space* of production-chain economy games and dense 4X interfaces, but
 uses entirely original content, naming, and systems.
 
@@ -32,20 +32,23 @@ Time only advances when *you* tick, so the game is a calm, turn-based planner.
 - Galaxy of **5 systems / 15 planets**, all data-driven.
 - **20 items**, **12 building types**, **20 recipes** (including extraction).
 - **3 factions**, **7 events**, **7 objectives**, rotating **contract board**.
+- **4 scenario presets** (`scenarios.json`) and **2 NPC corporation seeds** (`npc_corporations.json`).
 - Base game is the built-in **`vanilla`** mod; external example mods in `mods/`.
 
 ### Player corporation
 
-- Starting layout from `campaign_start.json` (credits, stock, buildings, home system).
+- Starting layout from merged `campaign_start.json` + chosen **scenario** (snapshot frozen in save).
 - **Fleet logistics** — purchase multiple ship types; concurrent transport jobs.
 - **Production queues** — one running job per building with queued overflow.
-- **Quick market trades** — preview and execute at best bid/ask.
+- **Production planner** — read-only chain feasibility from current player stock (no auto-queue).
+- **Quick market trades** — preview and execute at best bid/ask; interactive price charts.
 - **Objectives & contracts** — staged first-hour arc, optional side quests, faction reputation.
 
 ### Economy & simulation
 
-- **Local markets** per system: order book, NPC liquidity, midpoint trade pricing, price history (365-tick retention).
-- **Regional economy** — economic profiles, stockpile-scaled NPC depth, NPC cross-system trade convoys.
+- **Local markets** per system: order book, abstract `NPC_OWNER` liquidity, corp-owned NPC orders, midpoint trade pricing, price history (365-tick retention).
+- **NPC corporations** — Helion Mining and Orion Refining run production, list surplus/shortage on markets, and ship goods between systems (deterministic AI).
+- **Regional economy** — economic profiles, stockpile-scaled NPC depth, abstract cross-system trade convoys.
 - **Population dynamics** — live planet populations driven by food security; per-capita demand.
 - **Events** — tick interval, low stock, stockpile shortage triggers; gating and cooldowns.
 - **Deterministic tick** — pure TypeScript simulation; see [`ECONOMY.md`](ECONOMY.md) for step order.
@@ -88,15 +91,18 @@ snapshots, hard CI gates, and optional JSON/Markdown/CSV reports. See
 | Area | Status | Notes |
 |------|--------|-------|
 | Population-driven demand | **In prototype** | Live populations + per-capita consumption |
-| NPC regional trade | **In prototype** | Convoys between surplus/shortage markets |
+| NPC regional trade | **In prototype** | Abstract convoys between surplus/shortage markets |
+| NPC corporations | **In prototype** | Helion Mining + Orion Refining; production, market, logistics AI |
+| Scenario difficulty starts | **In prototype** | Four presets with frozen save snapshots |
+| Production chain planner | **In prototype** | Read-only feasibility; no auto-queue yet |
+| Interactive price charts | **In prototype** | Market page SVG chart with range + tooltip |
 | Multiple ships & fleet | **In prototype** | Purchasable types, concurrent jobs |
 | Windows portable exe | **In prototype** | `release/GalacticEconomy.exe` |
-| Full NPC corporations | Planned | Autonomous extract/produce/trade beyond convoys |
 | Research / tech trees | Planned | — |
 | Colonization & habitat growth | Planned | — |
 | Standing trade routes & automation | Planned | — |
 | Richer event chains & diplomacy | Planned | — |
-| Production / logistics planner UI | Planned | — |
+| Planner auto-queue / market buying | Planned | v1.1 stretch |
 | Installers (Linux/macOS) | Planned | electron-builder targets beyond Windows portable |
 | Mod-injected UI pages | Planned | `getStarMap` IPC exists today for tools/forks |
 

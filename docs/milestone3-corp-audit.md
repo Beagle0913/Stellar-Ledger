@@ -1,5 +1,8 @@
 # Milestone 3 — single-corporation audit (Phase 0)
 
+> **Status:** Completed in Phase 3A (`corporations[]`, `playerCorporationId`, migration v12).
+> This file is a historical audit trail — use `src/simulation/corporations.ts` helpers in new code.
+
 Generated during Phase 0 preparation. Use this list when refactoring to `corporations[]` + `playerCorporationId`.
 
 ## Search patterns

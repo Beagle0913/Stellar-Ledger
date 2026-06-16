@@ -229,6 +229,19 @@ The Market page supports **quick trades** against NPC liquidity:
 
 These use the same matching and midpoint pricing rules as resting orders.
 
+## Price history & charts
+
+`getPriceHistory({ systemId, itemId, sinceTick?, limit? })` returns recent trade rows for
+the Market page **price chart** (7 / 30 / 90 / all ranges, hover tooltip). History is
+persisted per market+item with 365-tick retention (see [Price history](#price-history) above).
+
+## Production planner
+
+`getProductionPlan({ targetItemId, targetQty })` runs the read-only planner in
+`src/simulation/productionPlanner.ts`. It evaluates feasibility from **player corporation
+stock only** — no market buying, no NPC inventory, no automatic queueing. The Production
+page shows required inputs, building availability, estimated days, bottlenecks, and warnings.
+
 ## Smart time advance
 
 The Dashboard exposes `runTicksSmart` with modes `production`, `transport`, and `changes`.
@@ -239,4 +252,4 @@ comes first). Saves run once at the end, same as `runTicks(n)`.
 
 Automated headless simulations (`src/balance/`) run scripted player strategies against the
 vanilla economy and evaluate hard gates (arc completion, stockpile bounds, event cooldowns,
-etc.). See [`docs/BALANCE_ANALYTICS.md`](BALANCE_ANALYTICS.md).
+NPC order bounds, price explosion checks, etc.). See [`docs/BALANCE_ANALYTICS.md`](BALANCE_ANALYTICS.md).

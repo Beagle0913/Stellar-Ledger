@@ -16,8 +16,8 @@ All notable changes to this prototype are documented here.
 - **Docs** — `ECONOMY.md`, `MODDING.md`, `ROADMAP.md` updated for Milestone 3 completion.
 
 ### Changed — documentation
-- **README** expanded: gameplay guide, troubleshooting, architecture diagram, CI badge, contributor workflow.
-- **Docs cross-linked:** DESIGN, ECONOMY, MODDING, PERSISTENCE, BALANCE_ANALYTICS, ROADMAP, and `docs/README.md` aligned on clone flow, commands, content counts, and portable exe naming.
+- **README** expanded: scenario starts, price charts, production planner, NPC corporations, updated vanilla content counts.
+- **Docs cross-linked:** DESIGN, ECONOMY, MODDING, PERSISTENCE, BALANCE_ANALYTICS, ROADMAP, and `docs/README.md` aligned on Milestone 3 features, schema v13, and balance gates.
 - **`LICENSE`** added (MIT). **`docs/README.md`** now includes developer quick reference and CI table matching `.github/workflows/ci.yml`.
 
 ### Added — developer tooling

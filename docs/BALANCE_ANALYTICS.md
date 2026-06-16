@@ -56,6 +56,11 @@ Reports are written only by `balance:report` into `reports/balance/` (gitignored
 - `event_cooldown_respected`
 - `no_event_every_tick`
 - Strategy-specific gates (idle wealth, modest growth, Hauler II window, etc.)
+- **Milestone 3 NPC economy** (idle baseline + 100-day soak):
+  - `market_not_empty_day_30` — at least one tradeable item has depth by day 30
+  - `npc_orders_bounded` — no runaway corp order spam per corp/system/item/side
+  - `no_npc_inventory_negative` — NPC corporation inventories stay ≥ 0
+  - `no_price_explosion_day_100` — reference prices stay within configured multiplier bounds
 
 **Warnings** appear in reports but do **not** fail CI:
 

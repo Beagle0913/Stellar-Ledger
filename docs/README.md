@@ -36,9 +36,12 @@ docs above cover **how the game works** and **how to extend it**.
 | Factions | 3 | `data/vanilla/factions.json` |
 | Events | 7 | `data/vanilla/events.json` |
 | Objectives | 7 | `data/vanilla/objectives.json` |
+| Scenarios | 4 | `data/vanilla/scenarios.json` |
+| NPC corporations | 2 | `data/vanilla/npc_corporations.json` |
 
-Contract templates, economic profiles, ships, and campaign start config live in the
-same `data/vanilla/` folder. See [MODDING.md](MODDING.md) for the full file list.
+Contract templates, economic profiles, ships, campaign start config, and economy
+tunables live in the same `data/vanilla/` folder. See [MODDING.md](MODDING.md) for
+the full file list.
 
 ---
 

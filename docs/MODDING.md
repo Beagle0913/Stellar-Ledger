@@ -30,9 +30,9 @@ Two behaviors to know:
   folder (e.g. `data/`) and relaunch. The game never reads live content from the internal
   seed — only from the folders beside the exe.
 - **Save snapshot.** When you start a **new campaign**, the loaded item/recipe/building/
-  etc. definitions are **frozen into that save's SQLite file**. Editing `data/` or `mods/`
-  afterward changes *future* new campaigns but leaves existing saves untouched, so old
-  campaigns never break when content changes.
+  scenario, and NPC corporation seed definitions are **frozen into that save's SQLite file**.
+  Editing `data/` or `mods/` afterward changes *future* new campaigns but leaves existing
+  saves untouched, so old campaigns never break when content changes.
 
 ## Vanilla data structure
 
@@ -299,6 +299,31 @@ rebuilt from JSON when a save loads.
 
 `aiProfile`: `extractor` | `refiner` | `balanced` | `trader` — controls production and
 market AI (trader skips industrial production). See [`ECONOMY.md`](ECONOMY.md).
+
+## Scenarios (`scenarios.json`)
+
+Optional. Named **new-campaign presets** that partially override `campaign_start.json`
+and optionally `economyConfigOverrides` / `startingObjectiveIds`. Vanilla ships four:
+`standard`, `prospector_easy`, `barebones_hard`, `trade_focus`.
+
+```json
+{
+  "id": "prospector_easy",
+  "name": "Prospector",
+  "description": "Extra credits and stock for a gentler first hour.",
+  "difficulty": "easy",
+  "campaignStart": {
+    "startingCredits": 52000,
+    "startingStock": { "ore": 200, "food": 120, "fuel": 120 }
+  }
+}
+```
+
+`difficulty`: `easy` | `normal` | `hard` | `custom`.
+
+When a campaign is created, the chosen scenario is **snapshotted** into SQLite
+(`scenario_config_json`). Loaded saves bootstrap from that snapshot — editing
+`scenarios.json` later affects **future** new campaigns only. See [`PERSISTENCE.md`](PERSISTENCE.md).
 
 ## Star map
 
