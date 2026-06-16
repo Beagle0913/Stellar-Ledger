@@ -3,6 +3,9 @@
 This document describes the economic model of the prototype and **documents the market
 trade-price choice** required by the spec.
 
+> **See also:** [DESIGN.md](DESIGN.md) (core loop) · [MODDING.md](MODDING.md) (content JSON) ·
+> [BALANCE_ANALYTICS.md](BALANCE_ANALYTICS.md) · [README — Commands](../README.md#commands)
+
 ## Items
 
 Items are defined in `data/vanilla/items.json`. Each item has:

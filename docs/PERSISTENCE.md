@@ -2,6 +2,9 @@
 
 How campaign data is stored, and where to put new fields.
 
+> **See also:** [MODDING.md](MODDING.md) (save snapshots vs live JSON) ·
+> [README — Troubleshooting](../README.md#troubleshooting) · [DESIGN.md](DESIGN.md)
+
 ## Three storage tiers
 
 | Tier | When to use | Examples | Survives save/load? |

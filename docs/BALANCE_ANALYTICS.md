@@ -2,15 +2,20 @@
 
 Headless balance simulation and reporting for the vanilla economy. Runs under Node/Vitest with **no Electron, no SQLite, and no renderer**.
 
+> **See also:** [ECONOMY.md](ECONOMY.md) · [README — Commands](../README.md#commands) ·
+> `corepack pnpm verify` (includes balance gates)
+
 ## Running
 
-```bash
+```powershell
 # CI-style hard gates (no report files written)
-npm run balance
+corepack pnpm balance
 
 # Full suite including report artifact generation
-npm run balance:report
+corepack pnpm run balance:report
 ```
+
+(`npm run balance` also works if npm is on your PATH.)
 
 Reports are written only by `balance:report` into `reports/balance/` (gitignored).
 
@@ -43,7 +48,7 @@ Reports are written only by `balance:report` into `reports/balance/` (gitignored
 
 ## Hard gates vs warnings
 
-**Hard gates** fail CI (`npm run balance`):
+**Hard gates** fail CI (`corepack pnpm balance` or `npm run balance`):
 
 - `no_hauler2_day1`
 - `arc_completes` (arcPlay only)
@@ -67,7 +72,7 @@ Reports are written only by `balance:report` into `reports/balance/` (gitignored
 - **Markdown** — gates, milestones, top volatility
 - **CSV** — daily time series + optional volatility series
 
-When `npm run balance:report` writes artifacts, it produces both `<strategy>-<timestamp>.json` (full) and `<strategy>-<timestamp>.summary.json` (slim).
+When `corepack pnpm run balance:report` (or `npm run balance:report`) writes artifacts, it produces both `<strategy>-<timestamp>.json` (full) and `<strategy>-<timestamp>.summary.json` (slim).
 
 ## Adding a strategy
 

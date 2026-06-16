@@ -5,6 +5,16 @@ All notable changes to this prototype are documented here.
 ## [Unreleased]
 
 ### Changed — documentation
+- **README** expanded: gameplay guide, troubleshooting, architecture diagram, CI badge, contributor workflow.
+- **Docs cross-linked:** DESIGN, ECONOMY, MODDING, PERSISTENCE, BALANCE_ANALYTICS, ROADMAP, and `docs/README.md` aligned on clone flow, commands, content counts, and portable exe naming.
+- **`LICENSE`** added (MIT). **`docs/README.md`** now includes developer quick reference and CI table matching `.github/workflows/ci.yml`.
+
+### Added — developer tooling
+- **`scripts/ensure-node-native.mjs`** + `pretest` hook — auto-rebuilds `better-sqlite3` for Node before tests.
+- **`pnpm verify`** — runs typecheck, lint, test, and balance.
+- **CI:** `rebuild:node` step on Ubuntu before tests (fixes postinstall Electron ABI).
+
+### Changed — documentation (prior)
 - **README** refreshed: GitHub clone instructions, current feature list, docs index, removed machine-specific dev notes.
 - **`docs/README.md`** added as documentation index with reading order.
 - **DESIGN**, **ROADMAP**, **MODDING**, **ECONOMY**, **PERSISTENCE** updated to match shipped features (objectives, fleet, star map, balance harness, autosave, example mods).

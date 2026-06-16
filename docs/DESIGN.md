@@ -1,5 +1,8 @@
 # DESIGN
 
+> **See also:** [README — How to play](../README.md#how-to-play) · [ECONOMY.md](ECONOMY.md) ·
+> [MODDING.md](MODDING.md) · [ROADMAP.md](ROADMAP.md)
+
 ## What the game is
 
 Stellar Ledger is a single-player, offline, spreadsheet-style strategy game about

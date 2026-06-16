@@ -1,11 +1,13 @@
 # Stellar Ledger — Galactic Economy Prototype
 
+[![CI](https://github.com/Beagle0913/Stellar-Ledger/actions/workflows/ci.yml/badge.svg)](https://github.com/Beagle0913/Stellar-Ledger/actions/workflows/ci.yml)
+
 An original, moddable, single-player **galactic economy / spreadsheet strategy** game.
 This repository is a **vertical slice prototype**: it proves the architecture end to
 end (data-driven mods → simulation core → SQLite saves → Electron/React UI) rather
 than shipping the full game.
 
-**Repository:** [github.com/Beagle0913/Stellar-Ledger](https://github.com/Beagle0913/Stellar-Ledger)
+**Repository:** [github.com/Beagle0913/Stellar-Ledger](https://github.com/Beagle0913/Stellar-Ledger) · **Docs index:** [`docs/README.md`](docs/README.md)
 
 ---
 
@@ -47,6 +49,8 @@ Open [Actions](https://github.com/Beagle0913/Stellar-Ledger/actions) → latest 
 ## How to play
 
 Stellar Ledger is a **turn-based planner**: time only advances when you tick.
+
+For design rationale and the full core loop, see [`docs/DESIGN.md`](docs/DESIGN.md).
 
 1. **Save / Load** — create a **New Campaign** (pick a name; mods can be toggled before starting).
 2. **Dashboard** — see credits, day, objectives, and contextual hints. Use **Run 1 Day Tick**,
@@ -138,10 +142,11 @@ corepack pnpm test
 | I want to… | Start here |
 |------------|------------|
 | Play without cloning | `Build Game.bat` → `Play.bat` |
-| Code on another PC | Clone → `pnpm install` → `rebuild:node` → `pnpm verify` |
+| Code on another PC | [Clone and develop](#clone-and-develop-any-machine) → `pnpm verify` |
 | Hack game content | [`docs/MODDING.md`](docs/MODDING.md) + `data/vanilla/` |
 | Understand the economy | [`docs/ECONOMY.md`](docs/ECONOMY.md) |
 | Add an IPC feature | [Adding a new IPC endpoint](#adding-a-new-ipc-endpoint) below |
+| Read all docs | [`docs/README.md`](docs/README.md) |
 
 ---
 
@@ -336,9 +341,10 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for milestone status and [`CHANGELOG.md
 
 ## Documentation
 
+Full index and reading order: [`docs/README.md`](docs/README.md)
+
 | Doc | Topic |
 |-----|-------|
-| [`docs/README.md`](docs/README.md) | Index and reading order |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Game design and architecture |
 | [`docs/ECONOMY.md`](docs/ECONOMY.md) | Economic model and tick pipeline |
 | [`docs/MODDING.md`](docs/MODDING.md) | Creating and validating mods |
@@ -351,4 +357,4 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for milestone status and [`CHANGELOG.md
 
 ## License
 
-MIT — see [`package.json`](package.json).
+[MIT](LICENSE)

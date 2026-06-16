@@ -5,6 +5,9 @@ All game content is data. The base game is a built-in mod named **`vanilla`**
 validated with Zod before it is loaded; invalid data produces a clear error and the
 campaign will refuse to start.
 
+> **See also:** [README — How to play](../README.md#how-to-play) · [ECONOMY.md](ECONOMY.md) ·
+> [PERSISTENCE.md](PERSISTENCE.md) (save snapshots) · [example-expanded-industry](../mods/example-expanded-industry/)
+
 ## Where the files live
 
 **Running from source (development):** edit `data/` and `mods/` in the project root.
@@ -13,7 +16,7 @@ campaign will refuse to start.
 `.exe`** on first launch and that is where you edit content:
 
 ```
-GalacticEconomy-<version>-portable.exe
+GalacticEconomy.exe
 data/      <- edit data/vanilla here (and add data mods)
 mods/      <- add external mod folders here
 saves/     <- campaign .sqlite files

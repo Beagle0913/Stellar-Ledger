@@ -79,7 +79,7 @@ Milestone status for the Stellar Ledger prototype. **Done** = shipped in this re
 
 ## How to contribute
 
-1. Read [`docs/README.md`](README.md) for documentation index.
-2. Run `corepack pnpm test` and `corepack pnpm lint` before opening a PR.
-3. For economy changes, run `corepack pnpm balance` and note results in the PR.
+1. Read this index and the root [`README.md`](../README.md) (especially [Contributing](../README.md#contributing)).
+2. `corepack pnpm install --frozen-lockfile` → `npm run rebuild:node` → `corepack pnpm verify`.
+3. For economy changes, note `pnpm balance` results in your PR.
 4. Update [`CHANGELOG.md`](../CHANGELOG.md) for player- or developer-visible changes.
