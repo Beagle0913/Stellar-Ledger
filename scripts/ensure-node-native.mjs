@@ -24,6 +24,7 @@ function probe() {
 
 function rebuildForNode() {
   const attempts = [
+    ['npm', ['run', 'rebuild:node']],
     ['corepack', ['pnpm', 'run', 'rebuild:node']],
     ['pnpm', ['run', 'rebuild:node']]
   ]
@@ -32,7 +33,7 @@ function rebuildForNode() {
     const result = spawnSync(cmd, args, {
       cwd: root,
       stdio: 'inherit',
-      shell: process.platform === 'win32'
+      shell: true
     })
     if (result.status === 0) return true
   }
