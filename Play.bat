@@ -15,11 +15,38 @@ if exist "release\GalacticEconomy.exe" (
 
 echo No portable exe found at release\GalacticEconomy.exe
 echo.
-echo Build the game first:
-echo   double-click Build Game.bat
+set /p BUILD_NOW="Build now? This runs Setup + dist ^(Y/N^): "
+if /I not "%BUILD_NOW%"=="Y" (
+  echo.
+  echo Download a release build from GitHub, or run Build Game.bat.
+  pause
+  exit /b 1
+)
+
 echo.
-echo Or run from source ^(requires Node.js^):
-echo   npm run play
-echo.
-pause
-exit /b 1
+call "%~dp0scripts\bootstrap.bat"
+if errorlevel 1 (
+  echo.
+  echo Setup failed. See messages above.
+  pause
+  exit /b 1
+)
+
+echo Building portable exe ^(about 1-2 minutes^)...
+call npm run dist
+if errorlevel 1 (
+  echo.
+  echo Build failed. See messages above.
+  pause
+  exit /b 1
+)
+
+if not exist "release\GalacticEconomy.exe" (
+  echo Build finished but release\GalacticEconomy.exe was not found.
+  pause
+  exit /b 1
+)
+
+echo Launching release\GalacticEconomy.exe ...
+start "" "release\GalacticEconomy.exe"
+exit /b 0

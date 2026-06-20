@@ -37,4 +37,4 @@ corepack pnpm verify
 
 `better-sqlite3` is compiled for Node (tests) or Electron (app). See [README troubleshooting](../README.md#troubleshooting).
 
-CI (`.github/workflows/ci.yml`): `check` on ubuntu, `dist-windows` on windows — both on push/PR to `main`.
+CI (`.github/workflows/ci.yml`): `check` on ubuntu, `dist-windows` on windows (after check), `release` on green `main` / `v*` tag pushes. Player downloads: [GitHub Releases](../README.md#play-windows).

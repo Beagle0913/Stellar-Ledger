@@ -25,7 +25,8 @@
     "dist": "node scripts/dist.mjs",
     "dist:fast": "electron-vite build && electron-builder",
     "play": "node scripts/rebuild-electron-native.mjs && electron-vite build && electron-vite preview",
-    "play:portable": "node scripts/launch-portable.mjs"
+    "play:portable": "node scripts/launch-portable.mjs",
+    "setup": "node scripts/ensure-deps.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",

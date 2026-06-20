@@ -1,5 +1,10 @@
 node_modules/
 
+# Local bootstrap (portable Node, pnpm store, resolved path)
+.tools/
+.pnpm-store/
+scripts/.node-path.txt
+
 # Build output
 out/
 release/

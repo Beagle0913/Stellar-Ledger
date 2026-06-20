@@ -10,14 +10,22 @@ Docs: [`docs/README.md`](docs/README.md)
 
 ## Play (Windows)
 
-You need Node once to build. After that it's just an exe.
+### Stable build (players — no Node required)
 
-1. Run `Build Game.bat` (installs deps the first time, then packages).
-2. Run `Play.bat`, or open `release\GalacticEconomy.exe`.
+Download the newest **versioned release** (e.g. `v0.1.0`) from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Run `GalacticEconomy.exe`. Optional: verify the download with `GalacticEconomy.exe.sha256`.
 
 The exe is portable. Copy it anywhere; on first launch it creates `data/`, `mods/`, and `saves/` next to itself.
 
-CI also builds a portable exe on every green `main` push. Grab it from [Actions](https://github.com/Beagle0913/Stellar-Ledger/actions) → latest `dist-windows` run → **GalacticEconomy-portable** artifact.
+### Rolling development build (bleeding edge)
+
+Download the **"Galactic Economy (Latest)"** pre-release from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Built from every green `main` push. This is not the same as GitHub's "Latest" stable badge (prereleases cannot be marked latest).
+
+### Build from clone (developers)
+
+1. Double-click **`Setup.bat`** once — bootstraps Node into `.tools/node/` if needed, installs deps into `node_modules/`.
+2. Double-click **`Build Game.bat`** to package, then **`Play.bat`** (offers to build if the exe is missing).
+
+CI also uploads a 7-day [Actions artifact](https://github.com/Beagle0913/Stellar-Ledger/actions) as a fallback; [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases) are the primary download.
 
 ## How to play
 
@@ -85,7 +93,7 @@ Content authors: [`docs/MODDING.md`](docs/MODDING.md). Economy rules: [`docs/ECO
 
 ## Packaging
 
-`pnpm run dist` or `Build Game.bat`. Output: `release/GalacticEconomy.exe`.
+`Setup.bat` then `Build Game.bat`, or `pnpm run dist`. Output: `release/GalacticEconomy.exe`.
 
 The packaged exe seeds `data/` and `mods/` beside itself once. Your edits persist; delete a folder to reset. Live content always comes from disk beside the exe, not from the bundled seed.
 
@@ -108,7 +116,8 @@ Debug page (dev builds only): activity log and economy inspector.
 | Tests fail after dev/dist | `pnpm test` — pretest rebuilds for Node. |
 | `electron-rebuild failed` | Close `GalacticEconomy.exe` and retry. |
 | Build can't overwrite files | Close all running exe instances. |
-| `pnpm` not found | `corepack pnpm …` or `corepack enable`. |
+| `pnpm` not found | Run **`Setup.bat`** or `corepack enable` then `corepack pnpm …`. |
+| Setup can't download Node | Check network/proxy; install Node.js 22+ from [nodejs.org](https://nodejs.org/) manually. |
 | Portable exe won't start | Rebuild; check `release/verify-smoke-failure.log`. |
 
 ## Layout
