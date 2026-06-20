@@ -137,34 +137,70 @@ function systemCoords(state: GameState, systemId: string): { x: number; y: numbe
 }
 
 function buildLanes(state: GameState, systems: StarMapSystemView[]): StarMapLaneView[] {
-  const lanes: StarMapLaneView[] = []
+  if (systems.length < 2) return []
+
+  const byId = new Map(systems.map((s) => [s.id, s]))
+  const dist = (a: StarMapSystemView, b: StarMapSystemView) =>
+    systemDistance(state, a.id, b.id)
+
+  // Minimum spanning tree guarantees connectivity.
+  const edgeKeys = new Set<string>()
+  const lanePairs: Array<[StarMapSystemView, StarMapSystemView]> = []
+  const addEdge = (a: StarMapSystemView, b: StarMapSystemView) => {
+    const key = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`
+    if (edgeKeys.has(key)) return
+    edgeKeys.add(key)
+    lanePairs.push([a, b])
+  }
+
+  const inTree = new Set<string>([systems[0]!.id])
+  while (inTree.size < systems.length) {
+    let best: { a: StarMapSystemView; b: StarMapSystemView; distance: number } | null = null
+    for (const uId of inTree) {
+      const u = byId.get(uId)!
+      for (const v of systems) {
+        if (inTree.has(v.id)) continue
+        const distance = dist(u, v)
+        if (!best || distance < best.distance) best = { a: u, b: v, distance }
+      }
+    }
+    if (!best) break
+    inTree.add(best.b.id)
+    addEdge(best.a, best.b)
+  }
+
+  // k-nearest neighbors for local density (k=3).
+  const k = 3
+  for (const sys of systems) {
+    const neighbors = systems
+      .filter((other) => other.id !== sys.id)
+      .map((other) => ({ other, distance: dist(sys, other) }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, k)
+    for (const { other } of neighbors) addEdge(sys, other)
+  }
+
   let maxDistance = 1
-  for (let i = 0; i < systems.length; i += 1) {
-    for (let j = i + 1; j < systems.length; j += 1) {
-      const dist = systemDistance(state, systems[i]!.id, systems[j]!.id)
-      if (dist > maxDistance) maxDistance = dist
-    }
+  for (const [a, b] of lanePairs) {
+    const d = dist(a, b)
+    if (d > maxDistance) maxDistance = d
   }
-  for (let i = 0; i < systems.length; i += 1) {
-    for (let j = i + 1; j < systems.length; j += 1) {
-      const a = systems[i]!
-      const b = systems[j]!
-      const distance = systemDistance(state, a.id, b.id)
-      const t = maxDistance > 0 ? distance / maxDistance : 0
-      lanes.push({
-        systemAId: a.id,
-        systemBId: b.id,
-        x1: a.x,
-        y1: a.y,
-        x2: b.x,
-        y2: b.y,
-        distance,
-        opacity: 0.85 - t * 0.55,
-        strokeWidth: 2.2 - t * 1.2
-      })
+
+  return lanePairs.map(([a, b]) => {
+    const distance = dist(a, b)
+    const t = maxDistance > 0 ? distance / maxDistance : 0
+    return {
+      systemAId: a.id,
+      systemBId: b.id,
+      x1: a.x,
+      y1: a.y,
+      x2: b.x,
+      y2: b.y,
+      distance,
+      opacity: 0.85 - t * 0.55,
+      strokeWidth: 2.2 - t * 1.2
     }
-  }
-  return lanes
+  })
 }
 
 /** Append NPC convoys from the latest tick; trim entries older than MAP_CONVOY_VISIBLE_TICKS. */

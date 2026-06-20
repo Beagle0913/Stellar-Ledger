@@ -5,6 +5,7 @@ import { useCampaignAsync } from '../hooks'
 import { DataTable } from '../components/DataTable'
 import { StatusBanner } from '../components/StatusBanner'
 import { LinkButton } from '../components/LinkButton'
+import { SystemPicker } from '../components/SystemPicker'
 import type { PlanetSummary, RouteView, SystemBuildingView, SystemDetail, SystemSummary } from '../../shared/types'
 
 export function SystemPage(): React.JSX.Element {
@@ -21,13 +22,12 @@ export function SystemPage(): React.JSX.Element {
         <h2>System</h2>
         <p className="notice">Select a system:</p>
         <div className="panel">
-          <div className="row">
-            {(systems.data ?? []).map((s) => (
-              <button key={s.id} onClick={() => navigate('system', { systemId: s.id })}>
-                {s.name}
-              </button>
-            ))}
-          </div>
+          <SystemPicker
+            systems={systems.data ?? []}
+            value={null}
+            onChange={(systemId) => navigate('system', { systemId })}
+            id="system-page-picker"
+          />
         </div>
       </div>
     )

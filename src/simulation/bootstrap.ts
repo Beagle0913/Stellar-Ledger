@@ -1,3 +1,4 @@
+import { homePlanetIdFromDefs, homeSystemIdFromDefs } from '../shared/galaxyMeta.js'
 import { mergeCampaignStartConfig } from '../shared/campaignStartConfig.js'
 import { DEFAULT_CORP_ID, DEFAULT_CORP_NAME } from '../shared/constants.js'
 import { marketIdForSystem, newId } from '../shared/ids.js'
@@ -19,12 +20,10 @@ import { seedNpcCorporations } from './seedNpcCorporations.js'
  */
 export function buildInitialState(defs: GameDefinitions, campaignName: string): GameState {
   const start = defs.campaignStartConfig ?? mergeCampaignStartConfig(undefined)
-  const homeSystemId =
-    (start.homeSystemId && defs.systems.some((s) => s.id === start.homeSystemId)
-      ? start.homeSystemId
-      : defs.systems[0]?.id) ?? 'sys_helion'
+  const homeSystemId = homeSystemIdFromDefs(defs)
   const minHab = start.homePlanetMinHabitability
   const homePlanet =
+    defs.planets.find((p) => p.id === homePlanetIdFromDefs(defs)) ??
     defs.planets.find((p) => p.systemId === homeSystemId && p.habitability >= minHab) ??
     defs.planets.find((p) => p.systemId === homeSystemId)
 

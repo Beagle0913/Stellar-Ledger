@@ -7,7 +7,7 @@ import {
   recordRegionalTradesForMap
 } from '../src/simulation/starMapView.js'
 import { FACTION_MAP_COLORS } from '../src/shared/starMap.js'
-import { homeSystemId, newGame, otherSystemId, playerShip } from './helpers.js'
+import { homeSystemId, newGame, otherSystemId, playerShip, getHomeSystemId, getSystemByFaction } from './helpers.js'
 
 describe('buildStarMapView', () => {
   it('marks home system and assigns faction colors', () => {
@@ -21,9 +21,10 @@ describe('buildStarMapView', () => {
     expect(homeView?.isHome).toBe(true)
     expect(homeView?.distanceFromHome).toBe(0)
 
-    const helion = map.systems.find((s) => s.id === 'sys_helion')
-    expect(helion?.controllingFactionName).toBe('Helion Consortium')
-    expect(helion?.factionColor).toBe(FACTION_MAP_COLORS['faction_consortium'])
+    const consortiumId = getSystemByFaction('faction_consortium')
+    const consortium = map.systems.find((s) => s.id === consortiumId)
+    expect(consortium?.controllingFactionName).toBe('Helion Consortium')
+    expect(consortium?.factionColor).toBe(FACTION_MAP_COLORS['faction_consortium'])
   })
 
   it('includes running transport arcs with progress', () => {
@@ -43,10 +44,12 @@ describe('buildStarMapView', () => {
     expect(map.transportArcs[0]!.progressFraction).toBeCloseTo(0.5, 5)
   })
 
-  it('builds distance-weighted lanes', () => {
+  it('builds MST + k-NN lanes (not full mesh)', () => {
     const state = newGame()
     const map = buildStarMapView(state)
-    expect(map.lanes.length).toBeGreaterThan(0)
+    const n = map.systems.length
+    expect(map.lanes.length).toBeGreaterThan(n - 1)
+    expect(map.lanes.length).toBeLessThan((n * (n - 1)) / 2)
     for (const lane of map.lanes) {
       expect(lane.distance).toBeGreaterThan(0)
       expect(lane.opacity).toBeGreaterThan(0)
@@ -75,13 +78,15 @@ describe('buildStarMapView', () => {
   it('recordRegionalTradesForMap trims old convoys', () => {
     const state = newGame()
     recordRegionalTradesForMap(state, 1, [])
+    const home = getHomeSystemId()
+    const other = otherSystemId(newGame())
     recordRegionalTradesForMap(state, 5, [
       {
         itemId: 'food',
         fromMarketId: 'm1',
         toMarketId: 'm2',
-        fromSystemId: 'sys_helion',
-        toSystemId: 'sys_vesper',
+        fromSystemId: home,
+        toSystemId: other,
         quantity: 10
       }
     ])

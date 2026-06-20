@@ -3,7 +3,7 @@
     "id": "corp_helion_mining",
     "name": "Helion Mining",
     "factionId": "faction_consortium",
-    "homeSystemId": "sys_cinder",
+    "homeSystemId": "sys_001",
     "startingCredits": 55000,
     "startingStock": {
       "ore": 120,
@@ -12,10 +12,16 @@
       "energy": 80
     },
     "buildings": [
-      { "planetId": "cinder_core", "buildingType": "mine" }
+      {
+        "planetId": "sys_001_p2",
+        "buildingType": "mine"
+      }
     ],
     "ships": [
-      { "definitionId": "ship_hauler_1", "name": "Helion Hauler" }
+      {
+        "definitionId": "ship_hauler_1",
+        "name": "Helion Hauler"
+      }
     ],
     "aiProfile": "extractor"
   },
@@ -23,7 +29,7 @@
     "id": "corp_orion_refining",
     "name": "Orion Refining",
     "factionId": "faction_frontier",
-    "homeSystemId": "sys_marrow",
+    "homeSystemId": "sys_002",
     "startingCredits": 48000,
     "startingStock": {
       "ore": 80,
@@ -32,7 +38,10 @@
       "energy": 60
     },
     "buildings": [
-      { "planetId": "marrow_a", "buildingType": "refinery" }
+      {
+        "planetId": "sys_002_p1",
+        "buildingType": "refinery"
+      }
     ],
     "aiProfile": "refiner"
   }

@@ -7,6 +7,7 @@ import { LinkButton } from '../components/LinkButton'
 import { MarketEconomyGuide, PriceDiagnosticsPanel } from '../components/PriceDiagnosticsPanel'
 import { PriceChart } from '../components/PriceChart'
 import { StatusBanner } from '../components/StatusBanner'
+import { SystemPicker } from '../components/SystemPicker'
 import {
   formatPriceChange,
   formatTrendLabel,
@@ -181,20 +182,13 @@ export function MarketPage(): React.JSX.Element {
       />
 
       <div className="panel">
-        <div className="form-line">
-          <label htmlFor="market-system-select">System</label>
-          <select
-            id="market-system-select"
-            value={systemId ?? ''}
-            onChange={(e) => setSystemId(e.target.value)}
-          >
-            {(systems.data ?? []).map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SystemPicker
+          systems={systems.data ?? []}
+          value={systemId}
+          onChange={setSystemId}
+          id="market-system-select"
+          homeSystemId={selectedSystemId}
+        />
       </div>
 
       <div className="panel">

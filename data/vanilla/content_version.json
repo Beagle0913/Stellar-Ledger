@@ -1,1 +1,5 @@
-{ "version": 3 }
+{
+  "version": 4,
+  "galaxySeed": 42,
+  "generatorVersion": "1.0.0"
+}

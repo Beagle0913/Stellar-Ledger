@@ -2,7 +2,7 @@
 
 ## What this is
 
-Stellar Ledger is an offline single-player game about running an industrial corporation across a small galaxy. You mine and refine goods, ship them between systems, and trade on local markets. The UI is dense tables, charts, and a flat star map — closer to a planning spreadsheet than an action game. Original content and naming throughout.
+Stellar Ledger is an offline single-player game about running an industrial corporation across a 100-system galaxy. You mine and refine goods, ship them between systems, and trade on local markets. The UI is dense tables, charts, and a flat star map — closer to a planning spreadsheet than an action game. Original content and naming throughout.
 
 ## Core loop
 
@@ -12,7 +12,7 @@ Nothing happens until you tick.
 
 ## Prototype scope
 
-**World:** 5 systems, 15 planets, 20 items, 12 buildings, 20 recipes, 3 factions, 7 events, 7 objectives, contract board. Four scenario presets and two seeded NPC corporations in vanilla JSON.
+**World:** 100 systems, approximately 550 generated planets (see `galaxy-meta.json` for exact count), 20 items, 12 buildings, 20 recipes, 3 factions, 7 events, 7 objectives, contract board. Four scenario presets and two seeded NPC corporations in vanilla JSON.
 
 **Player:** Start from `campaign_start.json` plus chosen scenario (frozen in the save). Fleet logistics, production queues, read-only chain planner, quick market trades, price charts, objectives with a first-hour arc.
 

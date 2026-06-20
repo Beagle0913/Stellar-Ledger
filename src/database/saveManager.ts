@@ -49,6 +49,7 @@ import {
   writeDefinitions
 } from './repositories/worldRepo.js'
 import { loadProgression, saveProgression } from './repositories/progressionRepo.js'
+import { assertSaveGalaxyCompatible } from '../shared/galaxyMeta.js'
 import { clearLoadValidationWarnings } from './saveValidation.js'
 
 /** Create a new campaign: freeze definitions + persist initial state. */
@@ -97,6 +98,7 @@ export function loadCampaign(db: DB): GameState {
     economyConfig,
     campaignStartConfig
   )
+  assertSaveGalaxyCompatible(definitions)
   const progression = loadProgression(db, definitions.objectives)
   const planetPopulations = loadPlanetPopulations(db, definitions.planets)
   const corporations = loadCorporations(db)

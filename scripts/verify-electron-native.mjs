@@ -48,7 +48,7 @@ if (result.status !== 0) {
   console.error(result.stdout?.trim())
   console.error(result.stderr?.trim())
   console.error(
-    '\nbetter-sqlite3 is not built for Electron. Close any running GalacticEconomy.exe, then run:\n  corepack pnpm run rebuild:electron'
+    '\nbetter-sqlite3 is not built for Electron. Close any running StellarLedger.exe, then run:\n  corepack pnpm run rebuild:electron'
   )
   process.exit(1)
 }

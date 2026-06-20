@@ -165,6 +165,18 @@ function runScalingCase(systemCount: number, maxMs: number): void {
 
 
 describe('large-galaxy scaling', () => {
+  it('runs 100-system vanilla galaxy × 30 days within budget', () => {
+    const defs = loadVanillaDefs()
+    expect(defs.systems.length).toBe(100)
+    const state = buildInitialState(defs, 'Vanilla Scaling')
+    const days = 30
+    const start = performance.now()
+    const result = runTicks(state, days)
+    const elapsed = performance.now() - start
+    expect(result.tick).toBe(days)
+    assertHealthy(state)
+    expect(elapsed).toBeLessThan(15_000)
+  })
 
   it('runs a multi-day batch over hundreds of systems quickly and stays consistent', () => {
 

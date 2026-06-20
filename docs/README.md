@@ -19,7 +19,7 @@ Start with the root [README](../README.md) for install and commands. These files
 | Items | 20 | `data/vanilla/items.json` |
 | Buildings | 12 | `data/vanilla/buildings.json` |
 | Recipes | 20 | `data/vanilla/recipes.json` |
-| Systems / planets | 5 / 15 | `systems.json`, `planets.json` |
+| Systems / planets | 100 / ~505 | `systems.json`, `planets.json`, `galaxy-meta.json` |
 | Factions / events / objectives | 3 / 7 / 7 | `factions.json`, `events.json`, `objectives.json` |
 | Scenarios / NPC corps | 4 / 2 | `scenarios.json`, `npc_corporations.json` |
 

@@ -156,7 +156,7 @@ function createWindow(): void {
     width: 1280,
     height: 820,
     backgroundColor: '#0d1117',
-    title: 'Galactic Economy Prototype',
+    title: 'Stellar Ledger',
     webPreferences: {
       preload: join(__dirname, '../preload/preload.cjs'),
       sandbox: false,

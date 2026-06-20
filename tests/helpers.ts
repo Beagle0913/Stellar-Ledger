@@ -4,6 +4,8 @@ import { mergeMods } from '../src/mods/mergeMods.js'
 import { buildInitialState } from '../src/database/saveManager.js'
 import { getPlayerCorporation, getPlayerCorporationId } from '../src/simulation/corporations.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
+import { getGalaxyMeta } from '../src/shared/galaxyMeta.js'
+import { marketIdForSystem } from '../src/shared/ids.js'
 import { resolveScenario, STANDARD_SCENARIO_ID } from '../src/shared/scenarios.js'
 import type { GameDefinitions, GameState } from '../src/shared/types.js'
 
@@ -26,6 +28,55 @@ export function newGame(): GameState {
 }
 
 export { getPlayerCorporation, getPlayerCorporationId } from '../src/simulation/corporations.js'
+
+function requireGalaxyMeta() {
+  const meta = getGalaxyMeta(VANILLA_DIR)
+  if (!meta) throw new Error('galaxy-meta.json missing — run pnpm generate:galaxy')
+  return meta
+}
+
+/** Home system id from committed galaxy-meta.json. */
+export function getHomeSystemId(): string {
+  return requireGalaxyMeta().homeSystemId
+}
+
+/** Home planet id from committed galaxy-meta.json. */
+export function getHomePlanetId(): string {
+  return requireGalaxyMeta().homePlanetId
+}
+
+/** First planet id using the given economic profile. */
+export function getFirstPlanetWithProfile(profileId: string): string {
+  const planet = loadVanillaDefs().planets.find((p) => p.economicProfileId === profileId)
+  if (!planet) throw new Error(`Test setup: no planet with profile ${profileId}.`)
+  return planet.id
+}
+
+/** First system controlled by the given faction. */
+export function getSystemByFaction(factionId: string): string {
+  const system = loadVanillaDefs().systems.find((s) => s.controllingFactionId === factionId)
+  if (!system) throw new Error(`Test setup: no system for faction ${factionId}.`)
+  return system.id
+}
+
+/** NPC corp placement from galaxy-meta.json. */
+export function getGeneratedNpcCorp(corpId: string): { homeSystemId: string; planetId: string } {
+  const corp = requireGalaxyMeta().npcCorps[corpId]
+  if (!corp) throw new Error(`Test setup: unknown NPC corp ${corpId}.`)
+  return corp
+}
+
+/** Any system that is not the campaign home system. */
+export function getSampleNonHomeSystemId(): string {
+  const home = getHomeSystemId()
+  const other = loadVanillaDefs().systems.find((s) => s.id !== home)
+  if (!other) throw new Error('Test setup: no second system in vanilla data.')
+  return other.id
+}
+
+export function homeMarketId(): string {
+  return marketIdForSystem(getHomeSystemId())
+}
 
 /** First system id that is not the corporation's home system. */
 export function otherSystemId(state: GameState): string {

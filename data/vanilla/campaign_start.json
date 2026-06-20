@@ -14,5 +14,6 @@
     "farm",
     "machinery_factory"
   ],
-  "homePlanetMinHabitability": 0.5
+  "homePlanetMinHabitability": 0.5,
+  "homeSystemId": "sys_014"
 }

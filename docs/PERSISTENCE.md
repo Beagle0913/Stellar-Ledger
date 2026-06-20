@@ -14,6 +14,8 @@ Where campaign data lives and how to extend it.
 
 New campaigns write merged mod definitions into SQLite once. Edit JSON later → affects only future new campaigns.
 
+**v0.2.0 galaxy break:** Saves from v0.1.x reference the old 5-system map. Loading them in v0.2.0 shows a friendly conflict — start a new campaign for the 100-system galaxy. No automatic migration.
+
 Mutable state saves after player commands (`persistAfterMutation`), after ticks, and on Save Now. The layout shows saved / saving / error and last saved tick.
 
 ## Adding a field

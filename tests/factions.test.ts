@@ -7,23 +7,25 @@ import {
   factionPriceBias,
   processLocalEconomy
 } from '../src/simulation/localEconomy.js'
-import { newGame } from './helpers.js'
+import { newGame, getSystemByFaction, homeMarketId } from './helpers.js'
 
 describe('faction regional identity', () => {
   it('factionPriceBias reads controlling faction from system definitions', () => {
     const state = newGame()
-    expect(factionPriceBias(state, 'sys_helion')).toBe(1.08)
-    expect(factionPriceBias(state, 'sys_cinder')).toBe(0.92)
+    expect(factionPriceBias(state, getSystemByFaction('faction_consortium'))).toBe(1.08)
+    expect(factionPriceBias(state, getSystemByFaction('faction_frontier'))).toBe(0.92)
   })
 
   it('consortium-controlled Helion raises food prices more than independents at Vesper under shortage', () => {
     const helion = newGame()
     const vesper = newGame()
-    const helionMarket = marketIdForSystem('sys_helion')
-    const vesperMarket = marketIdForSystem('sys_vesper')
+    const consortiumSystem = getSystemByFaction('faction_consortium')
+    const independentsSystem = getSystemByFaction('faction_independents')
+    const helionMarket = marketIdForSystem(consortiumSystem)
+    const vesperMarket = marketIdForSystem(independentsSystem)
 
-    const helionFood = aggregateMarketRules(helion, 'sys_helion').find((r) => r.itemId === 'food')!
-    const vesperFood = aggregateMarketRules(vesper, 'sys_vesper').find((r) => r.itemId === 'food')!
+    const helionFood = aggregateMarketRules(helion, consortiumSystem).find((r) => r.itemId === 'food')!
+    const vesperFood = aggregateMarketRules(vesper, independentsSystem).find((r) => r.itemId === 'food')!
     expect(helionFood).toBeDefined()
     expect(vesperFood).toBeDefined()
 
@@ -39,7 +41,7 @@ describe('faction regional identity', () => {
 
   it('processLocalEconomy applies faction bias on live ticks', () => {
     const state = newGame()
-    const marketId = marketIdForSystem('sys_helion')
+    const marketId = homeMarketId()
     state.localStockpiles = [{ marketId, itemId: 'food', quantity: 80 }]
     const before = referencePrice(state, marketId, 'food')
     processLocalEconomy(state, 1)

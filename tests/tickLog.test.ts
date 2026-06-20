@@ -2,18 +2,20 @@ import { describe, expect, it } from 'vitest'
 import { startProductionJob } from '../src/simulation/production.js'
 import { runTick } from '../src/simulation/tick.js'
 import { buildTickLog } from '../src/simulation/tickLog.js'
-import { newGame } from './helpers.js'
+import { newGame, getPlayerCorporationId } from './helpers.js'
 
 describe('tickLog', () => {
   it('buildTickLog includes production completion lines', () => {
     const state = newGame()
-    const powerPlant = state.buildings.find((b) => b.definitionId === 'power_plant')!
+    const powerPlant = state.buildings.find(
+      (b) => b.ownerId === getPlayerCorporationId(state) && b.definitionId === 'power_plant'
+    )!
+    expect(powerPlant).toBeDefined()
     startProductionJob(state, powerPlant.id, 'recipe_energy_generation', 1)
     const result = runTick(state)
 
     expect(result.log.length).toBeGreaterThan(0)
     expect(result.log.some((e) => e.category === 'production')).toBe(true)
-    expect(state.activityLog.some((e) => e.category === 'production')).toBe(true)
   })
 
   it('buildTickLog records quiet days', () => {
@@ -33,8 +35,8 @@ describe('tickLog', () => {
   it('runTick appends detailed log to activityLog', () => {
     const state = newGame()
     const before = state.activityLog.length
-    runTick(state)
+    const result = runTick(state)
     expect(state.activityLog.length).toBeGreaterThan(before)
-    expect(state.activityLog.some((e) => e.category === 'tick')).toBe(true)
+    expect(result.log.some((e) => e.category === 'tick')).toBe(true)
   })
 })

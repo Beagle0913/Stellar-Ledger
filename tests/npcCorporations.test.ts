@@ -11,7 +11,7 @@ import {
 } from '../src/simulation/corporations.js'
 import { buildPlanetDetail, buildSystemDetail } from '../src/simulation/viewQueries.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
-import { loadVanillaDefs, newGame, standardScenario, VANILLA_DIR } from './helpers.js'
+import { loadVanillaDefs, newGame, standardScenario, VANILLA_DIR, getGeneratedNpcCorp } from './helpers.js'
 
 describe('npc corporations (Phase 3B)', () => {
   it('validates vanilla npc_corporations.json', () => {
@@ -78,7 +78,7 @@ describe('npc corporations (Phase 3B)', () => {
           {
             id: 'corp_fake',
             name: 'Fake Corp',
-            homeSystemId: 'sys_helion',
+            homeSystemId: getGeneratedNpcCorp('corp_helion_mining').homeSystemId,
             startingCredits: 1,
             startingStock: {},
             buildings: [],
@@ -107,7 +107,8 @@ describe('npc corporations (Phase 3B)', () => {
     expect(npcRow?.ownerName).toBe('Helion Mining')
     expect(npcRow?.isPlayerOwned).toBe(false)
 
-    const system = buildSystemDetail(state, 'sys_cinder')
+    const helionHome = getGeneratedNpcCorp('corp_helion_mining').homeSystemId
+    const system = buildSystemDetail(state, helionHome)
     expect(system.foreignBuildings.some((b) => b.ownerName === 'Helion Mining')).toBe(true)
   })
 })

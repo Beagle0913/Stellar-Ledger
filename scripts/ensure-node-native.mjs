@@ -54,7 +54,7 @@ try {
 
   if (!rebuildForNode()) {
     console.error(
-      '[pretest] rebuild:node failed. Close GalacticEconomy.exe if running, then run:\n' +
+      '[pretest] rebuild:node failed. Close StellarLedger.exe if running, then run:\n' +
         '  corepack pnpm run rebuild:node\n' +
         'See README.md — Running the GUI: native module ABI note.'
     )

@@ -26,7 +26,7 @@ function run(cmd, args) {
 const rebuild = run(electronRebuildCmd(), ['-f', '-w', 'better-sqlite3'])
 if (rebuild.status !== 0) {
   console.warn(
-    '\n[rebuild] electron-rebuild failed — if GalacticEconomy.exe is open, close it and rebuild.\n' +
+    '\n[rebuild] electron-rebuild failed — if StellarLedger.exe is open, close it and rebuild.\n' +
       '[rebuild] Checking whether the existing native module already matches Electron...\n'
   )
 }

@@ -13,7 +13,7 @@ Rough shape:
 | `homeSystemId` | Player home |
 | `currentTick` | Campaign day |
 | `systems[]` | Per-system stats, heat, faction color |
-| `lanes[]` | Jump connections |
+| `lanes[]` | MST + k-nearest-neighbor jump connections (not full mesh) |
 | `transportArcs[]` | Player routes in flight |
 | `npcConvoys[]` | Recent NPC hauls |
 | `factions[]` | Legend |

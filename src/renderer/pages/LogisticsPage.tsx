@@ -3,6 +3,7 @@ import { api } from '../api'
 import { useApp } from '../App'
 import { useCampaignAsync, useApiMutation, useApiMutationWithArg } from '../hooks'
 import { StatusBanner } from '../components/StatusBanner'
+import { SystemPicker } from '../components/SystemPicker'
 import { ExplanationLine } from '../components/ExplanationLine'
 import { DataTable } from '../components/DataTable'
 import type { LogisticsView, PurchasableShipView, Ship, SystemSummary, TransportJob } from '../../shared/types'
@@ -135,14 +136,15 @@ export function LogisticsPage(): React.JSX.Element {
               </option>
             ))}
           </select>
-          <label>To</label>
-          <select value={destinationSystemId} onChange={(e) => setDestination(e.target.value)}>
-            {(systems.data ?? []).map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+        </div>
+        <SystemPicker
+          systems={systems.data ?? []}
+          value={destinationSystemId || null}
+          onChange={setDestination}
+          id="logistics-destination"
+          label="Destination"
+        />
+        <div className="form-line">
           <label>Item</label>
           <input value={itemId} style={{ width: 120 }} onChange={(e) => setItemId(e.target.value)} />
           <label>Qty</label>

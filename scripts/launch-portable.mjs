@@ -1,6 +1,5 @@
 /**
- * Launch the packaged portable exe (release/GalacticEconomy.exe).
- * Used by `pnpm play:portable` and documented in README.
+ * Launch the packaged portable exe (release/StellarLedger.exe).
  */
 import { existsSync, readdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
@@ -11,14 +10,14 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const releaseDir = join(root, 'release')
 
 function findPortableExe() {
-  const preferred = join(releaseDir, 'GalacticEconomy.exe')
+  const preferred = join(releaseDir, 'StellarLedger.exe')
   if (existsSync(preferred)) return preferred
 
   if (!existsSync(releaseDir)) return null
   const legacy = readdirSync(releaseDir).find(
     (name) =>
       name.endsWith('-portable.exe') ||
-      (name.endsWith('.exe') && name.toLowerCase().includes('galactic'))
+      (name.endsWith('.exe') && name.toLowerCase().includes('stellar'))
   )
   return legacy ? join(releaseDir, legacy) : null
 }

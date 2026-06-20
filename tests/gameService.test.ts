@@ -6,7 +6,7 @@ import { openDatabase, closeDatabase } from '../src/database/db.js'
 import { loadOrders } from '../src/database/repositories/marketRepo.js'
 import { GameService } from '../src/main/gameService.js'
 import type { GameDefinitions } from '../src/shared/types.js'
-import { VANILLA_DIR, loadVanillaDefs } from './helpers.js'
+import { VANILLA_DIR, loadVanillaDefs, getHomeSystemId } from './helpers.js'
 
 // GameService runs fine under plain Node (no Electron); it only needs paths.
 
@@ -60,7 +60,7 @@ describe('GameService autosave', () => {
     expect(before.saveStatus).toBe('saved')
 
     service.createMarketOrder({
-      systemId: 'sys_helion',
+      systemId: getHomeSystemId(),
       itemId: 'ore',
       side: 'sell',
       quantity: 5,

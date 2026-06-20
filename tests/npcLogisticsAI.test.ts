@@ -2,14 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { getNpcCorporations } from '../src/simulation/corporations.js'
 import { addInventory } from '../src/simulation/economyMath.js'
 import { processNpcLogisticsAI } from '../src/simulation/npcLogisticsAI.js'
-import { newGame } from './helpers.js'
+import { newGame, getGeneratedNpcCorp } from './helpers.js'
 
 describe('npcLogisticsAI', () => {
   it('creates a transport job when surplus and shortage exist in different systems', () => {
     const state = newGame()
     const helion = getNpcCorporations(state).find((c) => c.id === 'corp_helion_mining')!
-    addInventory(state, helion.id, 'sys_marrow', 'ore', 5)
+    const destSystem = getGeneratedNpcCorp('corp_orion_refining').homeSystemId
+    addInventory(state, helion.id, destSystem, 'ore', 5)
     addInventory(state, helion.id, helion.homeSystemId, 'ore', 200)
+    addInventory(state, helion.id, helion.homeSystemId, 'fuel', 500)
 
     const before = state.transportJobs.length
     const dispatched = processNpcLogisticsAI(state)
@@ -18,14 +20,16 @@ describe('npcLogisticsAI', () => {
     const job = state.transportJobs[state.transportJobs.length - 1]!
     expect(job.ownerId).toBe(helion.id)
     expect(job.originSystemId).toBe(helion.homeSystemId)
-    expect(job.destinationSystemId).toBe('sys_marrow')
+    expect(job.destinationSystemId).toBe(destSystem)
   })
 
   it('does not dispatch more than one running route per corp', () => {
     const state = newGame()
     const helion = getNpcCorporations(state).find((c) => c.id === 'corp_helion_mining')!
-    addInventory(state, helion.id, 'sys_marrow', 'ore', 5)
+    const destSystem = getGeneratedNpcCorp('corp_orion_refining').homeSystemId
+    addInventory(state, helion.id, destSystem, 'ore', 5)
     addInventory(state, helion.id, helion.homeSystemId, 'ore', 200)
+    addInventory(state, helion.id, helion.homeSystemId, 'fuel', 500)
     processNpcLogisticsAI(state)
     expect(processNpcLogisticsAI(state)).toBe(0)
   })

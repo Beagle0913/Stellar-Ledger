@@ -146,12 +146,16 @@ export function buildDashboard(state: GameState): DashboardData {
 }
 
 export function buildSystemSummaries(state: GameState): SystemSummary[] {
+  const homeSystemId = getPlayerCorporation(state).homeSystemId
   return state.definitions.systems.map((s) => ({
     id: s.id,
     name: s.name,
     x: s.x,
     y: s.y,
-    planetCount: state.definitions.planets.filter((p) => p.systemId === s.id).length
+    planetCount: state.definitions.planets.filter((p) => p.systemId === s.id).length,
+    controllingFactionId: s.controllingFactionId ?? null,
+    distanceFromHome: s.id === homeSystemId ? 0 : systemDistance(state, homeSystemId, s.id),
+    isHome: s.id === homeSystemId
   }))
 }
 

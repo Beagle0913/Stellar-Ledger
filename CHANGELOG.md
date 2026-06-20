@@ -4,6 +4,25 @@ All notable changes to this prototype are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-20
+
+### Breaking
+- **Rebrand** to **Stellar Ledger**; portable exe renamed from `GalacticEconomy.exe` to **`StellarLedger.exe`**.
+- **100-system galaxy** replaces the vanilla 5-system map (~505 generated planets, seed 42). Committed JSON from `pnpm generate:galaxy`.
+- **Old saves** from v0.1.x cannot load — start a new campaign (Option A; no migration).
+
+### Added
+- **`galaxy-meta.json`** — home system/planet ids, NPC placement, generator metadata.
+- **`pnpm generate:galaxy`** / **`--check`** — seeded procedural generator with post-gen validation.
+- **`pnpm check:branding`** — CI guard against legacy product names.
+- **Star map lanes** — MST + k-nearest-neighbor culling (connected graph, ~200–350 edges vs full mesh).
+- **System pickers** — search, sort, and faction filter on System / Market / Logistics pages.
+- **100-system scaling test** — 30-day vanilla batch performance gate.
+
+### Changed
+- Save compatibility guard shows a friendly message when galaxy size mismatches.
+- Full documentation audit for Stellar Ledger naming and galaxy scale.
+
 ### Added — Milestone 3 NPC economy (Phases 3A–3G)
 - **Multi-corporation state** (`corporations[]`, `playerCorporationId`) with save/load migration v12–v13.
 - **Passive NPC corporation definitions** (`npc_corporations.json`) seed Helion Mining and Orion Refining on new campaigns only.

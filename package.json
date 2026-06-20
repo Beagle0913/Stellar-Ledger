@@ -1,8 +1,8 @@
 {
-  "name": "galactic-economy-prototype",
-  "version": "0.1.0",
+  "name": "stellar-ledger",
+  "version": "0.2.0",
   "private": true,
-  "description": "An original moddable single-player galactic economy / spreadsheet strategy game (vertical slice prototype).",
+  "description": "Stellar Ledger — a moddable single-player galactic economy strategy game.",
   "author": "Prototype",
   "license": "MIT",
   "main": "out/main/main.js",
@@ -12,9 +12,11 @@
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests",
+    "check:branding": "node scripts/check-branding.mjs",
+    "generate:galaxy": "node scripts/generate-galaxy.mjs",
     "pretest": "node scripts/ensure-node-native.mjs",
     "test": "vitest run",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run balance",
+    "verify": "npm run check:branding && npm run generate:galaxy -- --check && npm run typecheck && npm run lint && npm run test && npm run balance",
     "test:watch": "vitest",
     "balance": "vitest run tests/balance --exclude tests/balance/reportRunner.test.ts",
     "balance:report": "node scripts/balance-report.mjs",
@@ -56,8 +58,8 @@
     "vitest": "^2.1.8"
   },
   "build": {
-    "appId": "com.yourname.galactic-economy",
-    "productName": "GalacticEconomy",
+    "appId": "com.stellarledger.game",
+    "productName": "StellarLedger",
     "directories": {
       "output": "release"
     },
@@ -87,7 +89,7 @@
       "signAndEditExecutable": false
     },
     "portable": {
-      "artifactName": "GalacticEconomy.exe"
+      "artifactName": "StellarLedger.exe"
     }
   },
   "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916"

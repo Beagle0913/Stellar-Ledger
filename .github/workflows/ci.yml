@@ -22,6 +22,8 @@ jobs:
       - run: corepack enable
       - run: corepack pnpm install --frozen-lockfile
       - run: npm run rebuild:node
+      - run: npm run check:branding
+      - run: npm run generate:galaxy -- --check
       - run: corepack pnpm typecheck
       - run: corepack pnpm lint
       - run: corepack pnpm test
@@ -39,14 +41,14 @@ jobs:
       - name: Compute checksum
         shell: pwsh
         run: |
-          $hash = (Get-FileHash release/GalacticEconomy.exe -Algorithm SHA256).Hash.ToLower()
-          "${hash}  GalacticEconomy.exe" | Out-File -Encoding ascii -NoNewline release/GalacticEconomy.exe.sha256
+          $hash = (Get-FileHash release/StellarLedger.exe -Algorithm SHA256).Hash.ToLower()
+          "${hash}  StellarLedger.exe" | Out-File -Encoding ascii -NoNewline release/StellarLedger.exe.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: GalacticEconomy-portable
+          name: StellarLedger-portable
           path: |
-            release/GalacticEconomy.exe
-            release/GalacticEconomy.exe.sha256
+            release/StellarLedger.exe
+            release/StellarLedger.exe.sha256
           retention-days: 7
 
   release:
@@ -65,7 +67,7 @@ jobs:
 
       - uses: actions/download-artifact@v5
         with:
-          name: GalacticEconomy-portable
+          name: StellarLedger-portable
           path: release-artifact
 
       - name: Update latest tag
@@ -81,20 +83,20 @@ jobs:
         uses: softprops/action-gh-release@v2.6.2
         with:
           tag_name: ${{ github.ref_name }}
-          name: Galactic Economy ${{ github.ref_name }}
+          name: Stellar Ledger ${{ github.ref_name }}
           generate_release_notes: true
           overwrite_files: true
           fail_on_unmatched_files: true
           files: |
-            release-artifact/GalacticEconomy.exe
-            release-artifact/GalacticEconomy.exe.sha256
+            release-artifact/StellarLedger.exe
+            release-artifact/StellarLedger.exe.sha256
 
       - name: Publish rolling prerelease
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2.6.2
         with:
           tag_name: latest
-          name: Galactic Economy (Latest)
+          name: Stellar Ledger (Latest)
           prerelease: true
           body: |
             Rolling development build from `main`.
@@ -102,9 +104,9 @@ jobs:
             - Commit: ${{ github.sha }}
             - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Verify download integrity with `GalacticEconomy.exe.sha256`.
+            Verify download integrity with `StellarLedger.exe.sha256`.
           overwrite_files: true
           fail_on_unmatched_files: true
           files: |
-            release-artifact/GalacticEconomy.exe
-            release-artifact/GalacticEconomy.exe.sha256
+            release-artifact/StellarLedger.exe
+            release-artifact/StellarLedger.exe.sha256

@@ -1,37 +1,702 @@
 [
   {
-    "id": "sys_helion",
-    "name": "Helion",
-    "x": 120,
-    "y": 130,
+    "id": "sys_001",
+    "name": "Cor Belt",
+    "x": 662,
+    "y": 599,
     "controllingFactionId": "faction_consortium"
   },
   {
-    "id": "sys_vesper",
-    "name": "Vesper",
-    "x": 320,
-    "y": 170,
+    "id": "sys_002",
+    "name": "El Reach",
+    "x": 558,
+    "y": 639,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_003",
+    "name": "Be Nova",
+    "x": 611,
+    "y": 516,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_004",
+    "name": "Kal Prime",
+    "x": 649,
+    "y": 675,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_005",
+    "name": "Dra Prime",
+    "x": 515,
+    "y": 577,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_006",
+    "name": "Fenen",
+    "x": 696,
+    "y": 544,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_007",
+    "name": "Fen Reach",
+    "x": 574,
+    "y": 710,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_008",
+    "name": "Jun Belt",
+    "x": 548,
+    "y": 494,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_009",
+    "name": "Beos",
+    "x": 731,
+    "y": 648,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_010",
+    "name": "Elion",
+    "x": 478,
+    "y": 646,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_011",
+    "name": "Cor Rim",
+    "x": 654,
+    "y": 469,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_012",
+    "name": "Lun Rim",
+    "x": 650,
+    "y": 751,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_013",
+    "name": "Gar Reach",
+    "x": 458,
+    "y": 522,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_014",
+    "name": "Junen",
+    "x": 775,
+    "y": 570,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_015",
+    "name": "Lunara",
+    "x": 502,
+    "y": 758,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_016",
+    "name": "Al Vale",
+    "x": 584,
+    "y": 405,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_017",
+    "name": "Helion",
+    "x": 758,
+    "y": 730,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_018",
+    "name": "Lunos",
+    "x": 397,
+    "y": 604,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_019",
+    "name": "Garion",
+    "x": 755,
+    "y": 441,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_020",
+    "name": "Fen Prime",
+    "x": 582,
+    "y": 828,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_021",
+    "name": "Coren",
+    "x": 436,
+    "y": 423,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_022",
+    "name": "Al Gate",
+    "x": 845,
+    "y": 630,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_023",
+    "name": "Irien",
+    "x": 386,
+    "y": 743,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_024",
+    "name": "Iri Prime",
+    "x": 655,
+    "y": 338,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_025",
+    "name": "Jun Deep",
+    "x": 733,
+    "y": 846,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_026",
+    "name": "Lun Belt",
+    "x": 329,
+    "y": 504,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_027",
+    "name": "Fenion",
+    "x": 857,
+    "y": 477,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_028",
+    "name": "Hel Vale",
+    "x": 489,
+    "y": 879,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_029",
+    "name": "Gar Gate",
+    "x": 501,
+    "y": 304,
+    "controllingFactionId": "faction_consortium"
+  },
+  {
+    "id": "sys_030",
+    "name": "Iriion",
+    "x": 892,
+    "y": 747,
     "controllingFactionId": "faction_independents"
   },
   {
-    "id": "sys_cinder",
-    "name": "Cinder",
-    "x": 230,
-    "y": 340,
+    "id": "sys_031",
+    "name": "Coros",
+    "x": 287,
+    "y": 691,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_032",
+    "name": "Iri Reach",
+    "x": 780,
+    "y": 315,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_033",
+    "name": "El Gate",
+    "x": 658,
+    "y": 951,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_034",
+    "name": "Be Deep",
+    "x": 324,
+    "y": 384,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_035",
+    "name": "Lun Prime",
+    "x": 971,
+    "y": 577,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_036",
+    "name": "Alara",
+    "x": 336,
+    "y": 866,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_037",
+    "name": "Corion",
+    "x": 604,
+    "y": 215,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_038",
+    "name": "Cor Vale",
+    "x": 870,
+    "y": 892,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_039",
+    "name": "Draen",
+    "x": 205,
+    "y": 564,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_040",
+    "name": "Lunen",
+    "x": 933,
+    "y": 345,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_041",
+    "name": "Draos",
+    "x": 518,
+    "y": 1009,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_042",
+    "name": "Gar Nova",
+    "x": 379,
+    "y": 239,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_043",
+    "name": "Be Reach",
+    "x": 1015,
+    "y": 719,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_044",
+    "name": "Lun Nova",
+    "x": 202,
+    "y": 810,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_045",
+    "name": "Kal Belt",
+    "x": 759,
+    "y": 179,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_046",
+    "name": "Kal Deep",
+    "x": 776,
+    "y": 1039,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_047",
+    "name": "Dra Vale",
+    "x": 180,
+    "y": 395,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_048",
+    "name": "Junara",
+    "x": 1058,
+    "y": 466,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_049",
+    "name": "Beara",
+    "x": 355,
+    "y": 1025,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_050",
+    "name": "Junos",
+    "x": 492,
+    "y": 104,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_051",
+    "name": "Be Vale",
+    "x": 1010,
+    "y": 887,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_052",
+    "name": "Gar Vale",
+    "x": 85,
+    "y": 674,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_053",
+    "name": "Gar Prime",
+    "x": 944,
+    "y": 189,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_054",
+    "name": "Alen",
+    "x": 612,
+    "y": 1139,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_055",
+    "name": "Fen Nova",
+    "x": 224,
+    "y": 203,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_056",
+    "name": "Iri Rim",
+    "x": 1164,
+    "y": 625,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_057",
+    "name": "Hel Nova",
+    "x": 170,
+    "y": 965,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_058",
+    "name": "El Belt",
+    "x": 675,
+    "y": 25,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_059",
+    "name": "Iri Gate",
+    "x": 927,
+    "y": 1079,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_060",
+    "name": "Gar Deep",
+    "x": 26,
+    "y": 464,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_061",
+    "name": "Be Prime",
+    "x": 1129,
+    "y": 307,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_062",
+    "name": "Alion",
+    "x": 411,
+    "y": 1186,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_063",
+    "name": "Helara",
+    "x": 341,
+    "y": 37,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_064",
+    "name": "Dra Reach",
+    "x": 1185,
+    "y": 846,
+    "controllingFactionId": "faction_independents"
+  },
+  {
+    "id": "sys_065",
+    "name": "Fen Belt",
+    "x": -8,
+    "y": 816,
     "controllingFactionId": "faction_frontier"
   },
   {
-    "id": "sys_marrow",
-    "name": "Marrow",
-    "x": 470,
-    "y": 300,
+    "id": "sys_066",
+    "name": "Kalos",
+    "x": 899,
+    "y": 28,
     "controllingFactionId": "faction_frontier"
   },
   {
-    "id": "sys_quill",
-    "name": "Quill",
-    "x": 400,
-    "y": 90,
-    "controllingFactionId": "faction_consortium"
+    "id": "sys_067",
+    "name": "Lun Reach",
+    "x": 766,
+    "y": 1224,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_068",
+    "name": "Jun Prime",
+    "x": 34,
+    "y": 239,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_069",
+    "name": "Cor Deep",
+    "x": 1255,
+    "y": 489,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_070",
+    "name": "Be Gate",
+    "x": 187,
+    "y": 1142,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_071",
+    "name": "Corara",
+    "x": 556,
+    "y": -90,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_072",
+    "name": "Iri Nova",
+    "x": 1108,
+    "y": 1081,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_073",
+    "name": "Fen Gate",
+    "x": -113,
+    "y": 584,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_074",
+    "name": "Dra Rim",
+    "x": 1124,
+    "y": 128,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_075",
+    "name": "Al Belt",
+    "x": 537,
+    "y": 1313,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_076",
+    "name": "Hel Gate",
+    "x": 164,
+    "y": 15,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_077",
+    "name": "Jun Rim",
+    "x": 1327,
+    "y": 736,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_078",
+    "name": "El Nova",
+    "x": -33,
+    "y": 997,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_079",
+    "name": "Jun Nova",
+    "x": 801,
+    "y": -136,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_080",
+    "name": "Kalion",
+    "x": 954,
+    "y": 1280,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_081",
+    "name": "Fenara",
+    "x": -127,
+    "y": 322,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_082",
+    "name": "Jun Reach",
+    "x": 1323,
+    "y": 314,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_083",
+    "name": "Elara",
+    "x": 253,
+    "y": 1320,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_084",
+    "name": "Elen",
+    "x": 363,
+    "y": -171,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_085",
+    "name": "Fen Vale",
+    "x": 1308,
+    "y": 1013,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_086",
+    "name": "Al Prime",
+    "x": -203,
+    "y": 761,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_087",
+    "name": "Iri Vale",
+    "x": 1094,
+    "y": -74,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_088",
+    "name": "Hel Belt",
+    "x": 695,
+    "y": 1438,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_089",
+    "name": "Fen Rim",
+    "x": -53,
+    "y": 50,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_090",
+    "name": "Iri Deep",
+    "x": 1464,
+    "y": 576,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_091",
+    "name": "Be Rim",
+    "x": -19,
+    "y": 1207,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_092",
+    "name": "Elos",
+    "x": 653,
+    "y": -287,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_093",
+    "name": "Be Belt",
+    "x": 1155,
+    "y": 1293,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_094",
+    "name": "Kal Reach",
+    "x": -287,
+    "y": 463,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_095",
+    "name": "Kalen",
+    "x": 1348,
+    "y": 96,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_096",
+    "name": "Cor Nova",
+    "x": 381,
+    "y": 1498,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_097",
+    "name": "Lun Deep",
+    "x": 142,
+    "y": -206,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_098",
+    "name": "El Prime",
+    "x": 1489,
+    "y": 890,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_099",
+    "name": "Iri Belt",
+    "x": -263,
+    "y": 989,
+    "controllingFactionId": "faction_frontier"
+  },
+  {
+    "id": "sys_100",
+    "name": "Dra Gate",
+    "x": 966,
+    "y": -279,
+    "controllingFactionId": "faction_frontier"
   }
 ]

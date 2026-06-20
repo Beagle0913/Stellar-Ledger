@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo ========================================
-echo   Galactic Economy - Setup
+echo   Stellar Ledger - Setup
 echo ========================================
 echo.
 

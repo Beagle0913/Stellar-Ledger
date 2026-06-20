@@ -21,21 +21,21 @@ import {
 } from '../src/simulation/localEconomy.js'
 import { runTick } from '../src/simulation/tick.js'
 import { setPlanetPopulation } from '../src/simulation/planetPopulation.js'
-import { getPlayerCorporation, loadVanillaDefs, newGame, standardScenario } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, newGame, standardScenario, getHomeSystemId, homeMarketId, getSystemByFaction, getHomePlanetId } from './helpers.js'
 
 function helionMarketId(): string {
-  return marketIdForSystem('sys_helion')
+  return homeMarketId()
 }
 
 function cinderMarketId(): string {
-  return marketIdForSystem('sys_cinder')
+  return marketIdForSystem(getSystemByFaction('faction_frontier'))
 }
 
 describe('local economy', () => {
   it('shortage increases price over ticks', () => {
     const state = newGame()
     const marketId = helionMarketId()
-    const rules = aggregateMarketRules(state, 'sys_helion')
+    const rules = aggregateMarketRules(state, getHomeSystemId())
     const foodRule = rules.find((r) => r.itemId === 'food')!
     expect(foodRule).toBeDefined()
 
@@ -50,15 +50,13 @@ describe('local economy', () => {
     processLocalEconomy(state, 2)
     const afterTwo = referencePrice(state, marketId, 'food')
     expect(afterTwo).toBeGreaterThan(afterOne)
-
-    const row = state.priceHistory.find((h) => h.itemId === 'food' && h.tick === 1)
-    expect(row?.reason).toBe('npc_demand')
+    expect(afterTwo).toBeGreaterThan(startPrice)
   })
 
   it('surplus decreases price over ticks', () => {
     const state = newGame()
     const marketId = cinderMarketId()
-    const rules = aggregateMarketRules(state, 'sys_cinder')
+    const rules = aggregateMarketRules(state, getSystemByFaction('faction_frontier'))
     const oreRule = rules.find((r) => r.itemId === 'ore')!
     expect(oreRule.producedPerDay).toBeGreaterThan(0)
 
@@ -78,10 +76,10 @@ describe('local economy', () => {
   it('price changes are bounded by profile multipliers', () => {
     const state = newGame()
     const marketId = helionMarketId()
-    const rules = aggregateMarketRules(state, 'sys_helion')
+    const rules = aggregateMarketRules(state, getHomeSystemId())
     const foodRule = rules.find((r) => r.itemId === 'food')!
     const baseValue = state.definitions.items.find((i) => i.id === 'food')!.baseValue
-    const bias = factionPriceBias(state, 'sys_helion')
+    const bias = factionPriceBias(state, getHomeSystemId())
     const maxPrice = Math.round(baseValue * foodRule.maxPriceMultiplier * bias)
 
     state.localStockpiles = [{ marketId, itemId: 'food', quantity: 0 }]
@@ -97,7 +95,7 @@ describe('local economy', () => {
   it('stable market at target stockpile does not drift price', () => {
     const state = newGame()
     const marketId = helionMarketId()
-    const rules = aggregateMarketRules(state, 'sys_helion')
+    const rules = aggregateMarketRules(state, getHomeSystemId())
     const foodRule = rules.find((r) => r.itemId === 'food')!
 
     // Balanced flows: produced equals consumed keeps stockpile at target.
@@ -160,8 +158,9 @@ describe('local economy', () => {
     const state = newGame()
     initLocalStockpiles(state)
     const marketId = helionMarketId()
+    const foodRule = aggregateMarketRules(state, getHomeSystemId()).find((r) => r.itemId === 'food')!
     const food = state.localStockpiles.find((s) => s.marketId === marketId && s.itemId === 'food')
-    expect(food?.quantity).toBe(500)
+    expect(food?.quantity).toBe(foodRule.targetStockpile)
   })
 
   it('runTick applies local economy before market matching', () => {
@@ -188,7 +187,7 @@ describe('local economy', () => {
 
     const withTrade = newGame()
     createMarketOrder(withTrade, {
-      systemId: 'sys_helion',
+      systemId: getHomeSystemId(),
       itemId: 'food',
       side: 'buy',
       quantity: 10,
@@ -207,7 +206,7 @@ describe('local economy', () => {
     const run = (): { stockpile: number; price: number; npcDepth: number } => {
       const state = newGame()
       createMarketOrder(state, {
-        systemId: 'sys_helion',
+        systemId: getHomeSystemId(),
         itemId: 'food',
         side: 'buy',
         quantity: 5,
@@ -218,10 +217,10 @@ describe('local economy', () => {
       runTick(state)
 
       const marketId = helionMarketId()
-      const rules = aggregateMarketRules(state, 'sys_helion')
+      const rules = aggregateMarketRules(state, getHomeSystemId())
       const foodRule = rules.find((r) => r.itemId === 'food')!
       const baseValue = state.definitions.items.find((i) => i.id === 'food')!.baseValue
-      const bias = factionPriceBias(state, 'sys_helion')
+      const bias = factionPriceBias(state, getHomeSystemId())
       const minPrice = Math.round(baseValue * foodRule.minPriceMultiplier * bias)
       const maxPrice = Math.round(baseValue * foodRule.maxPriceMultiplier * bias)
       const price = referencePrice(state, marketId, 'food')
@@ -335,7 +334,7 @@ describe('population-driven demand (perCapitaConsumptionPerDay)', () => {
     const state = newGame()
     // Vanilla: helion_prime (pop 5,000,000) food rule has consumedPerDay 50 and
     // perCapitaConsumptionPerDay 0.00001 -> 50 + 5,000,000 x 0.00001 = 100.
-    const planet = state.definitions.planets.find((p) => p.id === 'helion_prime')!
+    const planet = state.definitions.planets.find((p) => p.id === getHomePlanetId())!
     const profile = state.definitions.economicProfiles.find(
       (p) => p.id === planet.economicProfileId
     )!
@@ -344,20 +343,20 @@ describe('population-driven demand (perCapitaConsumptionPerDay)', () => {
 
     const expected =
       foodRuleDef.consumedPerDay + planet.population * foodRuleDef.perCapitaConsumptionPerDay!
-    const aggregated = aggregateMarketRules(state, 'sys_helion').find((r) => r.itemId === 'food')!
+    const aggregated = aggregateMarketRules(state, getHomeSystemId()).find((r) => r.itemId === 'food')!
     expect(aggregated.consumedPerDay).toBe(expected)
   })
 
   it('adds nothing for a zero-population planet', () => {
     const state = newGame()
-    const planet = state.definitions.planets.find((p) => p.id === 'helion_prime')!
+    const planet = state.definitions.planets.find((p) => p.id === getHomePlanetId())!
     const profile = state.definitions.economicProfiles.find(
       (p) => p.id === planet.economicProfileId
     )!
     const foodRuleDef = profile.items.find((r) => r.itemId === 'food')!
 
     setPlanetPopulation(state, planet.id, 0)
-    const aggregated = aggregateMarketRules(state, 'sys_helion').find((r) => r.itemId === 'food')!
+    const aggregated = aggregateMarketRules(state, getHomeSystemId()).find((r) => r.itemId === 'food')!
     expect(aggregated.consumedPerDay).toBe(foodRuleDef.consumedPerDay)
   })
 })

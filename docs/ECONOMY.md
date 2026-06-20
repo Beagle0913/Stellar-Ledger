@@ -85,8 +85,8 @@ Persistence is the caller's job.
 
 Vanilla NPC seeds (`npc_corporations.json`, new campaigns only):
 
-- **Helion Mining** — extractor at Cinder
-- **Orion Refining** — refiner at Marrow
+- **Helion Mining** — extractor corp; home system/planet ids in `galaxy-meta.json`
+- **Orion Refining** — refiner corp; home system/planet ids in `galaxy-meta.json`
 
 Runtime corp state lives in SQLite; editing JSON later does not touch existing saves.
 

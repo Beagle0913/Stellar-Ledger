@@ -3,17 +3,24 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo ========================================
-echo   Galactic Economy
+echo   Stellar Ledger
 echo ========================================
 echo.
 
-if exist "release\GalacticEconomy.exe" (
-  echo Launching release\GalacticEconomy.exe ...
-  start "" "release\GalacticEconomy.exe"
+if exist "release\StellarLedger.exe" (
+  echo Launching release\StellarLedger.exe ...
+  start "" "release\StellarLedger.exe"
   exit /b 0
 )
 
-echo No portable exe found at release\GalacticEconomy.exe
+if exist "release\GalacticEconomy.exe" (
+  echo v0.2.0 renamed the exe to StellarLedger.exe.
+  echo Run Build Game.bat or download the latest release from GitHub.
+  pause
+  exit /b 1
+)
+
+echo No portable exe found at release\StellarLedger.exe
 echo.
 set /p BUILD_NOW="Build now? This runs Setup + dist ^(Y/N^): "
 if /I not "%BUILD_NOW%"=="Y" (
@@ -41,12 +48,12 @@ if errorlevel 1 (
   exit /b 1
 )
 
-if not exist "release\GalacticEconomy.exe" (
-  echo Build finished but release\GalacticEconomy.exe was not found.
+if not exist "release\StellarLedger.exe" (
+  echo Build finished but release\StellarLedger.exe was not found.
   pause
   exit /b 1
 )
 
-echo Launching release\GalacticEconomy.exe ...
-start "" "release\GalacticEconomy.exe"
+echo Launching release\StellarLedger.exe ...
+start "" "release\StellarLedger.exe"
 exit /b 0

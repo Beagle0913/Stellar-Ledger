@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { EventDefinition } from '../src/shared/types.js'
 import { NPC_OWNER } from '../src/shared/types.js'
 import { eventEligible, processEvents } from '../src/simulation/events.js'
-import { getPlayerCorporation, loadVanillaDefs, newGame } from './helpers.js'
+import { getPlayerCorporation, loadVanillaDefs, newGame, homeMarketId } from './helpers.js'
 
 // Tests for the event trigger/effect unions, focusing on the v0.1.3 additions:
 // stockpileShortage trigger, stockpileShock and creditBonus effects.
@@ -138,7 +138,7 @@ describe('vanilla economic-drama events', () => {
     const warning = defs.events.find((e) => e.id === 'evt_food_security_warning')!
     state.definitions.events = [warning]
     completeObjective(state, 'obj_arc_revenue')
-    state.localStockpiles = [{ marketId: 'market_sys_helion', itemId: 'food', quantity: 150 }]
+    state.localStockpiles = [{ marketId: homeMarketId(), itemId: 'food', quantity: 150 }]
 
     processEvents(state, 15)
     expect(state.eventsLog).toHaveLength(1)
@@ -150,7 +150,7 @@ describe('vanilla economic-drama events', () => {
     const relief = defs.events.find((e) => e.id === 'evt_food_relief_convoy')!
     state.definitions.events = [relief]
     completeObjective(state, 'obj_arc_produce')
-    state.localStockpiles = [{ marketId: 'market_sys_helion', itemId: 'food', quantity: 50 }]
+    state.localStockpiles = [{ marketId: homeMarketId(), itemId: 'food', quantity: 50 }]
 
     processEvents(state, 15)
     expect(state.localStockpiles[0]!.quantity).toBe(200)
@@ -161,7 +161,7 @@ describe('vanilla economic-drama events', () => {
     const relief = defs.events.find((e) => e.id === 'evt_food_relief_convoy')!
     state.definitions.events = [relief]
     completeObjective(state, 'obj_arc_produce')
-    state.localStockpiles = [{ marketId: 'market_sys_helion', itemId: 'food', quantity: 50 }]
+    state.localStockpiles = [{ marketId: homeMarketId(), itemId: 'food', quantity: 50 }]
 
     processEvents(state, 15)
     processEvents(state, 16)
@@ -175,7 +175,7 @@ describe('vanilla economic-drama events', () => {
     const state = newGame()
     const squeeze = defs.events.find((e) => e.id === 'evt_machinery_squeeze')!
     state.definitions.events = [squeeze]
-    state.localStockpiles = [{ marketId: 'market_sys_helion', itemId: 'machinery', quantity: 50 }]
+    state.localStockpiles = [{ marketId: homeMarketId(), itemId: 'machinery', quantity: 50 }]
 
     processEvents(state, 25)
     expect(state.eventsLog).toHaveLength(0)
@@ -192,7 +192,7 @@ describe('stockpileShortage trigger', () => {
       })
     ]
     state.localStockpiles = [
-      { marketId: 'market_sys_helion', itemId: 'food', quantity: 40 },
+      { marketId: homeMarketId(), itemId: 'food', quantity: 40 },
       { marketId: 'market_sys_quill', itemId: 'food', quantity: 900 }
     ]
 
@@ -209,9 +209,9 @@ describe('stockpileShortage trigger', () => {
       })
     ]
     state.localStockpiles = [
-      { marketId: 'market_sys_helion', itemId: 'food', quantity: 100 },
+      { marketId: homeMarketId(), itemId: 'food', quantity: 100 },
       // A different item below threshold must not trigger a food shortage.
-      { marketId: 'market_sys_helion', itemId: 'ore', quantity: 1 }
+      { marketId: homeMarketId(), itemId: 'ore', quantity: 1 }
     ]
 
     processEvents(state, 1)
@@ -229,9 +229,9 @@ describe('stockpileShock effect', () => {
       })
     ]
     state.localStockpiles = [
-      { marketId: 'market_sys_helion', itemId: 'food', quantity: 200 },
+      { marketId: homeMarketId(), itemId: 'food', quantity: 200 },
       { marketId: 'market_sys_quill', itemId: 'food', quantity: 30 },
-      { marketId: 'market_sys_helion', itemId: 'ore', quantity: 10 }
+      { marketId: homeMarketId(), itemId: 'ore', quantity: 10 }
     ]
 
     processEvents(state, 1)
@@ -250,7 +250,7 @@ describe('stockpileShock effect', () => {
         effect: { type: 'stockpileShock', itemId: 'food', delta: 150 }
       })
     ]
-    state.localStockpiles = [{ marketId: 'market_sys_helion', itemId: 'food', quantity: 25 }]
+    state.localStockpiles = [{ marketId: homeMarketId(), itemId: 'food', quantity: 25 }]
 
     processEvents(state, 1)
     expect(state.localStockpiles[0]!.quantity).toBe(175)

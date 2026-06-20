@@ -33,8 +33,9 @@ describe('mod loading', () => {
     const vanilla = loadModFromDir(VANILLA_DIR, 'builtin')
     expect(vanilla.manifest.id).toBe('vanilla')
     expect(vanilla.items.length).toBeGreaterThanOrEqual(20)
-    expect(vanilla.systems).toHaveLength(5)
-    expect(vanilla.planets).toHaveLength(15)
+    expect(vanilla.systems).toHaveLength(100)
+    expect(vanilla.planets.length).toBeGreaterThanOrEqual(480)
+    expect(vanilla.planets.length).toBeLessThanOrEqual(620)
     expect(vanilla.economicProfiles).toHaveLength(8)
   })
 

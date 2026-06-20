@@ -6,7 +6,7 @@ import { errorMessage, GameError, toIpcError } from '../src/shared/errors.js'
 import { ModValidationError } from '../src/mods/modTypes.js'
 import { safeDispatch } from '../src/main/dispatch.js'
 import { GameService } from '../src/main/gameService.js'
-import { VANILLA_DIR } from './helpers.js'
+import { VANILLA_DIR, getHomeSystemId, getSampleNonHomeSystemId } from './helpers.js'
 
 // The structured error contract: every value thrown anywhere in main must be
 // reduced to an IpcError { code, message } before crossing the IPC boundary.
@@ -91,13 +91,13 @@ describe('safeDispatch error codes', () => {
     expectError('getSystem', 'sys_does_not_exist', 'NOT_FOUND')
     expectError('createTransportJob', {
       shipId: 'no_such_ship',
-      destinationSystemId: 'sys_vesper',
+      destinationSystemId: getSampleNonHomeSystemId(),
       itemId: 'ore',
       quantity: 1
     }, 'NOT_FOUND')
     // Schema-valid but economically impossible: trillions in escrow.
     expectError('createMarketOrder', {
-      systemId: 'sys_helion',
+      systemId: getHomeSystemId(),
       itemId: 'food',
       side: 'buy',
       quantity: 1_000_000,

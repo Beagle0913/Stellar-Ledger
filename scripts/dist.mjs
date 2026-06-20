@@ -37,7 +37,7 @@ function runBin(name, args, label) {
 }
 
 if (stopRunningGame()) {
-  console.log('[dist] Closed a running GalacticEconomy.exe.')
+  console.log('[dist] Closed a running StellarLedger.exe.')
 }
 
 run('node', ['scripts/rebuild-electron-native.mjs'], 'Rebuilding better-sqlite3 for Electron…')
@@ -47,14 +47,14 @@ runBin('electron-builder', [], 'Packaging portable exe…')
 
 run('node', ['scripts/verify-packaged-native.mjs'], 'Verifying packaged better-sqlite3 under Electron…')
 
-const portable = join(root, 'release', 'GalacticEconomy.exe')
+const portable = join(root, 'release', 'StellarLedger.exe')
 if (!existsSync(portable)) {
-  console.error('\n[dist] Build finished but release/GalacticEconomy.exe was not created.')
+  console.error('\n[dist] Build finished but release/StellarLedger.exe was not created.')
   process.exit(1)
 }
 
 console.log('\n[dist] Restoring better-sqlite3 for Node (vitest)…')
 run('npm', ['rebuild', 'better-sqlite3'])
 
-console.log('\n[dist] Done → release/GalacticEconomy.exe')
+console.log('\n[dist] Done → release/StellarLedger.exe')
 console.log('[dist] Play with Play.bat or double-click the exe.\n')

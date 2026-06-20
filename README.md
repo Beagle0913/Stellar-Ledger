@@ -12,13 +12,15 @@ Docs: [`docs/README.md`](docs/README.md)
 
 ### Stable build (players — no Node required)
 
-Download the newest **versioned release** (e.g. `v0.1.0`) from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Run `GalacticEconomy.exe`. Optional: verify the download with `GalacticEconomy.exe.sha256`.
+Download the newest **versioned release** (e.g. `v0.2.0`) from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Run `StellarLedger.exe`. Optional: verify the download with `StellarLedger.exe.sha256`.
 
 The exe is portable. Copy it anywhere; on first launch it creates `data/`, `mods/`, and `saves/` next to itself.
 
+**v0.2.0 save note:** Campaigns from v0.1.x used a 5-system galaxy. Those saves cannot load in v0.2.0 — start a new campaign for the 100-system galaxy.
+
 ### Rolling development build (bleeding edge)
 
-Download the **"Galactic Economy (Latest)"** pre-release from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Built from every green `main` push. This is not the same as GitHub's "Latest" stable badge (prereleases cannot be marked latest).
+Download **"Stellar Ledger (Latest)"** pre-release from [Releases](https://github.com/Beagle0913/Stellar-Ledger/releases). Built from every green `main` push. This is not the same as GitHub's "Latest" stable badge (prereleases cannot be marked latest).
 
 ### Build from clone (developers)
 
@@ -53,7 +55,7 @@ Scenario presets, production planner, price charts, multi-corp saves (schema v13
 | Items | 20 |
 | Buildings | 12 |
 | Recipes | 20 |
-| Systems / planets | 5 / 15 |
+| Systems / planets | 100 / ~505 | `systems.json`, `planets.json`, `galaxy-meta.json` |
 | Factions / events / objectives | 3 / 7 / 7 |
 | Scenarios / NPC corps | 4 / 2 |
 
@@ -82,8 +84,8 @@ corepack pnpm test
 Useful scripts:
 
 ```powershell
-corepack pnpm verify              # typecheck + lint + test + balance
-corepack pnpm run dist            # release/GalacticEconomy.exe
+corepack pnpm verify              # branding + galaxy check + typecheck + lint + test + balance
+corepack pnpm run dist            # release/StellarLedger.exe
 corepack pnpm balance             # economy CI gates
 corepack pnpm run balance:report  # writes reports/balance/
 corepack pnpm scaffold:ipc        # IPC wiring helper
@@ -93,7 +95,7 @@ Content authors: [`docs/MODDING.md`](docs/MODDING.md). Economy rules: [`docs/ECO
 
 ## Packaging
 
-`Setup.bat` then `Build Game.bat`, or `pnpm run dist`. Output: `release/GalacticEconomy.exe`.
+`Setup.bat` then `Build Game.bat`, or `pnpm run dist`. Output: `release/StellarLedger.exe`.
 
 The packaged exe seeds `data/` and `mods/` beside itself once. Your edits persist; delete a folder to reset. Live content always comes from disk beside the exe, not from the bundled seed.
 
@@ -114,11 +116,12 @@ Debug page (dev builds only): activity log and economy inspector.
 |---------|-----|
 | `NODE_MODULE_VERSION 127` vs `130` | Close the exe. `pnpm run dist` or `Build Game.bat`. For tests: `pnpm test` or `npm run rebuild:node`. |
 | Tests fail after dev/dist | `pnpm test` — pretest rebuilds for Node. |
-| `electron-rebuild failed` | Close `GalacticEconomy.exe` and retry. |
+| `electron-rebuild failed` | Close `StellarLedger.exe` and retry. |
 | Build can't overwrite files | Close all running exe instances. |
 | `pnpm` not found | Run **`Setup.bat`** or `corepack enable` then `corepack pnpm …`. |
 | Setup can't download Node | Check network/proxy; install Node.js 22+ from [nodejs.org](https://nodejs.org/) manually. |
 | Portable exe won't start | Rebuild; check `release/verify-smoke-failure.log`. |
+| Old save won't load (v0.2.0) | Start a new campaign — v0.1.x saves used the old 5-system galaxy. |
 
 ## Layout
 

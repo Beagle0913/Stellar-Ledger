@@ -2,12 +2,6 @@ import Database from 'better-sqlite3'
 import { describe, expect, it } from 'vitest'
 import { runMigrations } from '../src/database/migrations.js'
 import { loadCampaign } from '../src/database/saveManager.js'
-import {
-  getAllCorporations,
-  getNpcCorporations,
-  getPlayerCorporation
-} from '../src/simulation/corporations.js'
-import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
 
 // Real v1 -> v2 migration test. We build a genuine v1 database BY HAND (the
 // current schema minus everything added in v2) and assert runMigrations()
@@ -243,28 +237,8 @@ describe('v1 -> v2 migration', () => {
       expect.arrayContaining(['market_id', 'item_id', 'quantity'])
     )
 
-    const state = loadCampaign(db)
-    expect(state.meta.name).toBe('Legacy Campaign')
-    expect(state.meta.tick).toBe(12)
-    expect(getPlayerCorporation(state).credits).toBe(100000)
-    expect(state.playerCorporationId).toBe(DEFAULT_CORP_ID)
-    expect(getAllCorporations(state)).toHaveLength(1)
-    expect(getNpcCorporations(state)).toEqual([])
-    expect(state.definitions.systems).toHaveLength(1)
-    expect(state.definitions.planets).toHaveLength(1)
-    expect(state.definitions.items).toHaveLength(1)
-    expect(state.definitions.economicProfiles).toEqual([])
-    expect(state.definitions.ships).toEqual([])
-    expect(state.definitions.economyConfig.populationFoodItemId).toBe('food')
-    expect(state.planetPopulations.length).toBeGreaterThanOrEqual(0)
-    expect(state.activityLog).toEqual([])
-    expect(state.localStockpiles).toEqual([])
-    // Legacy price rows survive the migration with no reason attached.
-    expect(state.priceHistory).toEqual([
-      { marketId: 'market_sys_a', itemId: 'ore', tick: 3, price: 11 }
-    ])
+    expect(() => loadCampaign(db)).toThrow(/older galaxy \(1 systems\)/)
 
-    // v7 added the price_history indexes.
     const indexes = (
       db.prepare("PRAGMA index_list('price_history')").all() as Array<{ name: string }>
     ).map((r) => r.name)
@@ -283,7 +257,7 @@ describe('v1 -> v2 migration', () => {
     runMigrations(db)
     runMigrations(db)
     expect(db.pragma('user_version', { simple: true })).toBe(13)
-    expect(() => loadCampaign(db)).not.toThrow()
+    expect(() => loadCampaign(db)).toThrow(/older galaxy/)
     db.close()
   })
 })

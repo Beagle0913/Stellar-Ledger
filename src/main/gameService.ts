@@ -158,6 +158,7 @@ export class GameService {
       state = loadCampaign(db)
     } catch (err) {
       closeDatabase(db)
+      if (err instanceof GameError) throw err
       throw new GameError('INTERNAL', errorMessage(err))
     }
     this.session.open(db, state, fileName, [...loadValidationWarnings])

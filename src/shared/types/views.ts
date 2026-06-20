@@ -138,6 +138,9 @@ export interface SystemSummary {
   x: number
   y: number
   planetCount: number
+  controllingFactionId?: FactionId | null
+  distanceFromHome?: number
+  isHome?: boolean
 }
 
 /** Galactic map DTO — exposed via `GameApi.getStarMap`; used by vanilla Star Map page and mod UIs. */

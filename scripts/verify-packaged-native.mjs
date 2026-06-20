@@ -31,7 +31,7 @@ function fail(title, body) {
   process.exit(1)
 }
 const unpacked = join(root, 'release', 'win-unpacked')
-const exe = join(unpacked, 'GalacticEconomy.exe')
+const exe = join(unpacked, 'StellarLedger.exe')
 const nativeBinary = join(
   unpacked,
   'resources',
@@ -88,7 +88,7 @@ if (probe.status !== 0) {
     'SQLite probe failed',
     `${probeOut}\n\nexit code: ${probe.status ?? 'unknown'}\n\n` +
       'Packaged better-sqlite3 failed to load under Electron (NODE_MODULE_VERSION mismatch?).\n' +
-      'Close GalacticEconomy.exe and run Build Game.bat again.'
+      'Close StellarLedger.exe and run Build Game.bat again.'
   )
 }
 
@@ -130,7 +130,7 @@ if (abiMismatch) {
   fail(
     'GUI smoke ABI mismatch',
     `${output.trim()}\n\nThe packaged exe would crash with a NODE_MODULE_VERSION mismatch.\n` +
-      'Close GalacticEconomy.exe and run Build Game.bat again.'
+      'Close StellarLedger.exe and run Build Game.bat again.'
   )
 }
 

@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { HANDLED_METHODS, invokeMethod } from '../src/main/dispatch.js'
 import { GameService } from '../src/main/gameService.js'
 import type { GameApi, StarMapView } from '../src/shared/types.js'
-import { VANILLA_DIR } from './helpers.js'
+import { VANILLA_DIR, getHomePlanetId, getHomeSystemId, getSampleNonHomeSystemId } from './helpers.js'
 
 // The dispatcher lives in src/main/dispatch.ts precisely so it can be tested
 // here without Electron: a real GameService against a temp saves dir.
@@ -37,6 +37,9 @@ afterAll(() => {
  * a method.
  */
 function payloadFor(): Record<keyof GameApi, unknown> {
+  const homeSystemId = getHomeSystemId()
+  const homePlanetId = getHomePlanetId()
+  const otherSystemId = getSampleNonHomeSystemId()
   return {
     listSaves: undefined,
     listScenarios: undefined,
@@ -46,13 +49,13 @@ function payloadFor(): Record<keyof GameApi, unknown> {
     hasActiveCampaign: undefined,
     getDashboard: undefined,
     getItems: undefined,
-    getPriceHistory: { systemId: 'sys_helion', itemId: 'food' },
+    getPriceHistory: { systemId: homeSystemId, itemId: 'food' },
     getSystems: undefined,
     getStarMap: undefined,
-    getSystem: 'sys_helion',
-    getPlanet: 'helion_prime',
-    getMarket: 'sys_helion',
-    createMarketOrder: { systemId: 'sys_helion', itemId: 'food', side: 'buy', quantity: 1, price: 5 },
+    getSystem: homeSystemId,
+    getPlanet: homePlanetId,
+    getMarket: homeSystemId,
+    createMarketOrder: { systemId: homeSystemId, itemId: 'food', side: 'buy', quantity: 1, price: 5 },
     cancelMarketOrder: 'order_does_not_exist',
     getInventory: undefined,
     getProduction: undefined,
@@ -62,7 +65,7 @@ function payloadFor(): Record<keyof GameApi, unknown> {
     getLogistics: undefined,
     createTransportJob: {
       shipId: 'no_such_ship',
-      destinationSystemId: 'sys_vesper',
+      destinationSystemId: otherSystemId,
       itemId: 'ore',
       quantity: 1
     },
@@ -80,12 +83,12 @@ function payloadFor(): Record<keyof GameApi, unknown> {
     purchaseShip: { shipDefinitionId: 'ship_hauler_2' },
     runTicksSmart: { mode: 'changes', maxDays: 5 },
     previewMarketTrade: {
-      systemId: 'sys_helion',
+      systemId: homeSystemId,
       itemId: 'ore',
       action: 'sell_max'
     },
     executeMarketTrade: {
-      systemId: 'sys_helion',
+      systemId: homeSystemId,
       itemId: 'ore',
       action: 'sell_amount',
       quantity: 1
@@ -133,7 +136,7 @@ describe('IPC dispatcher', () => {
   })
 
   it('rejects malformed payloads before they reach the service', () => {
-    expect(() => invokeMethod(service, 'createMarketOrder', { systemId: 'sys_helion' })).toThrow(
+    expect(() => invokeMethod(service, 'createMarketOrder', { systemId: getHomeSystemId() })).toThrow(
       /Invalid payload for "createMarketOrder"/
     )
     expect(() => invokeMethod(service, 'runTicks', 0)).toThrow(/Invalid payload for "runTicks"/)
@@ -141,11 +144,12 @@ describe('IPC dispatcher', () => {
     expect(() => invokeMethod(service, 'getPlanet', 42)).toThrow(/Invalid payload for "getPlanet"/)
   })
 
-  it('getStarMap returns systems and distance-weighted lanes', () => {
+  it('getStarMap returns systems and MST + k-NN lanes', () => {
     const map = invokeMethod(service, 'getStarMap', undefined) as StarMapView
     const n = map.systems.length
     expect(n).toBeGreaterThan(0)
     expect(map.homeSystemId).toBeTruthy()
-    expect(map.lanes.length).toBe((n * (n - 1)) / 2)
+    expect(map.lanes.length).toBeGreaterThan(n - 1)
+    expect(map.lanes.length).toBeLessThan((n * (n - 1)) / 2)
   })
 })

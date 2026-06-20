@@ -6,12 +6,12 @@ import { marketIdForSystem } from '../src/shared/ids.js'
 import { createMarketOrder, matchMarket } from '../src/simulation/market.js'
 import { syncNpcLiquidityToStockpiles } from '../src/simulation/npcLiquidity.js'
 import { setRegionalStockpile } from '../src/simulation/localEconomy.js'
-import { getPlayerCorporation, newGame } from './helpers.js'
+import { getPlayerCorporation, newGame, homeMarketId } from './helpers.js'
 
 describe('NPC stockpile-scaled liquidity', () => {
   it('reduces NPC sell depth when regional stockpile is low', () => {
     const state = newGame()
-    const marketId = marketIdForSystem('sys_helion')
+    const marketId = homeMarketId()
     setRegionalStockpile(state, marketId, 'food', 20)
     syncNpcLiquidityToStockpiles(state)
 

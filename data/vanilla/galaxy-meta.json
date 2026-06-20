@@ -1,0 +1,25 @@
+{
+  "seed": 42,
+  "generatorVersion": "1.0.0",
+  "generatedAt": "2026-06-20T00:00:00.000Z",
+  "systemCount": 100,
+  "planetCount": 505,
+  "homeSystemId": "sys_014",
+  "homePlanetId": "sys_014_p2",
+  "npcCorps": {
+    "corp_helion_mining": {
+      "homeSystemId": "sys_001",
+      "planetId": "sys_001_p2"
+    },
+    "corp_orion_refining": {
+      "homeSystemId": "sys_002",
+      "planetId": "sys_002_p1"
+    }
+  },
+  "planetCountByArchetype": {
+    "sparse": 16,
+    "typical": 54,
+    "rich": 24,
+    "massive": 6
+  }
+}

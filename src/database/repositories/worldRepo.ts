@@ -51,7 +51,7 @@ export function saveMeta(
     tick: meta.tick,
     created_at: meta.createdAt,
     ticking: meta.ticking ? 1 : 0,
-    game_version: '0.1.0',
+    game_version: '0.2.0',
     factions_json: JSON.stringify(defs.factions),
     events_json: JSON.stringify(defs.events),
     economic_profiles_json: JSON.stringify(defs.economicProfiles),

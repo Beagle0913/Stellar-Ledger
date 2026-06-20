@@ -11,7 +11,7 @@ From source: edit `data/` and `mods/` in the repo root.
 Portable exe: editable folders appear next to the exe on first run:
 
 ```
-GalacticEconomy.exe
+StellarLedger.exe
 data/      <- edit data/vanilla here (and add data mods)
 mods/      <- add external mod folders here
 saves/     <- campaign .sqlite files
@@ -31,8 +31,9 @@ New campaigns freeze loaded definitions (including scenario and NPC corp seeds) 
 | `items.json`     | Item definitions                                     |
 | `recipes.json`   | Recipe definitions (incl. extraction recipes)        |
 | `buildings.json` | Building type definitions                            |
-| `systems.json`   | Star systems (id, name, map x/y)                     |
+| `systems.json`   | Star systems (id, name, map x/y, controlling faction) |
 | `planets.json`   | Planets (stats + `systemId`)                         |
+| `galaxy-meta.json` | Generator metadata: seed, counts, home ids, NPC placement |
 | `factions.json`  | Factions (flavor)                                    |
 | `events.json`    | Event definitions (trigger + effect)                 |
 | `economic_profiles.json` | Regional demand/supply rules                 |
@@ -44,6 +45,17 @@ New campaigns freeze loaded definitions (including scenario and NPC corp seeds) 
 | `npc_corporations.json` | NPC corporation seeds (new campaigns only) |
 | `scenarios.json` | Named campaign start presets |
 | `content_version.json` | Integer bumped when vanilla content changes (portable seed updates) |
+
+## Regenerating the vanilla galaxy
+
+Vanilla ships **100 systems** and approximately **550 planets** as committed JSON (not generated at runtime). To regenerate from the seeded procedural generator:
+
+```powershell
+corepack pnpm generate:galaxy          # rewrite data/vanilla/*.json
+corepack pnpm generate:galaxy --check  # CI: fail if committed JSON drifted
+```
+
+After regeneration, review `galaxy-meta.json` for `homeSystemId`, `homePlanetId`, and NPC corp placement. Tests and docs reference those ids via `galaxy-meta.json`.
 
 ## Example mods
 
@@ -271,10 +283,10 @@ Optional. Seeds NPC corps on new campaigns only. Inventory, buildings, ships, cr
   "id": "corp_helion_mining",
   "name": "Helion Mining",
   "factionId": "faction_consortium",
-  "homeSystemId": "sys_cinder",
+  "homeSystemId": "sys_001",
   "startingCredits": 55000,
   "startingStock": { "ore": 120, "energy": 80 },
-  "buildings": [{ "planetId": "cinder_core", "buildingType": "mine" }],
+  "buildings": [{ "planetId": "sys_001_p2", "buildingType": "mine" }],
   "ships": [{ "definitionId": "ship_hauler_1", "name": "Helion Hauler" }],
   "aiProfile": "extractor"
 }
