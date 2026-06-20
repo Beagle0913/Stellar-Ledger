@@ -71,9 +71,9 @@ After regeneration, review `galaxy-meta.json` for `homeSystemId`, `homePlanetId`
 {
   "id": "my_mod",
   "name": "My Mod",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "You",
-  "gameVersion": "0.1.x",
+  "gameVersion": "0.2.x",
   "dependencies": ["vanilla"],
   "loadAfter": ["vanilla"],
   "description": "Adds some new industry."
@@ -104,13 +104,16 @@ items, a building, and two recipes on top of `vanilla`.
 ### Example economy config (optional object, not an array)
 
 `economy_config.json` overrides simulation tunables. Later mods in load order win per field.
-See `data/vanilla/economy_config.json` and `docs/ECONOMY.md`.
+See `data/vanilla/economy_config.json` and the NPC tuning table in [ECONOMY.md](ECONOMY.md).
 
 ```json
 {
   "regionalTradeMinSpreadPercent": 8,
   "regionalTradeMaxUnitsPerDay": 40,
-  "populationGrowthRatePerDay": 0.0001
+  "populationGrowthRatePerDay": 0.0001,
+  "npcStockTargets": { "ore": 80, "metal": 30, "food": 20 },
+  "npcDefaultStockTarget": 20,
+  "npcMarketMaxOrderQty": 40
 }
 ```
 
@@ -242,7 +245,7 @@ items, total sell proceeds, completed contracts, etc.).
 
 ## Validation rules
 
-The loader/merger enforces (each gives a clear error message):
+The loader/merger enforces (each gives a clear error message). Cross-reference rules live in `src/mods/mergeValidation.ts`.
 
 - every **item id** is unique; every **recipe id** is unique; every **building id** is
   unique (also systems, planets, factions, events).
@@ -267,6 +270,12 @@ Load order is resolved deterministically from `dependencies` + `loadAfter`
 
 You can review loaded data, discovered mods, definition counts, and any validation
 errors in-app on the **Mods** page.
+
+## When JSON is not enough
+
+Adding **content within existing types** (items, recipes, events with supported triggers/effects, objectives, contracts) is JSON-only — start a new campaign to pick it up.
+
+Adding a **new mechanic type** (new event trigger, objective type, contract type, tick step, or UI page) requires code changes across types, Zod schemas, registries, and sometimes persistence. Follow the checklists in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Reloading mod data
 

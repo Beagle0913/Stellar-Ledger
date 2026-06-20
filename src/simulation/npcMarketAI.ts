@@ -1,7 +1,7 @@
 import { newId } from '../shared/ids.js'
 import type { Corporation, GameState, ItemId, MarketOrder, OrderSide } from '../shared/types.js'
 import { NPC_OWNER } from '../shared/types/state.js'
-import { getCorporationById, getNpcCorporations } from './corporations.js'
+import { getCorporationById } from './corporations.js'
 import {
   availableQuantity,
   findInventory,
@@ -9,39 +9,18 @@ import {
   releaseReservation,
   reserveInventory
 } from './economyMath.js'
+import {
+  npcMarketBuyPriceMult,
+  npcMarketMaxOrderQty,
+  npcMarketMinOrderQty,
+  npcMarketSellPriceMult,
+  npcMarketShortageFraction,
+  npcMarketSurplusFraction,
+  npcStockTarget,
+  sortedNpcCorporations,
+  systemsForCorp
+} from './npc/shared.js'
 import { marketById, marketBySystemId } from './stateIndex.js'
-
-const MAX_CORP_ORDER_QTY = 40
-const MIN_ORDER_QTY = 5
-const SURPLUS_FRACTION = 0.25
-const SHORTAGE_FRACTION = 0.5
-const SELL_PRICE_MULT = 1.05
-const BUY_PRICE_MULT = 0.95
-
-const DEFAULT_TARGETS: Record<string, number> = {
-  ore: 80,
-  metal: 30,
-  machinery: 4,
-  energy: 40,
-  fuel: 30,
-  food: 20
-}
-
-function itemTarget(itemId: ItemId): number {
-  return DEFAULT_TARGETS[itemId] ?? 20
-}
-
-function sortedNpcCorporations(state: GameState): Corporation[] {
-  return getNpcCorporations(state).slice().sort((a, b) => a.id.localeCompare(b.id))
-}
-
-function systemsForCorp(state: GameState, corp: Corporation): string[] {
-  const systems = new Set<string>([corp.homeSystemId])
-  for (const row of state.inventories) {
-    if (row.ownerId === corp.id && row.quantity > 0) systems.add(row.systemId)
-  }
-  return [...systems].sort((a, b) => a.localeCompare(b))
-}
 
 function openCorpOrder(
   state: GameState,
@@ -82,13 +61,14 @@ function placeCorpOrder(
   tick: number
 ): boolean {
   const market = marketBySystemId(state, systemId)
-  if (!market || quantity < MIN_ORDER_QTY) return false
+  const minOrderQty = npcMarketMinOrderQty(state)
+  if (!market || quantity < minOrderQty) return false
 
   const ref = referencePrice(state, market.id, itemId)
   const price =
     side === 'sell'
-      ? Math.max(1, Math.round(ref * SELL_PRICE_MULT))
-      : Math.max(1, Math.round(ref * BUY_PRICE_MULT))
+      ? Math.max(1, Math.round(ref * npcMarketSellPriceMult(state)))
+      : Math.max(1, Math.round(ref * npcMarketBuyPriceMult(state)))
 
   const existing = openCorpOrder(state, corp.id, market.id, itemId, side)
   if (existing) cancelCorpOrder(state, existing)
@@ -119,32 +99,36 @@ function placeCorpOrder(
 export function processNpcMarketAI(state: GameState): number {
   const tick = state.meta.tick
   let actions = 0
+  const maxOrderQty = npcMarketMaxOrderQty(state)
+  const minOrderQty = npcMarketMinOrderQty(state)
+  const surplusFraction = npcMarketSurplusFraction(state)
+  const shortageFraction = npcMarketShortageFraction(state)
 
   for (const corp of sortedNpcCorporations(state)) {
     if (corp.aiProfile === 'trader') continue
 
-    for (const systemId of systemsForCorp(state, corp)) {
+    for (const systemId of systemsForCorp(state, corp, { requirePositiveQuantity: true })) {
       const market = marketBySystemId(state, systemId)
       if (!market) continue
 
       for (const item of state.definitions.items.slice().sort((a, b) => a.id.localeCompare(b.id))) {
         const qty = availableQuantity(findInventory(state, corp.id, systemId, item.id))
-        const target = itemTarget(item.id)
+        const target = npcStockTarget(state, item.id)
         const sellExisting = openCorpOrder(state, corp.id, market.id, item.id, 'sell')
         const buyExisting = openCorpOrder(state, corp.id, market.id, item.id, 'buy')
 
-        const surplus = qty - target * (1 + SURPLUS_FRACTION)
-        if (surplus >= MIN_ORDER_QTY) {
+        const surplus = qty - target * (1 + surplusFraction)
+        if (surplus >= minOrderQty) {
           if (buyExisting) cancelCorpOrder(state, buyExisting)
-          const sellQty = Math.min(Math.floor(surplus), MAX_CORP_ORDER_QTY)
+          const sellQty = Math.min(Math.floor(surplus), maxOrderQty)
           if (placeCorpOrder(state, corp, systemId, item.id, 'sell', sellQty, tick)) actions += 1
           continue
         }
 
-        const shortage = target * SHORTAGE_FRACTION - qty
-        if (shortage >= MIN_ORDER_QTY) {
+        const shortage = target * shortageFraction - qty
+        if (shortage >= minOrderQty) {
           if (sellExisting) cancelCorpOrder(state, sellExisting)
-          const buyQty = Math.min(Math.floor(shortage), MAX_CORP_ORDER_QTY)
+          const buyQty = Math.min(Math.floor(shortage), maxOrderQty)
           if (placeCorpOrder(state, corp, systemId, item.id, 'buy', buyQty, tick)) actions += 1
           continue
         }

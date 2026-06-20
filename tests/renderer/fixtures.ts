@@ -1,3 +1,4 @@
+import { GAME_VERSION } from '../../src/shared/constants.js'
 import type {
   DashboardData,
   InventoryView,
@@ -11,24 +12,32 @@ import type {
   SystemSummary
 } from '../../src/shared/types.js'
 
+/** Stable mock ids for renderer smoke tests (not tied to procedural galaxy data). */
+export const MOCK_HOME_SYSTEM_ID = 'sys_mock_home'
+export const MOCK_HOME_SYSTEM_NAME = 'Home System'
+export const MOCK_HOME_PLANET_ID = 'planet_mock_home'
+export const MOCK_HOME_PLANET_NAME = 'Home Prime'
+export const MOCK_OTHER_SYSTEM_ID = 'sys_mock_other'
+export const MOCK_OTHER_SYSTEM_NAME = 'Outpost'
+
 export const mockSystemSummary: SystemSummary = {
-  id: 'sys_helion',
-  name: 'Helion',
+  id: MOCK_HOME_SYSTEM_ID,
+  name: MOCK_HOME_SYSTEM_NAME,
   x: 0,
   y: 0,
   planetCount: 1
 }
 
 export const mockSystemDetail: SystemDetail = {
-  id: 'sys_helion',
-  name: 'Helion',
+  id: MOCK_HOME_SYSTEM_ID,
+  name: MOCK_HOME_SYSTEM_NAME,
   controllingFactionId: 'faction_consortium',
   controllingFactionName: 'Helion Consortium',
   factionPriceBias: 1,
   planets: [
     {
-      id: 'helion_prime',
-      name: 'Helion Prime',
+      id: MOCK_HOME_PLANET_ID,
+      name: MOCK_HOME_PLANET_NAME,
       planetType: 'terran',
       habitability: 0.8,
       mineralRichness: 0.6,
@@ -39,15 +48,15 @@ export const mockSystemDetail: SystemDetail = {
     }
   ],
   marketItems: [],
-  routes: [{ toSystemId: 'sys_cinder', toName: 'Cinder', distance: 12 }],
+  routes: [{ toSystemId: MOCK_OTHER_SYSTEM_ID, toName: MOCK_OTHER_SYSTEM_NAME, distance: 12 }],
   foreignBuildings: []
 }
 
 export const mockPlanetDetail: PlanetDetail = {
-  id: 'helion_prime',
-  name: 'Helion Prime',
-  systemId: 'sys_helion',
-  systemName: 'Helion',
+  id: MOCK_HOME_PLANET_ID,
+  name: MOCK_HOME_PLANET_NAME,
+  systemId: MOCK_HOME_SYSTEM_ID,
+  systemName: MOCK_HOME_SYSTEM_NAME,
   planetType: 'terran',
   habitability: 0.8,
   mineralRichness: 0.6,
@@ -79,15 +88,15 @@ export const mockDashboard: DashboardData = {
 }
 
 export const mockMarketView: MarketView = {
-  systemId: 'sys_helion',
-  systemName: 'Helion',
+  systemId: MOCK_HOME_SYSTEM_ID,
+  systemName: MOCK_HOME_SYSTEM_NAME,
   items: []
 }
 
 export const mockInventory: InventoryView[] = [
   {
-    systemId: 'sys_helion',
-    systemName: 'Helion',
+    systemId: MOCK_HOME_SYSTEM_ID,
+    systemName: MOCK_HOME_SYSTEM_NAME,
     itemId: 'ore',
     itemName: 'Ore',
     quantity: 100,
@@ -108,7 +117,7 @@ export const mockLogistics: LogisticsView = {
       cargoCapacity: 100,
       fuelUsePerDistance: 1,
       speed: 5,
-      currentSystemId: 'sys_helion',
+      currentSystemId: MOCK_HOME_SYSTEM_ID,
       ownerId: 'player'
     }
   ],
@@ -117,7 +126,7 @@ export const mockLogistics: LogisticsView = {
 }
 
 export const mockStarMap: StarMapView = {
-  homeSystemId: 'sys_helion',
+  homeSystemId: MOCK_HOME_SYSTEM_ID,
   currentTick: 5,
   systems: [
     {
@@ -137,8 +146,8 @@ export const mockStarMap: StarMapView = {
       contractHighlight: null
     },
     {
-      id: 'sys_cinder',
-      name: 'Cinder',
+      id: MOCK_OTHER_SYSTEM_ID,
+      name: MOCK_OTHER_SYSTEM_NAME,
       x: 200,
       y: 150,
       planetCount: 2,
@@ -154,13 +163,13 @@ export const mockStarMap: StarMapView = {
       topShortageSeverity: 0.2,
       economyHeat: 'shortage',
       eventTicksAgo: null,
-      contractHighlight: 'Deliver ore to Cinder'
+      contractHighlight: 'Deliver ore to Outpost'
     }
   ],
   lanes: [
     {
-      systemAId: 'sys_helion',
-      systemBId: 'sys_cinder',
+      systemAId: MOCK_HOME_SYSTEM_ID,
+      systemBId: MOCK_OTHER_SYSTEM_ID,
       x1: 0,
       y1: 0,
       x2: 200,
@@ -173,10 +182,10 @@ export const mockStarMap: StarMapView = {
   transportArcs: [
     {
       jobId: 'job_1',
-      originSystemId: 'sys_helion',
+      originSystemId: MOCK_HOME_SYSTEM_ID,
       originX: 0,
       originY: 0,
-      destinationSystemId: 'sys_cinder',
+      destinationSystemId: MOCK_OTHER_SYSTEM_ID,
       destinationX: 200,
       destinationY: 150,
       progressFraction: 0.5,
@@ -204,7 +213,7 @@ export const mockModsView: ModsView = {
     {
       id: 'vanilla',
       name: 'Vanilla',
-      version: '0.1.0',
+      version: GAME_VERSION,
       author: 'Prototype',
       description: 'Base game',
       enabled: true,

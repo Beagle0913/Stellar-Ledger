@@ -1,22 +1,20 @@
 import { join } from 'node:path'
-import { loadModFromDir } from '../src/mods/modLoader.js'
-import { mergeMods } from '../src/mods/mergeMods.js'
 import { buildInitialState } from '../src/database/saveManager.js'
 import { getPlayerCorporation, getPlayerCorporationId } from '../src/simulation/corporations.js'
 import { DEFAULT_CORP_ID } from '../src/shared/constants.js'
 import { getGalaxyMeta } from '../src/shared/galaxyMeta.js'
 import { marketIdForSystem } from '../src/shared/ids.js'
 import { resolveScenario, STANDARD_SCENARIO_ID } from '../src/shared/scenarios.js'
+import { loadVanillaDefinitions, VANILLA_DIR } from '../src/shared/vanillaLoader.js'
 import type { GameDefinitions, GameState } from '../src/shared/types.js'
 
 // Shared test utilities. Tests run headlessly under Node against the real vanilla
 // data and pure in-memory GameState — no Electron, no SQLite required.
 
-export const VANILLA_DIR = join(process.cwd(), 'data', 'vanilla')
+export { VANILLA_DIR, loadVanillaDefinitions }
 
 export function loadVanillaDefs(): GameDefinitions {
-  const vanilla = loadModFromDir(VANILLA_DIR, 'builtin')
-  return mergeMods([vanilla])
+  return loadVanillaDefinitions()
 }
 
 export function standardScenario(defs: GameDefinitions = loadVanillaDefs()) {

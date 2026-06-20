@@ -22,6 +22,7 @@
     "balance:report": "node scripts/balance-report.mjs",
     "postinstall": "electron-builder install-app-deps",
     "scaffold:ipc": "node scripts/scaffold-ipc.mjs",
+    "scaffold:state": "node scripts/scaffold-state-field.mjs",
     "rebuild:electron": "node scripts/rebuild-electron-native.mjs",
     "rebuild:node": "npm rebuild better-sqlite3",
     "dist": "node scripts/dist.mjs",

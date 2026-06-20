@@ -61,7 +61,7 @@ function payloadFor(): Record<keyof GameApi, unknown> {
     getProduction: undefined,
     getProductionPlan: { targetItemId: 'metal', targetQty: 1 },
     startProductionJob: { buildingId: 'no_such_building', recipeId: 'no_such_recipe', quantity: 1 },
-    buildBuilding: { planetId: 'helion_prime', buildingType: 'no_such_building_type' },
+    buildBuilding: { planetId: homePlanetId, buildingType: 'no_such_building_type' },
     getLogistics: undefined,
     createTransportJob: {
       shipId: 'no_such_ship',

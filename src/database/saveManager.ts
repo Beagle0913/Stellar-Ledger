@@ -6,7 +6,7 @@ import {
   scenarioSnapshotFrom
 } from '../shared/scenarios.js'
 import { buildInitialState } from '../simulation/bootstrap.js'
-import { PRICE_HISTORY_RETENTION_TICKS } from '../simulation/tick.js'
+import { PRICE_HISTORY_RETENTION_TICKS } from '../shared/constants.js'
 
 export { buildInitialState } from '../simulation/bootstrap.js'
 import {

@@ -1,6 +1,8 @@
 import { vi } from 'vitest'
 import type { GameApi, IpcResult } from '../../src/shared/types.js'
 import {
+  MOCK_HOME_SYSTEM_ID,
+  MOCK_HOME_SYSTEM_NAME,
   mockDashboard,
   mockInventory,
   mockLogistics,
@@ -111,8 +113,8 @@ export function createMockRendererApi(overrides: Partial<MockRendererApi> = {}):
     })),
     previewMarketTrade: vi.fn(async () => ({
       action: 'sell_max' as const,
-      systemId: 'sys_helion',
-      systemName: 'Helion',
+      systemId: MOCK_HOME_SYSTEM_ID,
+      systemName: MOCK_HOME_SYSTEM_NAME,
       itemId: 'ore',
       itemName: 'Ore',
       quantity: 0,
@@ -122,8 +124,8 @@ export function createMockRendererApi(overrides: Partial<MockRendererApi> = {}):
     })),
     executeMarketTrade: vi.fn(async () => ({
       action: 'sell_max' as const,
-      systemId: 'sys_helion',
-      systemName: 'Helion',
+      systemId: MOCK_HOME_SYSTEM_ID,
+      systemName: MOCK_HOME_SYSTEM_NAME,
       itemId: 'ore',
       itemName: 'Ore',
       quantity: 0,

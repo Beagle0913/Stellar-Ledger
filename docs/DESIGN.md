@@ -22,14 +22,17 @@ Nothing happens until you tick.
 
 ## Code layout
 
-- `src/simulation` — pure TypeScript, no Electron/React/DB. Takes `GameState`, returns new state.
-- Content ids come from JSON only; logic never hardcodes item names.
-- Renderer talks to main through typed IPC (`GameApi`); no Node in the UI.
+- `src/simulation` — pure TypeScript, no Electron/React/DB. Mutates in-memory `GameState`; tick steps in `tickSteps.ts`.
+- Content ids come from JSON only; logic never hardcodes item names (NPC tuning uses `economy_config.json`).
+- Renderer talks to main through typed IPC (`GameApi`); no Node in the UI. Pages registered in `pages/registry.ts`.
 - Saves copy mod definitions at campaign creation so later JSON edits can't break old games.
+- View DTOs built in `simulation/views/`; persistence split under `database/repositories/`.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for layer rules, IPC registry, and extension checklists.
 
 ## Explanations
 
-`src/shared/explanations/` turns existing simulation facts (price reasons, event triggers, objective locks, etc.) into player text. Built in view queries and tick results, not persisted.
+`src/shared/explanations/` turns existing simulation facts (price reasons, event triggers, objective locks, etc.) into player text. Built in `simulation/views/` and tick results, not persisted.
 
 ## Not done yet
 

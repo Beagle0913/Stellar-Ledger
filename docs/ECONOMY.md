@@ -34,7 +34,9 @@ Order owners:
 | `corp_*` | NPC corporation listing surplus or covering shortage |
 | player corp id | Your resting orders |
 
-Corp market AI (`npcMarketAI.ts`) keeps at most one open buy or sell per corp/system/item. Surplus → sell near 1.05× reference; shortage → buy near 0.95×. Objective progress counts player production only.
+Corp market AI (`npcMarketAI.ts`) and logistics AI (`npcLogisticsAI.ts`) share helpers in `simulation/npc/shared.ts`. Thresholds come from `economy_config.json`, not hardcoded TypeScript constants.
+
+Market AI keeps at most one open buy or sell per corp/system/item. Surplus → sell near `npcMarketSellPriceMult` × reference; shortage → buy near `npcMarketBuyPriceMult` × reference. Objective progress counts player production only.
 
 Sell orders reserve inventory. Buy orders escrow credits upfront.
 
@@ -50,7 +52,7 @@ When bid *B* crosses ask *S*, settlement is `round((B + S) / 2)`. Encoded as `TR
 
 Trade rows recorded after matching. Profile-driven price moves happen earlier in the tick. Player↔NPC trades nudge regional stockpiles. `referencePrice()` uses latest row or `baseValue`.
 
-365 ticks retained per market/item; older rows pruned at end of tick. Reference price always kept.
+365 ticks retained per market/item; older rows pruned at end of tick. Retention constant: `PRICE_HISTORY_RETENTION_TICKS` in `src/shared/constants.ts` (re-exported from `tick.ts`).
 
 ## Logistics
 
@@ -60,7 +62,7 @@ Cancel a running job: cargo returns at origin, fuel already spent is gone.
 
 ## Tick order
 
-`runTick(state)` — one day, deterministic:
+`runTick(state)` — one day, deterministic. Steps are registered in `src/simulation/tickSteps.ts` (`TICK_STEPS` array); order matches this list:
 
 1. Finish production jobs (player + NPC)
 2. Finish transport jobs (player + NPC)
@@ -97,6 +99,23 @@ Runtime corp state lives in SQLite; editing JSON later does not touch existing s
 **Regional trade:** goods move between markets when one side is in surplus and another in shortage, or when price spread exceeds a threshold. Capped per item per day.
 
 **Population:** live counts per planet; food security drives slow growth or decline. Feeds `perCapitaConsumptionPerDay` on profiles.
+
+### NPC AI tuning
+
+Corp market, logistics, and production AI read shared thresholds from `economy_config.json` (defaults in `src/shared/economyConfig.ts`). Mods may override individual fields.
+
+| Field | Role |
+|-------|------|
+| `npcStockTargets` | Per-item stockpile target for surplus/shortage checks |
+| `npcDefaultStockTarget` | Fallback target for items not listed above |
+| `npcMarketMaxOrderQty` / `npcMarketMinOrderQty` | Corp order size bounds |
+| `npcMarketSurplusFraction` / `npcMarketShortageFraction` | When to list sell vs buy orders |
+| `npcMarketSellPriceMult` / `npcMarketBuyPriceMult` | Corp order prices vs reference |
+| `npcLogisticsMaxQty` | Max units per inter-system haul |
+| `npcLogisticsMinSurplus` / `npcLogisticsMinShortage` | Minimum imbalance to dispatch |
+| `npcLogisticsSurplusFraction` / `npcLogisticsShortageFraction` | Logistics surplus/shortage thresholds |
+| `npcBalancedOreItemId` / `npcBalancedOreThreshold` | Balanced profile: refine when local stock is high |
+| `npcMaxProductionRunsPerBuilding` | Max recipe runs queued per idle building per tick |
 
 ## UI helpers
 

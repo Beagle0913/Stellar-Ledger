@@ -2,6 +2,7 @@ import React from 'react'
 import { render, type RenderResult } from '@testing-library/react'
 import { vi } from 'vitest'
 import { AppContext, type AppContextValue, type PageId } from '../../src/renderer/context.js'
+import { MOCK_HOME_PLANET_ID, MOCK_HOME_SYSTEM_ID } from './fixtures.js'
 
 export function defaultAppContext(overrides: Partial<AppContextValue> = {}): AppContextValue {
   return {
@@ -9,8 +10,8 @@ export function defaultAppContext(overrides: Partial<AppContextValue> = {}): App
     navigate: vi.fn(),
     refresh: vi.fn(),
     token: 0,
-    selectedSystemId: 'sys_helion',
-    selectedPlanetId: 'helion_prime',
+    selectedSystemId: MOCK_HOME_SYSTEM_ID,
+    selectedPlanetId: MOCK_HOME_PLANET_ID,
     campaignActive: true,
     setCampaignActive: vi.fn(),
     recoverNoCampaign: vi.fn(),

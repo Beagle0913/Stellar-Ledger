@@ -6,8 +6,8 @@ export { STARTING_CREDITS } from './balance.js'
 /** Name of the always-present built-in base content mod. */
 export const VANILLA_MOD_ID = 'vanilla'
 
-/** Game data/schema version used for mod compatibility checks. */
-export const GAME_VERSION = '0.1.0'
+/** Game data/schema version used for mod compatibility checks and save metadata. */
+export const GAME_VERSION = '0.2.0'
 
 /** Default player corporation. */
 export const DEFAULT_CORP_ID = 'player'
@@ -24,3 +24,6 @@ export const NPC_ORDER_QUANTITY = 1000
 
 /** Channel name used between renderer and main for the single IPC bridge. */
 export const IPC_CHANNEL = 'game:invoke'
+
+/** Price-history retention: rows older than this many ticks are pruned each tick. */
+export const PRICE_HISTORY_RETENTION_TICKS = 365

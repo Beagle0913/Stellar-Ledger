@@ -220,6 +220,25 @@ export interface EconomyConfig {
   populationFoodItemId: ItemId
   /** Item consumed as ship fuel during transport jobs. */
   fuelItemId: ItemId
+  /** Per-item stockpile targets for NPC market/logistics AI. */
+  npcStockTargets: Record<ItemId, number>
+  /** Fallback stock target when an item is not listed in npcStockTargets. */
+  npcDefaultStockTarget: number
+  npcMarketMaxOrderQty: number
+  npcMarketMinOrderQty: number
+  npcMarketSurplusFraction: number
+  npcMarketShortageFraction: number
+  npcMarketSellPriceMult: number
+  npcMarketBuyPriceMult: number
+  npcLogisticsMaxQty: number
+  npcLogisticsMinSurplus: number
+  npcLogisticsMinShortage: number
+  npcLogisticsSurplusFraction: number
+  npcLogisticsShortageFraction: number
+  /** Balanced production profile: refine when local stock of this item is at/above threshold. */
+  npcBalancedOreThreshold: number
+  npcBalancedOreItemId: ItemId
+  npcMaxProductionRunsPerBuilding: number
 }
 
 /**

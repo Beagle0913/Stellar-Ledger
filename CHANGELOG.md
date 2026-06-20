@@ -4,6 +4,22 @@ All notable changes to this prototype are documented here.
 
 ## [Unreleased]
 
+### Added — contributor architecture (future-feature groundwork)
+- **`docs/ARCHITECTURE.md`** — layers, IPC registry, services split, scaffolds, test map.
+- **IPC registry** — `src/shared/ipcMethods.ts`; preload generated from specs; `scaffold:ipc verify` / `--write`.
+- **Tick step registry** — `src/simulation/tickSteps.ts`; `PRICE_HISTORY_RETENTION_TICKS` in constants.
+- **Page registry** — `src/renderer/pages/registry.ts` drives nav and routing.
+- **Split modules** — `simulation/views/`, `main/services/`, `database/repositories/{meta,corp,definitions,entity}Repo`, `mods/mergeValidation.ts`.
+- **NPC shared utilities** — `simulation/npc/shared.ts`; corp AI tuning in `economy_config.json`.
+- **Lookup helpers** — `resolveNames.ts`, wider `stateIndex` adoption; `tests/architecture.test.ts` guard.
+- **Scaffolds** — `pnpm scaffold:state`; PR template persistence/IPC checklists.
+- **Tests** — extraction, populationDynamics, buildings, stateIndex, mergeValidation, renderer page interactions.
+
+### Changed — documentation
+- Full doc pass: README layout/IPC sections, docs index, DESIGN/PERSISTENCE/ECONOMY/MODDING/ROADMAP aligned with refactored code.
+- **`GAME_VERSION`** unified at `0.2.0` in `src/shared/constants.ts`.
+- **`loadVanillaDefinitions()`** shared by tests and balance harness (`src/shared/vanillaLoader.ts`).
+
 ## [0.2.0] — 2026-06-20
 
 ### Breaking

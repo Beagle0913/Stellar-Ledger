@@ -59,7 +59,9 @@ Scenario presets, production planner, price charts, multi-corp saves (schema v13
 | Factions / events / objectives | 3 / 7 / 7 |
 | Scenarios / NPC corps | 4 / 2 |
 
-Stack: TypeScript, Electron, React, Vite, better-sqlite3, Zod, Vitest (~330 tests).
+Stack: TypeScript, Electron, React, Vite, better-sqlite3, Zod, Vitest (~77 test files).
+
+Contributor guide: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (layers, IPC registry, services split, scaffolds).
 
 ## Development
 
@@ -88,7 +90,8 @@ corepack pnpm verify              # branding + galaxy check + typecheck + lint +
 corepack pnpm run dist            # release/StellarLedger.exe
 corepack pnpm balance             # economy CI gates
 corepack pnpm run balance:report  # writes reports/balance/
-corepack pnpm scaffold:ipc        # IPC wiring helper
+corepack pnpm scaffold:ipc        # IPC wiring helper (verify / new method)
+corepack pnpm scaffold:state      # persistence field checklist
 ```
 
 Content authors: [`docs/MODDING.md`](docs/MODDING.md). Economy rules: [`docs/ECONOMY.md`](docs/ECONOMY.md).
@@ -126,36 +129,40 @@ Debug page (dev builds only): activity log and economy inspector.
 ## Layout
 
 ```
-src/shared/       Types, constants, explanations
-src/simulation/   Tick, production, market, NPC AI, …
-src/database/     SQLite, migrations, save manager
-src/mods/         Loader, Zod schemas, merge
-src/balance/      Headless economy runs
-src/main/         Electron main + preload
-src/renderer/     React UI
-data/vanilla/     Base mod
-mods/             External mods
-tests/            Vitest
-docs/             Design, economy, modding, …
+src/shared/           Types, constants, explanations, ipcMethods, vanillaLoader
+src/simulation/       Tick (tickSteps), market, NPC AI (npc/shared), views/
+src/database/         SQLite, migrations, repositories/ (meta, corp, defs, entity)
+src/mods/             Loader, mergeMods, mergeValidation, Zod schemas
+src/balance/          Headless economy runs
+src/main/             Electron main, GameService, services/, commands/, dispatch
+src/renderer/         React UI, pages/registry.ts, components/
+data/vanilla/         Base mod
+mods/                 External mods
+tests/                Vitest (Node + jsdom renderer)
+docs/                 Design, architecture, economy, modding, …
 ```
 
-Pages: Dashboard, Star Map, System, Planet, Market, Production, Inventory, Logistics, Mods, Save/Load, Debug (dev only).
+Pages are registered in `src/renderer/pages/registry.ts` (Dashboard, Star Map, System, Planet, Market, Production, Inventory, Logistics, Mods, Save/Load, Debug in dev).
 
 ## IPC
 
-New `GameApi` methods need wiring in six places; `tests/ipc.test.ts` catches drift via `payloadFor()`:
+New `GameApi` methods are registered in **`src/shared/ipcMethods.ts`** (`IPC_METHOD_SPECS`). Preload builds the bridge from that list; dispatch still maps each name to `GameService`.
 
-1. `src/shared/types/api.ts`
-2. `src/main/ipcSchemas.ts` (if payload)
-3. `src/main/gameService.ts`
-4. `src/main/dispatch.ts`
-5. `src/main/preload.ts`
-6. `tests/ipc.test.ts`
+Checklist:
+
+1. `src/shared/ipcMethods.ts` — add `{ name, hasPayload }`
+2. `src/shared/types/api.ts` — type signature
+3. `src/main/ipcSchemas.ts` (if payload)
+4. `src/main/services/` — implement on the right service module
+5. `src/main/dispatch.ts` — switch case
+6. `tests/ipc.test.ts` — `payloadFor()` entry
 
 ```bash
 pnpm scaffold:ipc myMethod --payload
 pnpm scaffold:ipc verify
 ```
+
+Optional: `pnpm scaffold:ipc myMethod --payload --write` appends registry, dispatch, api stub, and test hints.
 
 Renderer never imports Node — only `window.api`.
 
@@ -165,18 +172,19 @@ Renderer never imports Node — only `window.api`.
 flowchart TB
   vanilla[data/vanilla JSON] --> mods[mod loader]
   extmods[mods/ JSON] --> mods
-  mods --> main[GameService]
-  renderer[React] --> preload --> main
-  main --> sim[simulation]
-  main --> db[(SQLite)]
-  sim --> main
+  mods --> svc[GameService + services/]
+  renderer[React pages/registry] --> preload --> dispatch
+  dispatch --> svc
+  svc --> sim[simulation views tickSteps]
+  svc --> db[(SQLite repos/)]
+  sim --> svc
 ```
 
 Simulation is pure TS on in-memory `GameState`. Saves freeze mod and scenario definitions at campaign creation.
 
 ## Contributing
 
-Branch from `main`, run `pnpm verify`, open a PR. CI runs `check` (ubuntu: typecheck, lint, test) and `dist-windows` (portable exe artifact).
+Branch from `main`, run `pnpm verify`, open a PR. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) before adding IPC, pages, tick steps, or save fields. CI runs `check` (ubuntu: typecheck, lint, test) and `dist-windows` (portable exe artifact, pnpm).
 
 [`docs/ROADMAP.md`](docs/ROADMAP.md) · [`CHANGELOG.md`](CHANGELOG.md)
 

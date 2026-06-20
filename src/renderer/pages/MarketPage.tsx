@@ -6,6 +6,7 @@ import { DataTable } from '../components/DataTable'
 import { LinkButton } from '../components/LinkButton'
 import { MarketEconomyGuide, PriceDiagnosticsPanel } from '../components/PriceDiagnosticsPanel'
 import { PriceChart } from '../components/PriceChart'
+import { MarketOrderForm } from '../components/MarketOrderForm'
 import { StatusBanner } from '../components/StatusBanner'
 import { SystemPicker } from '../components/SystemPicker'
 import {
@@ -244,63 +245,42 @@ export function MarketPage(): React.JSX.Element {
         )}
       </div>
 
-      <div className="panel">
-        <h3>Place Order</h3>
-        <div className="form-line">
-          <select value={side} onChange={(e) => setSide(e.target.value as OrderSide)}>
-            <option value="sell">Sell</option>
-            <option value="buy">Buy</option>
-          </select>
-          <select value={itemId} onChange={(e) => setItemId(e.target.value)}>
-            {(m?.items ?? []).map((it) => (
-              <option key={it.itemId} value={it.itemId}>
-                {it.itemName}
-              </option>
-            ))}
-          </select>
-          <label>Qty</label>
-          <input
-            type="number"
-            min={1}
-            value={quantity}
-            style={{ width: 80 }}
-            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-          />
-          <label>Price</label>
-          <input
-            type="number"
-            min={1}
-            value={price}
-            style={{ width: 80 }}
-            onChange={(e) => setPrice(Math.max(1, Number(e.target.value)))}
-          />
-          <button className="primary" onClick={() => void submit()}>
-            Submit Order
-          </button>
-        </div>
-
-        <p className="hint">
-          {side === 'sell' ? (
-            <>
-              You have <span className="pos">{availableHere}</span> {selectedItem?.itemName ?? ''}{' '}
-              available here. Best bid:{' '}
-              <span className="mono">
-                {selectedItem?.buyOrders[0] ? `${selectedItem.buyOrders[0].price} cr` : '—'}
-              </span>
-              .
-            </>
-          ) : (
-            <>
-              This order escrows <span className="mono">{orderCost.toLocaleString()} cr</span>. Best
-              ask:{' '}
-              <span className="mono">
-                {selectedItem?.sellOrders[0] ? `${selectedItem.sellOrders[0].price} cr` : '—'}
-              </span>
-              .
-            </>
-          )}
-        </p>
-      </div>
+      <MarketOrderForm
+        side={side}
+        itemId={itemId}
+        quantity={quantity}
+        price={price}
+        items={m?.items ?? []}
+        pending={createOrderMut.pending}
+        onSideChange={setSide}
+        onItemChange={setItemId}
+        onQuantityChange={setQuantity}
+        onPriceChange={setPrice}
+        onSubmit={() => void submit()}
+        hint={
+          <p className="hint">
+            {side === 'sell' ? (
+              <>
+                You have <span className="pos">{availableHere}</span> {selectedItem?.itemName ?? ''}{' '}
+                available here. Best bid:{' '}
+                <span className="mono">
+                  {selectedItem?.buyOrders[0] ? `${selectedItem.buyOrders[0].price} cr` : '—'}
+                </span>
+                .
+              </>
+            ) : (
+              <>
+                This order escrows <span className="mono">{orderCost.toLocaleString()} cr</span>. Best
+                ask:{' '}
+                <span className="mono">
+                  {selectedItem?.sellOrders[0] ? `${selectedItem.sellOrders[0].price} cr` : '—'}
+                </span>
+                .
+              </>
+            )}
+          </p>
+        }
+      />
 
       <MarketEconomyGuide />
 

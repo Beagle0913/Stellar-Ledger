@@ -15,37 +15,14 @@ import {
   type PageId
 } from './context'
 import type { DashboardData } from '../shared/types'
-import { DashboardPage } from './pages/DashboardPage'
-import { StarMapPage } from './pages/StarMapPage'
-import { SystemPage } from './pages/SystemPage'
-import { PlanetPage } from './pages/PlanetPage'
-import { MarketPage } from './pages/MarketPage'
-import { ProductionPage } from './pages/ProductionPage'
-import { InventoryPage } from './pages/InventoryPage'
-import { LogisticsPage } from './pages/LogisticsPage'
-import { ModsPage } from './pages/ModsPage'
-import { SaveLoadPage } from './pages/SaveLoadPage'
-import { DebugPage } from './pages/DebugPage'
+import { PAGE_REGISTRY } from './pages/registry'
 
 export type { PageId } from './context'
 export { useApp } from './context'
 
-const BASE_PAGES: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'starmap', label: 'Star Map' },
-  { id: 'system', label: 'System' },
-  { id: 'planet', label: 'Planet' },
-  { id: 'market', label: 'Market' },
-  { id: 'production', label: 'Production' },
-  { id: 'inventory', label: 'Inventory' },
-  { id: 'logistics', label: 'Logistics' },
-  { id: 'mods', label: 'Mods' },
-  { id: 'saveload', label: 'Save / Load' }
-]
-
-const PAGES: NavItem[] = import.meta.env.DEV
-  ? [...BASE_PAGES, { id: 'debug', label: 'Debug' }]
-  : BASE_PAGES
+const PAGES: NavItem[] = PAGE_REGISTRY.filter(
+  (entry) => entry.showInNav && (!entry.devOnly || import.meta.env.DEV)
+).map(({ id, label }) => ({ id, label }))
 
 export function App(): React.JSX.Element {
   const [page, setPage] = useState<PageId>('saveload')
@@ -176,28 +153,8 @@ export function App(): React.JSX.Element {
 }
 
 function PageView({ page }: { page: PageId }): React.JSX.Element {
-  switch (page) {
-    case 'dashboard':
-      return <DashboardPage />
-    case 'starmap':
-      return <StarMapPage />
-    case 'system':
-      return <SystemPage />
-    case 'planet':
-      return <PlanetPage />
-    case 'market':
-      return <MarketPage />
-    case 'production':
-      return <ProductionPage />
-    case 'inventory':
-      return <InventoryPage />
-    case 'logistics':
-      return <LogisticsPage />
-    case 'mods':
-      return <ModsPage />
-    case 'saveload':
-      return <SaveLoadPage />
-    case 'debug':
-      return <DebugPage />
-  }
+  const entry = PAGE_REGISTRY.find((p) => p.id === page)
+  if (!entry) throw new Error(`Unknown page: ${page}`)
+  const Component = entry.component
+  return <Component />
 }

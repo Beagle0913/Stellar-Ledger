@@ -28,4 +28,4 @@ node scripts/dump-star-map.mjs path/to/saves/your-campaign.sqlite
 
 ## Custom UI
 
-Mods can't inject React pages yet. Options: external tool reading saves (hard), fork the renderer and call `getStarMap`, or wait for a nav-hook API. Refresh after ticks so convoy arcs stay current.
+Mods can't inject React pages yet. Built-in pages are registered in `src/renderer/pages/registry.ts` (planned extension point for mod nav). Options today: external tool reading saves (hard), fork the renderer and call `getStarMap`, or wait for mod nav hooks on the roadmap.

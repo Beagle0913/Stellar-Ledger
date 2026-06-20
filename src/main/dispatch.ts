@@ -1,4 +1,5 @@
 import { GameError, toIpcError } from '../shared/errors.js'
+import { HANDLED_METHODS } from '../shared/ipcMethods.js'
 import type { IpcResult } from '../shared/types.js'
 import { logError } from './log.js'
 import type { GameService } from './gameService.js'
@@ -8,53 +9,7 @@ import { parseIpcPayload } from './ipcSchemas.js'
 // GameService call. Lives in its own Electron-free module so it is importable
 // (and testable) under plain Node — main.ts wires it to ipcMain.
 
-/** Every GameApi method name handled by invokeMethod (kept exhaustive by tests). */
-export const HANDLED_METHODS = [
-  'listSaves',
-  'listScenarios',
-  'createNewCampaign',
-  'loadCampaign',
-  'saveCurrent',
-  'hasActiveCampaign',
-  'getDashboard',
-  'getItems',
-  'getPriceHistory',
-  'getSystems',
-  'getStarMap',
-  'getSystem',
-  'getPlanet',
-  'getMarket',
-  'createMarketOrder',
-  'cancelMarketOrder',
-  'getInventory',
-  'getProduction',
-  'getProductionPlan',
-  'startProductionJob',
-  'buildBuilding',
-  'getLogistics',
-  'createTransportJob',
-  'cancelTransportJob',
-  'runTick',
-  'runTicks',
-  'deleteSave',
-  'renameSave',
-  'getMods',
-  'setModEnabled',
-  'getEvents',
-  'getActivityLog',
-  'getDebugState',
-  'cancelProductionJob',
-  'purchaseShip',
-  'runTicksSmart',
-  'previewMarketTrade',
-  'executeMarketTrade',
-  'repeatProductionJob',
-  'runProductionUntilExhausted',
-  'acceptContract',
-  'completeContract',
-  'abandonContract',
-  'reloadModData'
-] as const
+export { HANDLED_METHODS }
 
 export function invokeMethod(service: GameService, method: string, payload: unknown): unknown {
   switch (method) {

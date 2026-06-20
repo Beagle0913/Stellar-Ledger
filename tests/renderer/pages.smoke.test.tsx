@@ -4,6 +4,11 @@ import './apiMock.js'
 import { describe, expect, it } from 'vitest'
 import { screen } from '@testing-library/react'
 import { renderWithApp } from './renderWithApp.js'
+import {
+  MOCK_HOME_PLANET_NAME,
+  MOCK_HOME_SYSTEM_ID,
+  MOCK_HOME_SYSTEM_NAME
+} from './fixtures.js'
 import { DashboardPage } from '../../src/renderer/pages/DashboardPage.js'
 import { SaveLoadPage } from '../../src/renderer/pages/SaveLoadPage.js'
 import { InventoryPage } from '../../src/renderer/pages/InventoryPage.js'
@@ -30,7 +35,7 @@ describe('renderer page smoke tests', () => {
   it('InventoryPage renders inventory heading and data', async () => {
     renderWithApp(<InventoryPage />)
     expect(await screen.findByRole('heading', { name: 'Inventory' })).toBeInTheDocument()
-    expect(await screen.findByText('Helion')).toBeInTheDocument()
+    expect(await screen.findByText(MOCK_HOME_SYSTEM_NAME)).toBeInTheDocument()
     expect(await screen.findByText('Ore')).toBeInTheDocument()
   })
 
@@ -56,12 +61,12 @@ describe('renderer page smoke tests', () => {
 
   it('SystemPage renders system detail when selected', async () => {
     renderWithApp(<SystemPage />)
-    expect(await screen.findByRole('heading', { name: 'Helion' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: MOCK_HOME_SYSTEM_NAME })).toBeInTheDocument()
   })
 
   it('PlanetPage renders planet detail when selected', async () => {
     renderWithApp(<PlanetPage />)
-    expect(await screen.findByRole('heading', { name: 'Helion Prime' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: MOCK_HOME_PLANET_NAME })).toBeInTheDocument()
   })
 
   it('StarMapPage renders map, node, and detail panel', async () => {
@@ -69,8 +74,8 @@ describe('renderer page smoke tests', () => {
     expect(await screen.findByTestId('star-map-page')).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Star Map' })).toBeInTheDocument()
     expect(await screen.findByTestId('star-map-svg')).toBeInTheDocument()
-    expect(await screen.findByTestId('star-map-node-sys_helion')).toBeInTheDocument()
+    expect(await screen.findByTestId(`star-map-node-${MOCK_HOME_SYSTEM_ID}`)).toBeInTheDocument()
     const detail = await screen.findByTestId('star-map-detail-panel')
-    expect(detail).toHaveTextContent('Helion')
+    expect(detail).toHaveTextContent(MOCK_HOME_SYSTEM_NAME)
   })
 })

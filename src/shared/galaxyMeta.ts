@@ -64,7 +64,7 @@ export function homeSystemIdFromDefs(definitions: GameDefinitions): string {
     return configured
   }
   const first = definitions.systems[0]
-  if (!first) throw new Error('No systems in definitions.')
+  if (!first) throw new GameError('INTERNAL', 'No systems in definitions.')
   return first.id
 }
 
@@ -78,6 +78,6 @@ export function homePlanetIdFromDefs(definitions: GameDefinitions): string {
   const planet =
     definitions.planets.find((p) => p.systemId === systemId && p.habitability >= minHab) ??
     definitions.planets.find((p) => p.systemId === systemId)
-  if (!planet) throw new Error(`No planet in home system ${systemId}.`)
+  if (!planet) throw new GameError('INTERNAL', `No planet in home system ${systemId}.`)
   return planet.id
 }

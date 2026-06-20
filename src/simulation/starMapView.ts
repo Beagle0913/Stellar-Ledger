@@ -18,6 +18,7 @@ import {
 } from '../shared/starMap.js'
 import { getPlayerCorporation } from './corporations.js'
 import { itemLabel, referencePrice, systemDistance } from './economyMath.js'
+import { systemById } from './stateIndex.js'
 import { aggregateMarketRules, getRegionalStockpile } from './localEconomy.js'
 import type { RegionalTrade } from './npcRegionalTrade.js'
 
@@ -132,7 +133,7 @@ function contractHighlightsBySystem(state: GameState): Map<SystemId, string> {
 }
 
 function systemCoords(state: GameState, systemId: string): { x: number; y: number } {
-  const sys = state.definitions.systems.find((s) => s.id === systemId)
+  const sys = systemById(state, systemId)
   return { x: sys?.x ?? 0, y: sys?.y ?? 0 }
 }
 

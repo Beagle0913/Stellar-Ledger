@@ -4,6 +4,7 @@ import { useApp } from '../App'
 import { useCampaignAsync, useApiMutationWithArg, useTickControls } from '../hooks'
 import { StatusBanner } from '../components/StatusBanner'
 import { StatCard } from '../components/StatCard'
+import { TickControlsPanel } from '../components/TickControlsPanel'
 import { DataTable } from '../components/DataTable'
 import { TutorialPanel } from '../components/TutorialPanel'
 import { formatPriceChange, formatTrendLabel, trendTagClass } from '../../shared/economyDiagnostics'
@@ -77,29 +78,14 @@ export function DashboardPage(): React.JSX.Element {
 
       <TutorialPanel credits={d?.credits ?? null} />
 
-      <div className="panel">
-        <div className="form-line">
-          <button className="primary" disabled={ticking} onClick={() => void runTick()}>
-            {ticking ? 'Running…' : 'Run 1 Day Tick'}
-          </button>
-          <button disabled={ticking} onClick={() => void runWeek()}>
-            {ticking ? 'Running…' : 'Run 7 Days'}
-          </button>
-          <button disabled={ticking} onClick={() => void runSmart('production')}>
-            Advance to next production
-          </button>
-          <button disabled={ticking} onClick={() => void runSmart('transport')}>
-            Advance to next transport
-          </button>
-          <button disabled={ticking} onClick={() => void runSmart('changes')}>
-            Advance until something changes
-          </button>
-        </div>
-        <p className="muted">
-          Smart advance caps at 30 days. Production/transport jump to the next completion;
-          &quot;until something changes&quot; stops on trades, jobs, deliveries, or events.
-        </p>
-      </div>
+      <TickControlsPanel
+        ticking={ticking}
+        onRunTick={() => void runTick()}
+        onRunWeek={() => void runWeek()}
+        onRunSmartProduction={() => void runSmart('production')}
+        onRunSmartTransport={() => void runSmart('transport')}
+        onRunSmartChanges={() => void runSmart('changes')}
+      />
 
       {d && d.actionSuggestions.length > 0 && (
         <div className="panel">

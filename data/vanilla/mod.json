@@ -3,8 +3,8 @@
   "name": "Vanilla",
   "version": "0.1.0",
   "author": "Prototype",
-  "gameVersion": "0.1.x",
+  "gameVersion": "0.2.x",
   "dependencies": [],
   "loadAfter": [],
-  "description": "Base game content: items, recipes, buildings, the starting 5-system galaxy, factions, and events."
+  "description": "Base game content: items, recipes, buildings, the 100-system galaxy, factions, events, and NPC corporation seeds."
 }

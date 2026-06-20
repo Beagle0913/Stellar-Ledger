@@ -1,29 +1,16 @@
 import type { Corporation, GameState, ItemId, Ship, TransportJob } from '../shared/types.js'
-import { getNpcCorporations } from './corporations.js'
 import { availableQuantity, findInventory } from './economyMath.js'
 import { createTransportJob } from './logistics.js'
-
-const MAX_LOGISTICS_QTY = 60
-const MIN_SURPLUS = 10
-const MIN_SHORTAGE = 10
-const SURPLUS_FRACTION = 0.3
-const SHORTAGE_FRACTION = 0.5
-
-const DEFAULT_TARGETS: Record<string, number> = {
-  ore: 80,
-  metal: 30,
-  machinery: 4,
-  energy: 40,
-  fuel: 30
-}
-
-function itemTarget(itemId: ItemId): number {
-  return DEFAULT_TARGETS[itemId] ?? 20
-}
-
-function sortedNpcCorporations(state: GameState): Corporation[] {
-  return getNpcCorporations(state).slice().sort((a, b) => a.id.localeCompare(b.id))
-}
+import {
+  npcLogisticsMaxQty,
+  npcLogisticsMinShortage,
+  npcLogisticsMinSurplus,
+  npcLogisticsShortageFraction,
+  npcLogisticsSurplusFraction,
+  npcStockTarget,
+  sortedNpcCorporations,
+  systemsForCorp
+} from './npc/shared.js'
 
 function corpRunningTransport(state: GameState, corpId: string): TransportJob | undefined {
   return state.transportJobs.find((j) => j.ownerId === corpId && j.status === 'running')
@@ -42,17 +29,14 @@ function localQty(state: GameState, corpId: string, systemId: string, itemId: It
   return availableQuantity(findInventory(state, corpId, systemId, itemId))
 }
 
-function systemsForCorp(state: GameState, corp: Corporation): string[] {
-  const systems = new Set<string>([corp.homeSystemId])
-  for (const row of state.inventories) {
-    if (row.ownerId === corp.id) systems.add(row.systemId)
-  }
-  return [...systems].sort((a, b) => a.localeCompare(b))
-}
-
 /** Dispatch at most one inter-system haul per NPC corp when surplus/shortage pairs exist. */
 export function processNpcLogisticsAI(state: GameState): number {
   let dispatched = 0
+  const maxQty = npcLogisticsMaxQty(state)
+  const minSurplus = npcLogisticsMinSurplus(state)
+  const minShortage = npcLogisticsMinShortage(state)
+  const surplusFraction = npcLogisticsSurplusFraction(state)
+  const shortageFraction = npcLogisticsShortageFraction(state)
 
   for (const corp of sortedNpcCorporations(state)) {
     if (corpRunningTransport(state, corp.id)) continue
@@ -67,22 +51,22 @@ export function processNpcLogisticsAI(state: GameState): number {
       | undefined
 
     for (const item of items) {
-      const target = itemTarget(item.id)
+      const target = npcStockTarget(state, item.id)
       for (const fromSystemId of systems) {
         const surplus =
           localQty(state, corp.id, fromSystemId, item.id) -
-          target * (1 + SURPLUS_FRACTION)
-        if (surplus < MIN_SURPLUS) continue
+          target * (1 + surplusFraction)
+        if (surplus < minSurplus) continue
         if (ship.currentSystemId !== fromSystemId) continue
 
         for (const toSystemId of systems) {
           if (toSystemId === fromSystemId) continue
           const shortage =
-            target * SHORTAGE_FRACTION - localQty(state, corp.id, toSystemId, item.id)
-          if (shortage < MIN_SHORTAGE) continue
+            target * shortageFraction - localQty(state, corp.id, toSystemId, item.id)
+          if (shortage < minShortage) continue
           const quantity = Math.min(
             Math.floor(Math.min(surplus, shortage)),
-            MAX_LOGISTICS_QTY,
+            maxQty,
             Math.floor(ship.cargoCapacity / (item.volume || 1))
           )
           if (quantity <= 0) continue

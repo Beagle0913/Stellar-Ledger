@@ -78,7 +78,8 @@ function consumeInputsForJob(
       input.quantity * quantity
     )
     if (!removed) {
-      throw new Error(
+      throw new GameError(
+        'VALIDATION',
         `Failed to consume ${itemLabel(state, input.itemId)} (need ${input.quantity * quantity}).`
       )
     }

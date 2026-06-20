@@ -18,6 +18,7 @@ import type {
   ObjectiveView,
   ContractView
 } from '../shared/types.js'
+import { systemById } from './stateIndex.js'
 import { getPlayerCorporation } from './corporations.js'
 import { explainObjectiveView } from '../shared/explanations/objectives.js'
 import type { Trade } from './market.js'
@@ -249,7 +250,7 @@ export function noteContractSellInFaction(
   for (const contract of state.progression.activeContracts) {
     if (!contract.accepted || contract.type !== 'sell_in_faction') continue
     if (contract.params.itemId !== itemId) continue
-    const system = state.definitions.systems.find((s) => s.id === systemId)
+    const system = systemById(state, systemId)
     if (system?.controllingFactionId !== contract.params.factionId) continue
     if (contract.params.systemId && contract.params.systemId !== systemId) continue
     contract.progress = Math.min(contract.target, contract.progress + quantity)

@@ -1,6 +1,7 @@
 import { DEFAULT_CORP_ID } from '../shared/constants.js'
 import { newId } from '../shared/ids.js'
 import type { GameState, NpcCorporationDefinition } from '../shared/types.js'
+import { buildingDefById, planetById } from './stateIndex.js'
 
 /** Seed passive NPC corporations from mod definitions (new campaigns only). */
 export function seedNpcCorporations(state: GameState): void {
@@ -36,9 +37,9 @@ function seedOneNpcCorporation(state: GameState, def: NpcCorporationDefinition):
   }
 
   for (const b of def.buildings) {
-    const planet = state.definitions.planets.find((p) => p.id === b.planetId)
+    const planet = planetById(state, b.planetId)
     if (!planet) continue
-    if (!state.definitions.buildings.some((bd) => bd.id === b.buildingType)) continue
+    if (!buildingDefById(state, b.buildingType)) continue
     state.buildings.push({
       id: newId('bld'),
       definitionId: b.buildingType,

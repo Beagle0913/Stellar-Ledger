@@ -36,7 +36,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
+      - run: corepack enable
+      - run: corepack pnpm install --frozen-lockfile
       - run: npm run dist
       - name: Compute checksum
         shell: pwsh

@@ -11,7 +11,30 @@ export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
   populationGrowthRatePerDay: 0.00008,
   populationDeclineFoodRatio: 0.45,
   populationFoodItemId: 'food',
-  fuelItemId: 'fuel'
+  fuelItemId: 'fuel',
+  npcStockTargets: {
+    ore: 80,
+    metal: 30,
+    machinery: 4,
+    energy: 40,
+    fuel: 30,
+    food: 20
+  },
+  npcDefaultStockTarget: 20,
+  npcMarketMaxOrderQty: 40,
+  npcMarketMinOrderQty: 5,
+  npcMarketSurplusFraction: 0.25,
+  npcMarketShortageFraction: 0.5,
+  npcMarketSellPriceMult: 1.05,
+  npcMarketBuyPriceMult: 0.95,
+  npcLogisticsMaxQty: 60,
+  npcLogisticsMinSurplus: 10,
+  npcLogisticsMinShortage: 10,
+  npcLogisticsSurplusFraction: 0.3,
+  npcLogisticsShortageFraction: 0.5,
+  npcBalancedOreThreshold: 8,
+  npcBalancedOreItemId: 'ore',
+  npcMaxProductionRunsPerBuilding: 5
 }
 
 /** Merge mod overrides onto defaults; unknown keys are ignored by the schema layer. */

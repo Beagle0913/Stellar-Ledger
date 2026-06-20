@@ -220,7 +220,23 @@ export const economyConfigSchema = z.object({
   populationGrowthRatePerDay: z.number().nonnegative().optional(),
   populationDeclineFoodRatio: z.number().min(0).max(2).optional(),
   populationFoodItemId: idSchema.optional(),
-  fuelItemId: idSchema.optional()
+  fuelItemId: idSchema.optional(),
+  npcStockTargets: z.record(idSchema, z.number().nonnegative()).optional(),
+  npcDefaultStockTarget: z.number().nonnegative().optional(),
+  npcMarketMaxOrderQty: z.number().positive().optional(),
+  npcMarketMinOrderQty: z.number().positive().optional(),
+  npcMarketSurplusFraction: z.number().nonnegative().optional(),
+  npcMarketShortageFraction: z.number().min(0).max(1).optional(),
+  npcMarketSellPriceMult: z.number().positive().optional(),
+  npcMarketBuyPriceMult: z.number().positive().optional(),
+  npcLogisticsMaxQty: z.number().positive().optional(),
+  npcLogisticsMinSurplus: z.number().nonnegative().optional(),
+  npcLogisticsMinShortage: z.number().nonnegative().optional(),
+  npcLogisticsSurplusFraction: z.number().nonnegative().optional(),
+  npcLogisticsShortageFraction: z.number().min(0).max(1).optional(),
+  npcBalancedOreThreshold: z.number().nonnegative().optional(),
+  npcBalancedOreItemId: idSchema.optional(),
+  npcMaxProductionRunsPerBuilding: z.number().positive().optional()
 })
 
 export const campaignStartConfigSchema = z.object({

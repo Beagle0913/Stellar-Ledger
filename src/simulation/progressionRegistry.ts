@@ -10,6 +10,7 @@ import type {
 } from '../shared/types.js'
 import { getPlayerCorporation } from './corporations.js'
 import { estimateInventoryValue } from './economyMath.js'
+import { resolveItemName, resolveSystemName } from './resolveNames.js'
 
 export type ContractBuildContext = {
   template: ContractTemplateDefinition
@@ -29,21 +30,12 @@ export type ContractBuildResult = {
 type ContractBuilder = (ctx: ContractBuildContext) => ContractBuildResult
 type ContractProgressFn = (state: GameState, contract: ActiveContract) => number
 
-function itemName(state: GameState, itemId: string | undefined): string | undefined {
-  if (!itemId) return undefined
-  return state.definitions.items.find((i) => i.id === itemId)?.name ?? itemId
-}
-
-function systemName(state: GameState, systemId: string): string {
-  return state.definitions.systems.find((s) => s.id === systemId)?.name ?? systemId
-}
-
 const CONTRACT_BUILDERS: Record<ContractTemplateType, ContractBuilder> = {
   deliver_item: ({ template, tier, state, seed, pickSystemId, pickInt }) => {
-    const name = itemName(state, tier.itemId)
+    const name = tier.itemId ? resolveItemName(state, tier.itemId) : undefined
     const system = pickSystemId(state, seed)
     const qty = pickInt(tier.quantityMin ?? 1, tier.quantityMax ?? 1, seed)
-    const dest = systemName(state, system)
+    const dest = resolveSystemName(state, system)
     return {
       title: `Deliver ${qty} ${name ?? 'goods'} to ${dest}`,
       description: `${template.description} Destination: ${dest}.`,
@@ -51,7 +43,7 @@ const CONTRACT_BUILDERS: Record<ContractTemplateType, ContractBuilder> = {
     }
   },
   produce_item: ({ template, tier, state, seed, pickInt }) => {
-    const name = itemName(state, tier.itemId)
+    const name = tier.itemId ? resolveItemName(state, tier.itemId) : undefined
     const qty = pickInt(tier.quantityMin ?? 1, tier.quantityMax ?? 1, seed + 1)
     return {
       title: `Produce ${qty} ${name ?? 'goods'}`,
@@ -60,14 +52,14 @@ const CONTRACT_BUILDERS: Record<ContractTemplateType, ContractBuilder> = {
     }
   },
   sell_in_faction: ({ template, tier, state, seed, pickSystemId, pickInt }) => {
-    const name = itemName(state, tier.itemId)
+    const name = tier.itemId ? resolveItemName(state, tier.itemId) : undefined
     const qty = pickInt(tier.quantityMin ?? 1, tier.quantityMax ?? 1, seed + 2)
     const factionSystems = state.definitions.systems.filter(
       (s) => s.controllingFactionId === template.factionId
     )
     const regionSystem =
       factionSystems[seed % Math.max(1, factionSystems.length)]?.id ?? pickSystemId(state, seed)
-    const regionName = systemName(state, regionSystem)
+    const regionName = resolveSystemName(state, regionSystem)
     return {
       title: `Sell ${qty} ${name ?? 'goods'} in ${regionName}`,
       description: `${template.description} Sales must occur in ${regionName}.`,

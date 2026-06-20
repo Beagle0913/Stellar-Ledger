@@ -3,6 +3,8 @@ import { createLogEntry } from '../shared/gameLog.js'
 import type { GameLogEntry, GameState, MarketChangeEntry } from '../shared/types.js'
 import { getCorporationById } from './corporations.js'
 import { itemLabel } from './economyMath.js'
+import { resolveRecipeName, resolveSystemName } from './resolveNames.js'
+import { recipeById } from './stateIndex.js'
 import type { Trade } from './market.js'
 import type { RegionalTrade } from './npcRegionalTrade.js'
 import type { PopulationChange } from './populationDynamics.js'
@@ -19,14 +21,6 @@ export interface TickLogContext {
   marketChanges: MarketChangeEntry[]
 }
 
-function systemName(state: GameState, systemId: string): string {
-  return state.definitions.systems.find((s) => s.id === systemId)?.name ?? systemId
-}
-
-function recipeName(state: GameState, recipeId: string): string {
-  return state.definitions.recipes.find((r) => r.id === recipeId)?.name ?? recipeId
-}
-
 /** Build human-readable log lines for everything that happened on one tick. */
 export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext): GameLogEntry[] {
   const entries: GameLogEntry[] = []
@@ -40,7 +34,7 @@ export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext
   )
 
   for (const job of ctx.completedProduction) {
-    const recipe = state.definitions.recipes.find((r) => r.id === job.recipeId)
+    const recipe = recipeById(state, job.recipeId)
     const outputs =
       recipe?.outputs
         .map((o) => `${o.quantity * job.quantity} ${itemLabel(state, o.itemId)}`)
@@ -49,14 +43,14 @@ export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext
       createLogEntry(
         tick,
         'production',
-        `Completed ${recipeName(state, job.recipeId)} ×${job.quantity} → ${outputs}.`
+        `Completed ${resolveRecipeName(state, job.recipeId)} ×${job.quantity} → ${outputs}.`
       )
     )
   }
 
   for (const job of ctx.completedTransport) {
-    const dest = systemName(state, job.destinationSystemId)
-    const origin = systemName(state, job.originSystemId)
+    const dest = resolveSystemName(state, job.destinationSystemId)
+    const origin = resolveSystemName(state, job.originSystemId)
     const owner = getCorporationById(state, job.ownerId)
     const ownerLabel = owner?.name ?? job.ownerId
     entries.push(
@@ -69,8 +63,8 @@ export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext
   }
 
   for (const rt of ctx.regionalTrades) {
-    const from = systemName(state, rt.fromSystemId)
-    const to = systemName(state, rt.toSystemId)
+    const from = resolveSystemName(state, rt.fromSystemId)
+    const to = resolveSystemName(state, rt.toSystemId)
     entries.push(
       createLogEntry(
         tick,
@@ -83,7 +77,7 @@ export function buildTickLog(state: GameState, tick: number, ctx: TickLogContext
   for (const trade of ctx.trades) {
     if (!trade.playerSide) continue
     const market = state.markets.find((m) => m.id === trade.marketId)
-    const sys = market ? systemName(state, market.systemId) : trade.marketId
+    const sys = market ? resolveSystemName(state, market.systemId) : trade.marketId
     const verb = trade.playerSide === 'buy' ? 'Bought' : 'Sold'
     entries.push(
       createLogEntry(

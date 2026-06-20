@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { GameError } from '../shared/errors.js'
 import {
   buildMaterialsFileSchema,
   campaignStartConfigSchema,
@@ -52,7 +53,7 @@ export function isStrictSaveValidation(): boolean {
 function noteValidationWarning(label: string, detail: string): void {
   const msg = `${label}: ${detail}`
   if (isStrictSaveValidation()) {
-    throw new Error(msg)
+    throw new GameError('VALIDATION', msg)
   }
   loadValidationWarnings.push(msg)
 }

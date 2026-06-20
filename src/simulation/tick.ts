@@ -1,28 +1,17 @@
 import { GameError } from '../shared/errors.js'
-import { appendActivityLog, trimEventsLog } from '../shared/gameLog.js'
+import { appendActivityLog } from '../shared/gameLog.js'
 import { collectMarketChangesForTick } from '../shared/economyDiagnostics.js'
+import { PRICE_HISTORY_RETENTION_TICKS } from '../shared/constants.js'
 import { buildTickDigest } from '../shared/explanations/digest.js'
-import type { GameState, ProductionJob, TickResult, TransportJob } from '../shared/types.js'
-import { processEvents } from './events.js'
-import { processNpcLogisticsAI } from './npcLogisticsAI.js'
-import { processNpcMarketAI } from './npcMarketAI.js'
-import { processNpcProductionAI } from './npcProductionAI.js'
-import { processTransportJobs } from './logistics.js'
-import { applyTradesToLocalStockpiles, processLocalEconomy } from './localEconomy.js'
-import { matchMarket, recordPriceHistory, replenishNpcLiquidity } from './market.js'
-import { syncNpcLiquidityToStockpiles } from './npcLiquidity.js'
-import { processNpcRegionalTrade } from './npcRegionalTrade.js'
-import { processPopulationDynamics } from './populationDynamics.js'
-import { applyTradesToProgression, processContractsEndOfTick, refreshObjectiveProgress } from './progression.js'
-import { processProductionJobs } from './production.js'
+import type { GameState, TickResult } from '../shared/types.js'
+import { processContractsEndOfTick, refreshObjectiveProgress } from './progression.js'
 import { buildTickLog } from './tickLog.js'
+import { createTickStepContext, TICK_STEPS } from './tickSteps.js'
 // The deterministic daily tick. One call == one in-game day. The renderer's
 // "Run 1 Day Tick" button maps to exactly one runTick().
 
 export type { TickResult }
-
-/** Price-history retention: rows older than this many ticks are pruned each tick. */
-export const PRICE_HISTORY_RETENTION_TICKS = 365
+export { PRICE_HISTORY_RETENTION_TICKS }
 
 /**
  * Advance the simulation by one day. Steps (in order, matching ECONOMY.md):
@@ -54,50 +43,11 @@ export function runTick(state: GameState): TickResult {
   state.meta.ticking = true
   try {
     const nextTick = state.meta.tick + 1
+    const ctx = createTickStepContext(nextTick)
 
-    const productionSnapshot = snapshotJobStatuses(state.productionJobs)
-    processProductionJobs(state)
-    const completedProductionJobs = countNewlyCompleted(
-      productionSnapshot,
-      state.productionJobs
-    )
-    const completedProduction = findNewlyCompletedJobs(
-      productionSnapshot,
-      state.productionJobs
-    ) as ProductionJob[]
-
-    const transportSnapshot = snapshotJobStatuses(state.transportJobs)
-    processTransportJobs(state)
-    const completedTransportJobs = countNewlyCompleted(
-      transportSnapshot,
-      state.transportJobs
-    )
-    const completedTransport = findNewlyCompletedJobs(
-      transportSnapshot,
-      state.transportJobs
-    ) as TransportJob[]
-
-    processNpcProductionAI(state)
-    processNpcMarketAI(state)
-    processNpcLogisticsAI(state)
-
-    processLocalEconomy(state, nextTick)
-    const populationChanges = processPopulationDynamics(state)
-    const regionalTradeList = processNpcRegionalTrade(state)
-    syncNpcLiquidityToStockpiles(state)
-
-    const eventsBefore = state.eventsLog.length
-    const trades = matchMarket(state)
-    applyTradesToLocalStockpiles(state, trades)
-    applyTradesToProgression(state, trades)
-    replenishNpcLiquidity(state)
-    recordPriceHistory(state, trades, nextTick)
-
-    processEvents(state, nextTick)
-    const newEvents = state.eventsLog.slice(eventsBefore)
-    const newEventsCount = newEvents.length
-    // Bound the persisted event log so long campaigns don't grow it without end.
-    trimEventsLog(state)
+    for (const step of TICK_STEPS) {
+      step.run(state, ctx)
+    }
 
     // Cap price history: drop rows older than the retention window. The most
     // recent row per (market, item) is by definition inside the window, so the
@@ -121,14 +71,15 @@ export function runTick(state: GameState): TickResult {
     processContractsEndOfTick(state)
     refreshObjectiveProgress(state)
 
+    const newEvents = state.eventsLog.slice(ctx.eventsBefore)
     const marketChanges = collectMarketChangesForTick(state, nextTick)
     const explanations = buildTickDigest(state, { marketChanges, newEvents })
     const log = buildTickLog(state, nextTick, {
-      trades,
-      regionalTrades: regionalTradeList,
-      completedProduction,
-      completedTransport,
-      populationChanges,
+      trades: ctx.trades,
+      regionalTrades: ctx.regionalTradeList,
+      completedProduction: ctx.completedProduction,
+      completedTransport: ctx.completedTransport,
+      populationChanges: ctx.populationChanges,
       newEvents,
       marketChanges
     })
@@ -136,12 +87,12 @@ export function runTick(state: GameState): TickResult {
 
     return {
       tick: nextTick,
-      trades: trades.length,
-      completedProductionJobs,
-      completedTransportJobs,
-      newEvents: newEventsCount,
-      regionalTrades: regionalTradeList.length,
-      regionalTradeList,
+      trades: ctx.trades.length,
+      completedProductionJobs: ctx.completedProductionJobs,
+      completedTransportJobs: ctx.completedTransportJobs,
+      newEvents: ctx.newEventsCount,
+      regionalTrades: ctx.regionalTradeList.length,
+      regionalTradeList: ctx.regionalTradeList,
       log,
       marketChanges,
       explanations
@@ -192,26 +143,4 @@ export function runTicks(state: GameState, n: number): TickResult {
     total.explanations = result.explanations
   }
   return total
-}
-
-function snapshotJobStatuses(jobs: Array<{ id: string; status: string }>): Map<string, string> {
-  return new Map(jobs.map((j) => [j.id, j.status]))
-}
-
-function countNewlyCompleted(
-  before: Map<string, string>,
-  jobs: Array<{ id: string; status: string }>
-): number {
-  let n = 0
-  for (const job of jobs) {
-    if (before.get(job.id) !== 'completed' && job.status === 'completed') n += 1
-  }
-  return n
-}
-
-function findNewlyCompletedJobs(
-  before: Map<string, string>,
-  jobs: Array<{ id: string; status: string }>
-): Array<{ id: string; status: string }> {
-  return jobs.filter((j) => before.get(j.id) !== 'completed' && j.status === 'completed')
 }

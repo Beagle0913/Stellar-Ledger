@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from './api'
-import { isNoCampaignError } from './campaignRequired'
+import { formatApiErrorMessage, isNoCampaignError } from './campaignRequired'
 import { useApp } from './context'
 import type { SmartTickMode, TickResult } from '../shared/types'
 
@@ -26,6 +26,7 @@ export function useAsync<T>(
   deps: unknown[],
   onNoCampaign?: () => void
 ): AsyncState<T> {
+  const { handleApiError } = useApp()
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -49,7 +50,8 @@ export function useAsync<T>(
           onNoCampaign()
           return
         }
-        setError(e instanceof Error ? e.message : String(e))
+        const msg = handleApiError(e) ?? formatApiErrorMessage(e)
+        setError(msg)
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -58,7 +60,7 @@ export function useAsync<T>(
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, nonce, onNoCampaign])
+  }, [...deps, nonce, onNoCampaign, handleApiError])
 
   return { data, error, loading, reload }
 }

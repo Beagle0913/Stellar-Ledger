@@ -26,6 +26,19 @@ Mutable state saves after player commands (`persistAfterMutation`), after ticks,
 4. `saveManager.ts` — bootstrap, load, persist
 5. Tests: migrations, save round-trip, anything that touches the field
 
+Run `pnpm scaffold:state <fieldName>` (or `node scripts/scaffold-state-field.mjs`) for a step-by-step checklist. PR template includes the same list.
+
+## Repository layout
+
+Persistence code is split by concern (re-exported from `worldRepo.ts` for compatibility):
+
+| Module | Responsibility |
+|--------|----------------|
+| `metaRepo.ts` | `campaign_meta`, scenario columns, activity log JSON |
+| `corpRepo.ts` | `corporations` table |
+| `definitionsRepo.ts` | Frozen defs written once at campaign creation |
+| `entityRepo.ts` | Building instances, ships, events log, planet populations |
+
 Use tables when you need queries or frequent partial updates. Use JSON blobs for nested mod-shaped data. Keep derived UI-only stuff ephemeral.
 
 ## Campaign start

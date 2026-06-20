@@ -1,6 +1,11 @@
 import type { BuildingInstance, Corporation, GameState, RecipeDefinition } from '../shared/types.js'
-import { getNpcCorporations } from './corporations.js'
 import { availableQuantity, findInventory } from './economyMath.js'
+import {
+  npcBalancedOreItemId,
+  npcBalancedOreThreshold,
+  npcMaxProductionRunsPerBuilding,
+  sortedNpcCorporations
+} from './npc/shared.js'
 import { planetById } from './stateIndex.js'
 import {
   canStartProduction,
@@ -13,10 +18,6 @@ function buildingBusy(state: GameState, buildingId: string): boolean {
   return state.productionJobs.some(
     (j) => j.buildingId === buildingId && (j.status === 'running' || j.status === 'queued')
   )
-}
-
-function sortedNpcCorporations(state: GameState): Corporation[] {
-  return getNpcCorporations(state).slice().sort((a, b) => a.id.localeCompare(b.id))
 }
 
 function sortedCorpBuildings(state: GameState, corpId: string): BuildingInstance[] {
@@ -56,15 +57,17 @@ function pickRecipeForProfile(
     return sorted.find((r) => !r.extraction && maxAffordableRuns(state, building.id, r.id) > 0)
   }
 
-  const oreQty = localItemQty(state, corp.id, systemId, 'ore')
+  const oreItemId = npcBalancedOreItemId(state)
+  const oreQty = localItemQty(state, corp.id, systemId, oreItemId)
   const refine = sorted.find((r) => !r.extraction && maxAffordableRuns(state, building.id, r.id) > 0)
-  if (oreQty >= 8 && refine) return refine
+  if (oreQty >= npcBalancedOreThreshold(state) && refine) return refine
   return sorted.find((r) => maxAffordableRuns(state, building.id, r.id) > 0)
 }
 
 /** Queue at most one new production job per idle NPC building (deterministic). */
 export function processNpcProductionAI(state: GameState): number {
   let queued = 0
+  const maxRuns = npcMaxProductionRunsPerBuilding(state)
 
   for (const corp of sortedNpcCorporations(state)) {
     for (const building of sortedCorpBuildings(state, corp.id)) {
@@ -74,7 +77,7 @@ export function processNpcProductionAI(state: GameState): number {
       const recipe = pickRecipeForProfile(state, corp, building, recipes)
       if (!recipe) continue
 
-      const runs = Math.min(maxAffordableRuns(state, building.id, recipe.id), 5)
+      const runs = Math.min(maxAffordableRuns(state, building.id, recipe.id), maxRuns)
       if (runs <= 0) continue
       const check = canStartProduction(state, building.id, recipe.id, runs)
       if (!check.ok) continue

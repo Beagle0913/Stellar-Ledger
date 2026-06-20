@@ -14,11 +14,11 @@ Historical notes from before multi-corp landed. Phase 3A shipped `corporations[]
 
 ## Files that had `state.corporation` (pre-3A)
 
-`bootstrap.ts`, `market.ts`, `production.ts`, `logistics.ts`, `viewQueries.ts`, `gameService.ts`, repositories, renderer pages, tests — all migrated to `getPlayerCorporation()` and related helpers.
+`bootstrap.ts`, `market.ts`, `production.ts`, `logistics.ts`, `simulation/views/` (formerly `viewQueries.ts`), `gameService.ts`, repositories, renderer pages, tests — all migrated to `getPlayerCorporation()` and related helpers.
 
 ## SQLite
 
-`worldRepo` and friends previously used `LIMIT 1` on corporations; now load/save all rows.
+`worldRepo` (now split into `metaRepo`, `corpRepo`, etc.) previously used `LIMIT 1` on corporations; now load/save all rows.
 
 ## Follow-up (completed)
 

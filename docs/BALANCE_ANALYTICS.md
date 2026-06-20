@@ -12,7 +12,7 @@ corepack pnpm run balance:report  # also writes reports/balance/ (gitignored)
 | Module | Role |
 |--------|------|
 | `src/simulation/bootstrap.ts` | Pure `buildInitialState` |
-| `src/balance/bootstrap.ts` | Load vanilla defs, create state |
+| `src/balance/bootstrap.ts` | Load vanilla defs via `shared/vanillaLoader`, create state |
 | `src/balance/harness.ts` | Strategy → tick loop → snapshots |
 | `src/balance/strategies/` | Scripted player policies |
 | `src/balance/metrics.ts` | Daily snapshots, summary |
